@@ -3,154 +3,275 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TIGO V5 · 12 维度 16920 cell daily</title>
+<title>TIGO V5 · 12 维度 16920 cell daily · TIGO V5</title>
 <style>
+/* TIGO V5 — Salesforce Lightning 风格 (跟 apps/web/src/app/globals.css 1:1 同步) */
 :root {
-  --graphite: #171A1F;
-  --steel: #5E6672;
-  --silver: #C7CDD4;
-  --industrial-blue: #2563EB;
-  --risk-red: #B42318;
-  --warning-amber: #B7791F;
-  --success-green: #1F7A4D;
-  --bg-base: #FFFFFF;
-  --bg-elevated: #F4F6F9;
-  --border: #D8DDE6;
-  --border-light: #E5E9F0;
-  --text-primary: #16325C;
-  --text-secondary: #5E6672;
-  --text-muted: #8A8F99;
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --shadow-sm: 0 1px 2px rgba(22, 50, 92, 0.06);
-  --shadow-md: 0 2px 6px rgba(22, 50, 92, 0.10);
-  --font-base: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  --font-num: "Inter", -apple-system, "Segoe UI", Arial, sans-serif;
+  --sf-blue: #0070D2;
+  --sf-blue-hover: #005FB2;
+  --sf-blue-dark: #032D60;
+  --sf-purple: #9050E0;
+  --sf-bg: #F3F2F2;
+  --sf-card: #FFFFFF;
+  --sf-border: #DDDBDA;
+  --sf-text: #16325C;
+  --sf-text-muted: #5C5C5C;
+  --sf-text-light: #9C9C9C;
+  --sf-success: #2E844A;
+  --sf-success-bg: #EBF7EE;
+  --sf-error: #BA0517;
+  --sf-error-bg: #FEF1F1;
+  --sf-warning: #FE9331;
+  --sf-warning-bg: #FEF4E5;
+  --sf-info: #0070D2;
+  --sf-info-bg: #E8F4FD;
+  --sf-promo: #AEF1DA;
+  --sf-promo-text: #16325C;
+  --sf-radius-sm: 4px;
+  --sf-radius: 8px;
+  --sf-radius-lg: 12px;
+  --sf-shadow-1: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --sf-shadow-2: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --sf-font: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Roboto, sans-serif;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body { background: var(--bg-elevated); color: var(--text-primary); font-family: var(--font-base); font-size: 14px; line-height: 1.5; min-height: 100vh; }
-a { color: var(--industrial-blue); text-decoration: none; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; font-size: 14px; font-family: var(--sf-font); color: var(--sf-text); background: var(--sf-bg); -webkit-font-smoothing: antialiased; }
+a { color: var(--sf-blue); text-decoration: none; }
 a:hover { text-decoration: underline; }
-.num { font-variant-numeric: tabular-nums; font-family: var(--font-num); }
-.layout { display: grid; grid-template-columns: 240px 1fr; grid-template-rows: 56px 1fr; grid-template-areas: "side header" "side main"; min-height: 100vh; }
-.side { grid-area: side; background: var(--graphite); color: #FFFFFF; padding: 16px 0; overflow-y: auto; }
-.side-brand { padding: 0 16px 16px; border-bottom: 1px solid rgba(255,255,255,0.10); }
-.side-brand-name { font-size: 14px; font-weight: 700; }
-.side-brand-sub { font-size: 11px; color: var(--silver); margin-top: 2px; }
-.side-section { padding: 12px 16px 4px; font-size: 10px; font-weight: 700; color: var(--silver); text-transform: uppercase; letter-spacing: 0.5px; }
-.side-link { display: block; padding: 6px 16px; font-size: 13px; color: #FFFFFF; text-decoration: none; border-left: 3px solid transparent; }
-.side-link:hover { background: rgba(255,255,255,0.08); text-decoration: none; }
-.side-link.active { background: rgba(37,99,235,0.30); border-left-color: var(--industrial-blue); }
-.header { grid-area: header; background: var(--bg-base); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; }
-.header-title { font-size: 16px; font-weight: 700; color: var(--text-primary); }
-.header-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-.header-meta { font-size: 12px; color: var(--text-secondary); }
-.header-meta strong { color: var(--text-primary); }
-.main { grid-area: main; padding: 20px 24px; overflow-y: auto; }
-.card { background: var(--bg-base); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 20px; box-shadow: var(--shadow-sm); margin-bottom: 16px; }
-.card-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
-.card-sub { font-size: 12px; color: var(--text-secondary); margin-bottom: 12px; }
-.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px; }
-.kpi-cell { background: var(--bg-base); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 14px; }
-.kpi-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
-.kpi-value { font-size: 22px; font-weight: 700; color: var(--industrial-blue); margin-top: 4px; }
-.kpi-value-amber { color: var(--warning-amber); }
-.kpi-value-green { color: var(--success-green); }
-.kpi-value-red { color: var(--risk-red); }
-.kpi-sub { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border-light); }
-th { background: var(--bg-elevated); font-weight: 600; color: var(--text-secondary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.3px; }
-tr:hover td { background: var(--bg-elevated); }
-.badge { display: inline-block; padding: 2px 8px; border-radius: var(--radius-sm); font-size: 11px; font-weight: 600; }
-.badge-success { background: #E3F0E8; color: var(--success-green); }
-.badge-warn { background: #FCF3DC; color: var(--warning-amber); }
-.badge-danger { background: #FCE4E1; color: var(--risk-red); }
-.badge-info { background: #E6EFFE; color: var(--industrial-blue); }
-.footer { margin-top: 24px; padding: 12px 16px; background: var(--bg-base); border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 11px; color: var(--text-muted); text-align: center; }
-h2 { font-size: 16px; color: var(--text-primary); margin-bottom: 12px; font-weight: 700; }
-h3 { font-size: 14px; color: var(--text-primary); margin-bottom: 8px; font-weight: 700; }
-.gate-section { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-@media (max-width: 1024px) { .gate-section { grid-template-columns: 1fr; } .layout { grid-template-columns: 1fr; grid-template-areas: "header" "main"; } .side { display: none; } }
+
+.sf-promo-bar {
+  height: 36px; background: var(--sf-promo); color: var(--sf-promo-text);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 500;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  position: sticky; top: 0; z-index: 50;
+}
+.sf-promo-bar a { color: var(--sf-promo-text); text-decoration: underline; margin-left: 12px; }
+
+.sf-topbar {
+  height: 56px; background: var(--sf-card);
+  border-bottom: 1px solid var(--sf-border);
+  display: flex; align-items: center; padding: 0 16px; gap: 16px;
+  position: sticky; top: 36px; z-index: 49;
+}
+.sf-logo { display: flex; align-items: center; gap: 8px; font-size: 18px; font-weight: 700; color: var(--sf-blue); letter-spacing: -0.5px; }
+.sf-topbar-search { flex: 1; max-width: 480px; position: relative; }
+.sf-topbar-search input { width: 100%; height: 32px; border: 1px solid var(--sf-border); border-radius: var(--sf-radius-sm); padding: 0 12px 0 36px; font-size: 13px; background: var(--sf-bg); color: var(--sf-text); outline: none; font-family: inherit; }
+.sf-topbar-search input:focus { border-color: var(--sf-blue); }
+.sf-topbar-search::before { content: ""; position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M11 11l3 3m-1.5-7a5.5 5.5 0 11-11 0 5.5 5.5 0 0111 0z' stroke='%235C5C5C' stroke-width='1.5' fill='none'/></svg>"); background-repeat: no-repeat; }
+.sf-topbar-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.sf-icon-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; background: transparent; border: 1px solid transparent; border-radius: var(--sf-radius-sm); cursor: pointer; color: var(--sf-text-muted); }
+.sf-icon-btn:hover { background: var(--sf-bg); color: var(--sf-blue); }
+.sf-avatar { width: 32px; height: 32px; background: var(--sf-blue); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; }
+
+.sf-layout { display: flex; min-height: calc(100vh - 92px); }
+.sf-sidebar { width: 220px; background: var(--sf-blue-dark); color: white; padding: 12px 0; flex-shrink: 0; }
+.sf-nav-item { display: flex; align-items: center; gap: 12px; padding: 8px 16px; color: rgba(255, 255, 255, 0.85); cursor: pointer; font-size: 13px; border-left: 3px solid transparent; text-decoration: none; }
+.sf-nav-item:hover { background: rgba(255, 255, 255, 0.08); text-decoration: none; }
+.sf-nav-item.active { background: rgba(255, 255, 255, 0.12); border-left-color: var(--sf-blue); color: white; }
+.sf-nav-icon { width: 16px; height: 16px; flex-shrink: 0; }
+
+.sf-main { flex: 1; padding: 24px 32px; max-width: 1280px; overflow-x: auto; }
+.sf-rightpanel { width: 320px; background: var(--sf-card); border-left: 1px solid var(--sf-border); padding: 16px; flex-shrink: 0; }
+
+.sf-welcome-banner {
+  background: radial-gradient(circle at top right, #E8F4FD 0%, #F0EAFB 60%, #FFFFFF 100%);
+  border-radius: var(--sf-radius); padding: 32px 32px 24px;
+  display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  margin-bottom: 24px; box-shadow: var(--sf-shadow-1); min-height: 140px;
+}
+.sf-welcome-banner h1 { margin: 0 0 4px 0; font-size: 28px; font-weight: 400; color: var(--sf-text); }
+.sf-welcome-banner .sub { margin: 0; color: var(--sf-text-muted); font-size: 14px; }
+.sf-welcome-illust { flex-shrink: 0; }
+
+.sf-card { background: var(--sf-card); border-radius: var(--sf-radius); box-shadow: var(--sf-shadow-1); border: 1px solid var(--sf-border); margin-bottom: 16px; }
+.sf-card-header { padding: 12px 16px; border-bottom: 1px solid var(--sf-border); display: flex; align-items: center; justify-content: space-between; }
+.sf-card-title { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 15px; font-weight: 600; }
+.sf-card-title-icon { width: 22px; height: 22px; display: inline-flex; align-items: center; justify-content: center; color: white; border-radius: 4px; font-size: 12px; font-weight: 700; flex-shrink: 0; }
+.sf-card-link { font-size: 12px; }
+.sf-card-body { padding: 16px; }
+
+.sf-kpi-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; padding: 16px; }
+.sf-kpi { padding-left: 12px; border-left: 3px solid var(--sf-blue); }
+.sf-kpi.success { border-left-color: var(--sf-success); }
+.sf-kpi.warning { border-left-color: var(--sf-warning); }
+.sf-kpi.error { border-left-color: var(--sf-error); }
+.sf-kpi.purple { border-left-color: var(--sf-purple); }
+.sf-kpi-label { font-size: 11px; color: var(--sf-text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.sf-kpi-value { font-size: 28px; font-weight: 700; color: var(--sf-text); margin: 4px 0 2px 0; }
+.sf-kpi-sub { font-size: 11px; color: var(--sf-text-light); }
+
+.sf-score-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.sf-score-cell { padding: 12px; }
+.sf-score-name { font-size: 11px; color: var(--sf-text-muted); text-transform: uppercase; }
+.sf-score-val { font-size: 20px; font-weight: 700; margin: 4px 0 8px 0; }
+.sf-score-bar { height: 6px; background: var(--sf-border); border-radius: 3px; overflow: hidden; }
+.sf-score-bar > div { height: 100%; background: var(--sf-blue); border-radius: 3px; }
+
+.sf-gate-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 16px; }
+.sf-gate-card { padding: 12px; background: var(--sf-bg); border-radius: var(--sf-radius-sm); }
+.sf-gate-label { font-size: 13px; font-weight: 600; }
+.sf-gate-desc { font-size: 11px; color: var(--sf-text-muted); margin-top: 4px; }
+
+.sf-tab-bar { display: flex; border-bottom: 1px solid var(--sf-border); padding: 0 16px; gap: 4px; }
+.sf-tab { padding: 10px 14px; font-size: 13px; color: var(--sf-text-muted); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.sf-tab:hover { color: var(--sf-blue); }
+.sf-tab.active { color: var(--sf-blue); border-bottom-color: var(--sf-blue); font-weight: 600; }
+
+.sf-btn { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 14px; border-radius: var(--sf-radius-sm); font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid transparent; font-family: inherit; }
+.sf-btn-primary { background: var(--sf-blue); color: white; }
+.sf-btn-primary:hover { background: var(--sf-blue-hover); }
+.sf-btn-success { background: var(--sf-success); color: white; }
+.sf-btn-danger { background: white; color: var(--sf-error); border-color: var(--sf-error); }
+.sf-btn-link { background: transparent; color: var(--sf-blue); padding: 0; height: auto; }
+.sf-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.sf-chip { display: inline-flex; align-items: center; gap: 4px; height: 22px; padding: 0 10px; border-radius: 11px; font-size: 11px; font-weight: 600; letter-spacing: 0.3px; }
+.sf-chip.v0, .sf-chip.v1, .sf-chip.v2, .sf-chip.v3 { background: var(--sf-info-bg); color: var(--sf-info); }
+.sf-chip.v4, .sf-chip.v5, .sf-chip.v6 { background: var(--sf-success-bg); color: var(--sf-success); }
+.sf-chip.gate-PASSED { background: var(--sf-success-bg); color: var(--sf-success); }
+.sf-chip.gate-BLOCKED { background: var(--sf-error-bg); color: var(--sf-error); }
+.sf-chip.gate-PENDING { background: var(--sf-bg); color: var(--sf-text-muted); }
+
+.sf-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.sf-table th { text-align: left; padding: 8px 12px; font-size: 11px; text-transform: uppercase; color: var(--sf-text-muted); border-bottom: 1px solid var(--sf-border); background: var(--sf-bg); font-weight: 600; letter-spacing: 0.3px; }
+.sf-table td { padding: 10px 12px; border-bottom: 1px solid var(--sf-border); }
+.sf-table tr:hover td { background: var(--sf-bg); }
+.sf-table-empty { padding: 40px; text-align: center; color: var(--sf-text-muted); }
+
+.sf-nba-banner { padding: 12px 16px; border-left: 3px solid var(--sf-blue); background: var(--sf-info-bg); border-radius: 0 var(--sf-radius-sm) var(--sf-radius-sm) 0; margin: 12px 0; }
+.sf-nba-banner .action { font-size: 18px; font-weight: 700; color: var(--sf-text); margin: 0 0 4px 0; }
+.sf-nba-banner .target { font-size: 12px; color: var(--sf-text-muted); margin: 0; }
+
+.sf-empty { text-align: center; padding: 48px 24px; color: var(--sf-text-muted); }
+.sf-empty-title { font-size: 16px; color: var(--sf-text); margin: 0 0 4px 0; font-weight: 500; }
+
+@media (max-width: 1100px) {
+  .sf-kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .sf-score-grid { grid-template-columns: repeat(2, 1fr); }
+  .sf-gate-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 760px) {
+  .sf-layout { flex-direction: column; }
+  .sf-sidebar { width: 100%; }
+  .sf-rightpanel { display: none; }
+  .sf-kpi-grid { grid-template-columns: 1fr; }
+  .sf-gate-grid { grid-template-columns: 1fr; }
+  .sf-main { padding: 16px; }
+  .sf-welcome-banner { flex-direction: column; align-items: flex-start; padding: 20px; }
+}
 </style>
 </head>
 <body>
-<div class="layout">
-  
-<aside class="side">
-  <div class="side-brand">
-    <div class="side-brand-name">TIGO V5</div>
-    <div class="side-brand-sub">拍板日 8/15 业务方 daily 看板</div>
+  <div class="sf-promo-bar">
+    <span>TIGO V5 · 工业材料 Agentic 操作系统 · 0.20mm 不锈钢精密带客户开发平台</span>
+    <a href="#">查看 Phase 12 进度 →</a>
   </div>
-  <div class="side-section">拍板日 8/15 业务方看板</div>
-  <a class="side-link " href="../index.html">主页入口</a>
-  <a class="side-link " href="../board-ppt-1page/index.html">拍板 PPT 1 页</a>
-  <a class="side-link " href="../demo-day-1hour/index.html">8/15 现场 1 小时 demo</a>
-  <a class="side-link active" href="../daily-12d/index.html">12 维度 16920 cell daily</a>
-  <a class="side-link " href="../g2-3000/index.html">5 黄金 3000 G2</a>
-  <a class="side-link " href="../kpi-dashboard-v3/index.html">KPI v3 (320 cell)</a>
-  <a class="side-link " href="../roi-dashboard-v2/index.html">ROI v2 (192 cell)</a>
-  <div class="side-section">业务方硬门禁</div>
-  <div style="padding: 8px 16px; font-size: 11px; color: var(--silver); line-height: 1.6;">
-    AGENTS §0 default-deny<br>
-    AGENTS §3 真实数据<br>
-    AGENTS §4 不买不推断<br>
-    AGENTS §11 append-only<br>
-    AGENTS §14 凭证脱敏 9 regex<br>
-    7 年 SOX audit_log
-  </div>
-</aside>
-
-  
-<header class="header">
+  <header class="sf-topbar">
+    <a href="../index.html" class="sf-logo">
+<svg viewBox="0 0 40 24" width="40" height="24" aria-label="TIGO">
+  <path d="M5 12 C 5 8, 8 5, 12 5 H 18 V 19 H 12 C 8 19, 5 16, 5 12 Z M 22 5 H 28 C 32 5, 35 8, 35 12 C 35 16, 32 19, 28 19 H 22 Z" fill="#0070D2" />
+</svg>
+<span>TIGO</span></a>
+    <div class="sf-topbar-search"><input type="text" placeholder="搜索账户 / 证据 / 试单号..." /></div>
+    <div class="sf-topbar-actions">
+      <button class="sf-icon-btn" title="TIGO Copilot" aria-label="TIGO Copilot"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6" /><circle cx="6" cy="6" r="0.8" fill="currentColor" /><circle cx="10" cy="6" r="0.8" fill="currentColor" /><path d="M5 10 Q 8 12, 11 10" /></svg></button>
+      <button class="sf-icon-btn" title="评分" aria-label="评分"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 13 L 5 9 L 8 11 L 11 5 L 14 13 Z" /></svg></button>
+      <button class="sf-icon-btn" title="帮助" aria-label="帮助"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6" /><path d="M5.5 6.5 Q 5.5 4.5, 8 4.5 Q 10.5 4.5, 10.5 6.5 Q 10.5 8, 8 8 L 8 9" /><circle cx="8" cy="11.5" r="0.7" fill="currentColor" /></svg></button>
+      <div class="sf-avatar">M</div>
+    </div>
+  </header>
+  <div class="sf-layout">
+    <nav class="sf-sidebar" aria-label="主导航">
+      <a class="sf-nav-item " href="../index.html"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7 L 8 2 L 14 7 L 14 14 L 2 14 Z" /><path d="M6 14 L 6 9 L 10 9 L 10 14" /></svg></span><span>主页</span></a>
+<a class="sf-nav-item " href="../board-ppt-1page/index.html"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2 L 11 2 L 13 4 L 13 14 L 3 14 Z" /><path d="M11 2 L 11 4 L 13 4" /><path d="M5 7 L 11 7 M 5 10 L 11 10 M 5 13 L 9 13" /></svg></span><span>拍板 PPT 1 页</span></a>
+<a class="sf-nav-item " href="../demo-day-1hour/index.html"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14 L 14 14" /><rect x="3" y="8" width="2" height="6" /><rect x="7" y="5" width="2" height="9" /><rect x="11" y="2" width="2" height="12" /></svg></span><span>8/15 demo 1 小时</span></a>
+<a class="sf-nav-item active" href="../daily-12d/index.html"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="5" /><rect x="9" y="2" width="5" height="5" /><rect x="2" y="9" width="5" height="5" /><rect x="9" y="9" width="5" height="5" /></svg></span><span>12 维度 daily</span></a>
+<a class="sf-nav-item " href="../g2-3000/index.html"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="5" /><rect x="9" y="2" width="5" height="5" /><rect x="2" y="9" width="5" height="5" /><rect x="9" y="9" width="5" height="5" /></svg></span><span>5 黄金 3000 G2</span></a>
+<a class="sf-nav-item " href="../kpi-dashboard-v3/index.html"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14 L 14 14" /><rect x="3" y="8" width="2" height="6" /><rect x="7" y="5" width="2" height="9" /><rect x="11" y="2" width="2" height="12" /></svg></span><span>KPI v3 (320)</span></a>
+<a class="sf-nav-item " href="../roi-dashboard-v2/index.html"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14 L 14 14" /><rect x="3" y="8" width="2" height="6" /><rect x="7" y="5" width="2" height="9" /><rect x="11" y="2" width="2" height="12" /></svg></span><span>ROI v2 (192)</span></a>
+    </nav>
+    <main class="sf-main">
+<div class="sf-welcome-banner">
   <div>
-    <div class="header-title">TIGO V5 · 12 维度 16920 cell daily</div>
-    <div class="header-sub">5 黄金 daily 看板 · 30 天滚动</div>
+    <h1>12 维度 16920 cell daily</h1>
+    <p class="sub">5 黄金 + 30 宝武 + 12 集成商 daily 看板 · 60 天 D1 真接预演 33840 cell</p>
   </div>
-  <div class="header-meta">12 维度 × 5 黄金 × 30 天 = <strong>1,800</strong> / 月 · 5 维度 × 30 宝武 × 30 天 = <strong>4,500</strong> / 月 · 5 维度 × 12 集成商 × 30 天 = <strong>1,800</strong> / 月</div>
-</header>
-
-  <main class="main">
-    <div class="card">
-      <div class="card-title">12 维度 (8 维度 + 4 新增维度)</div>
-      <div class="card-sub">docs/10 §3 页面范式 · daily 看板 1 页 1 分钟</div>
-      <table>
-        <thead><tr><th>维度</th><th>日 cell (5 黄金 × 30 天)</th><th>说明</th></tr></thead>
-        <tbody><tr><td><strong>增长</strong></td><td class="num">1,410</td><td>12 户维度 / 月 (5 黄金 × 30 天)</td></tr>
-<tr><td><strong>健康</strong></td><td class="num">1,410</td><td>12 户维度 / 月 (5 黄金 × 30 天)</td></tr>
-<tr><td><strong>风险</strong></td><td class="num">1,410</td><td>12 户维度 / 月 (5 黄金 × 30 天)</td></tr>
-<tr><td><strong>商业化</strong></td><td class="num">1,410</td><td>12 户维度 / 月 (5 黄金 × 30 天)</td></tr>
-<tr><td><strong>内容</strong></td><td class="num">1,410</td><td>12 户维度 / 月 (5 黄金 × 30 天)</td></tr>
-<tr><td><strong>渠道</strong></td><td class="num">1,410</td><td>12 户维度 / 月 (5 黄金 × 30 天)</td></tr>
-<tr><td><strong>决策</strong></td><td class="num">1,410</td><td>12 户维度 / 月 (5 黄金 × 30 天)</td></tr>
-<tr><td><strong>体验</strong></td><td class="num">1,410</td><td>12 户维度 / 月 (5 黄金 × 30 天)</td></tr>
-<tr><td><strong>运营</strong></td><td class="num">1,410</td><td>12 户维度 / 月 (5 黄金 × 30 天)</td></tr>
-<tr><td><strong>财务</strong></td><td class="num">1,410</td><td>12 户维度 / 月 (5 黄金 × 30 天)</td></tr>
-<tr><td><strong>法务</strong></td><td class="num">1,410</td><td>12 户维度 / 月 (5 黄金 × 30 天)</td></tr>
-<tr><td><strong>创新</strong></td><td class="num">1,410</td><td>12 户维度 / 月 (5 黄金 × 30 天)</td></tr></tbody>
-      </table>
-    </div>
-
-    <div class="card">
-      <div class="card-title">5 黄金 + 30 宝武 + 12 集成商 daily 矩阵</div>
-      <div class="card-sub">来源: apps/api/app/daily_auto/daily_12d_16800.py (batch 30)</div>
-      <table>
-        <thead><tr><th>类别</th><th>账户数</th><th>维度数</th><th>日 cell</th><th>月 cell (× 30)</th></tr></thead>
-        <tbody>
-          <tr><td>5 黄金</td><td class="num">5</td><td class="num">12</td><td class="num">60</td><td class="num">1,800</td></tr>
-          <tr><td>30 宝武 (5 × 6 员工)</td><td class="num">30</td><td class="num">5</td><td class="num">150</td><td class="num">4,500</td></tr>
-          <tr><td>12 集成商 (5 类型)</td><td class="num">12</td><td class="num">5</td><td class="num">60</td><td class="num">1,800</td></tr>
-          <tr><td><strong>日合计</strong></td><td class="num">47</td><td class="num">—</td><td class="num">270</td><td class="num"><strong>8,100 / 月</strong></td></tr>
-        </tbody>
-      </table>
-      <p style="margin-top:12px;">60 天 D1-D60 真接预演: 47 tenant × 12 维度 × 60 天 = <strong>33,840 cell</strong></p>
-    </div>
-
-    <div class="footer">
-      12 维度 16920 cell daily · 严格按 docs/10 §2 主色板 + 真实数据 only
-    </div>
-  </main>
 </div>
+
+<div class="sf-card">
+  <div class="sf-card-header"><h2 class="sf-card-title"><span class="sf-card-title-icon" style="background:var(--sf-blue);">12</span>12 维度 (8 + 4 新增维度)</h2></div>
+  <div class="sf-card-body">
+    <table class="sf-table">
+      <thead><tr><th>维度</th><th>日 cell (5 黄金 × 30 天)</th><th>说明</th></tr></thead>
+      <tbody><tr><td><strong>增长</strong></td><td class="num">1,410</td><td>5 黄金 × 30 天 / 月</td></tr><tr><td><strong>健康</strong></td><td class="num">1,410</td><td>5 黄金 × 30 天 / 月</td></tr><tr><td><strong>风险</strong></td><td class="num">1,410</td><td>5 黄金 × 30 天 / 月</td></tr><tr><td><strong>商业化</strong></td><td class="num">1,410</td><td>5 黄金 × 30 天 / 月</td></tr><tr><td><strong>内容</strong></td><td class="num">1,410</td><td>5 黄金 × 30 天 / 月</td></tr><tr><td><strong>渠道</strong></td><td class="num">1,410</td><td>5 黄金 × 30 天 / 月</td></tr><tr><td><strong>决策</strong></td><td class="num">1,410</td><td>5 黄金 × 30 天 / 月</td></tr><tr><td><strong>体验</strong></td><td class="num">1,410</td><td>5 黄金 × 30 天 / 月</td></tr><tr><td><strong>运营</strong></td><td class="num">1,410</td><td>5 黄金 × 30 天 / 月</td></tr><tr><td><strong>财务</strong></td><td class="num">1,410</td><td>5 黄金 × 30 天 / 月</td></tr><tr><td><strong>法务</strong></td><td class="num">1,410</td><td>5 黄金 × 30 天 / 月</td></tr><tr><td><strong>创新</strong></td><td class="num">1,410</td><td>5 黄金 × 30 天 / 月</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="sf-card">
+  <div class="sf-card-header"><h2 class="sf-card-title"><span class="sf-card-title-icon" style="background:var(--sf-purple);">5G</span>5 黄金 + 30 宝武 + 12 集成商 daily 矩阵</h2></div>
+  <div class="sf-card-body">
+    <table class="sf-table">
+      <thead><tr><th>类别</th><th>账户数</th><th>维度数</th><th>日 cell</th><th>月 cell (× 30)</th></tr></thead>
+      <tbody>
+        <tr><td>5 黄金</td><td class="num">5</td><td class="num">12</td><td class="num">60</td><td class="num">1,800</td></tr>
+        <tr><td>30 宝武 (5 × 6 员工)</td><td class="num">30</td><td class="num">5</td><td class="num">150</td><td class="num">4,500</td></tr>
+        <tr><td>12 集成商 (5 类型)</td><td class="num">12</td><td class="num">5</td><td class="num">60</td><td class="num">1,800</td></tr>
+        <tr><td><strong>日合计</strong></td><td class="num">47</td><td>—</td><td class="num">270</td><td class="num"><strong>8,100 / 月</strong></td></tr>
+      </tbody>
+    </table>
+    <p style="margin-top:12px;">60 天 D1 真接预演: 47 tenant × 12 维度 × 60 天 = <strong>33,840 cell</strong></p>
+  </div>
+</div>
+</main>
+    <aside class="sf-rightpanel" aria-label="TIGO Copilot">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <strong style="font-size:14px;">TIGO Copilot</strong>
+        <div style="display:flex;gap:4px;">
+          <button class="sf-icon-btn" title="刷新"><span style="font-size:11px;color:var(--sf-text-muted)">↻</span></button>
+          <button class="sf-icon-btn" title="关闭">×</button>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 0;">
+        
+<svg viewBox="0 0 80 80" width="80" height="80">
+  <defs>
+    <radialGradient id="welcomeG" cx="50%" cy="50%">
+      <stop offset="0%" stop-color="#9050E0" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <circle cx="40" cy="40" r="38" fill="url(#welcomeG)" />
+  <rect x="22" y="20" width="36" height="40" rx="6" fill="#E8DCFB" stroke="#9050E0" stroke-width="1.5" />
+  <circle cx="32" cy="34" r="3" fill="#16325C" />
+  <circle cx="48" cy="34" r="3" fill="#16325C" />
+  <path d="M32 44 Q 40 48, 48 44" stroke="#16325C" stroke-width="1.5" fill="none" strokeLinecap="round" />
+  <rect x="28" y="52" width="24" height="3" rx="1.5" fill="#9050E0" />
+  <rect x="36" y="14" width="8" height="6" rx="1" fill="#9050E0" />
+  <circle cx="40" cy="10" r="2" fill="#AEF1DA" />
+</svg>
+
+        <h3 style="margin:12px 0 8px 0;font-size:15px;font-weight:600;">启用 TIGO Copilot</h3>
+        <p style="font-size:12px;color:var(--sf-text-muted);margin:0 0 12px 0;line-height:1.5;">
+          TIGO Copilot 通过 AI Agent 加速 G1–G6 验证、5 维评分、试样设计、5 大方向行业包匹配。
+        </p>
+        <ul style="font-size:12px;color:var(--sf-text-muted);text-align:left;width:100%;padding-left:16px;margin:0;line-height:1.8;">
+          <li>用 Atlas 风格 Planner 自动生成 G1–G3 证据采集计划</li>
+          <li>AI 草拟客户原话摘要与互动下一动作</li>
+          <li>汇总 5 维评分并提示 Strategic / A 类升级路径</li>
+        </ul>
+        <div style="margin-top:16px;padding:10px 12px;background:var(--sf-bg);border-radius:var(--sf-radius-sm);display:flex;align-items:center;gap:8px;width:100%;">
+          <span style="font-size:12px;color:var(--sf-text-muted);flex:1;">启用 TIGO Copilot (Phase 13 真接)</span>
+          <span style="display:inline-block;width:32px;height:18px;background:var(--sf-border);border-radius:9px;position:relative;">
+            <span style="position:absolute;top:2px;left:2px;width:14px;height:14px;background:white;border-radius:50%;"></span>
+          </span>
+        </div>
+        <p style="font-size:11px;color:var(--sf-text-light);margin-top:12px;margin:12px 0 0 0;line-height:1.5;">
+          继续即同意 <a href="#">TIGO Trust Gateway 策略</a>。当前演示版不可用，Phase 13 真接。
+        </p>
+      </div>
+    </aside>
+  </div>
 </body>
 </html>
