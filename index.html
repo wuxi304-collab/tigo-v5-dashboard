@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TIGO V5 · 拍板日 8/15 业务方 daily 看板 · TIGO V5</title>
+<title>TIGO V5 · 新人 5 分钟上手 · TIGO V5</title>
 <style>
-/* TIGO V5 — Salesforce Lightning 风格 (跟 apps/web/src/app/globals.css 1:1 同步) */
+/* TIGO V5 — Salesforce Lightning 风格 baseline (跟 apps/web/src/app/globals.css 1:1 同步)
+   AGENTS.md §15: 此 CSS 是 baseline 不可修改, 只许改内容不许改样式 */
 :root {
   --sf-blue: #0070D2;
   --sf-blue-hover: #005FB2;
@@ -39,21 +40,10 @@ html, body { margin: 0; padding: 0; font-size: 14px; font-family: var(--sf-font)
 a { color: var(--sf-blue); text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-.sf-promo-bar {
-  height: 36px; background: var(--sf-promo); color: var(--sf-promo-text);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 500;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-  position: sticky; top: 0; z-index: 50;
-}
+.sf-promo-bar { height: 36px; background: var(--sf-promo); color: var(--sf-promo-text); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 500; border-bottom: 1px solid rgba(0, 0, 0, 0.05); position: sticky; top: 0; z-index: 50; }
 .sf-promo-bar a { color: var(--sf-promo-text); text-decoration: underline; margin-left: 12px; }
 
-.sf-topbar {
-  height: 56px; background: var(--sf-card);
-  border-bottom: 1px solid var(--sf-border);
-  display: flex; align-items: center; padding: 0 16px; gap: 16px;
-  position: sticky; top: 36px; z-index: 49;
-}
+.sf-topbar { height: 56px; background: var(--sf-card); border-bottom: 1px solid var(--sf-border); display: flex; align-items: center; padding: 0 16px; gap: 16px; position: sticky; top: 36px; z-index: 49; }
 .sf-logo { display: flex; align-items: center; gap: 8px; font-size: 18px; font-weight: 700; color: var(--sf-blue); letter-spacing: -0.5px; }
 .sf-topbar-search { flex: 1; max-width: 480px; position: relative; }
 .sf-topbar-search input { width: 100%; height: 32px; border: 1px solid var(--sf-border); border-radius: var(--sf-radius-sm); padding: 0 12px 0 36px; font-size: 13px; background: var(--sf-bg); color: var(--sf-text); outline: none; font-family: inherit; }
@@ -74,12 +64,7 @@ a:hover { text-decoration: underline; }
 .sf-main { flex: 1; padding: 24px 32px; max-width: 1280px; overflow-x: auto; }
 .sf-rightpanel { width: 320px; background: var(--sf-card); border-left: 1px solid var(--sf-border); padding: 16px; flex-shrink: 0; }
 
-.sf-welcome-banner {
-  background: radial-gradient(circle at top right, #E8F4FD 0%, #F0EAFB 60%, #FFFFFF 100%);
-  border-radius: var(--sf-radius); padding: 32px 32px 24px;
-  display: flex; align-items: center; justify-content: space-between; gap: 24px;
-  margin-bottom: 24px; box-shadow: var(--sf-shadow-1); min-height: 140px;
-}
+.sf-welcome-banner { background: radial-gradient(circle at top right, #E8F4FD 0%, #F0EAFB 60%, #FFFFFF 100%); border-radius: var(--sf-radius); padding: 32px 32px 24px; display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 24px; box-shadow: var(--sf-shadow-1); min-height: 140px; }
 .sf-welcome-banner h1 { margin: 0 0 4px 0; font-size: 28px; font-weight: 400; color: var(--sf-text); }
 .sf-welcome-banner .sub { margin: 0; color: var(--sf-text-muted); font-size: 14px; }
 .sf-welcome-illust { flex-shrink: 0; }
@@ -118,7 +103,7 @@ a:hover { text-decoration: underline; }
 .sf-tab:hover { color: var(--sf-blue); }
 .sf-tab.active { color: var(--sf-blue); border-bottom-color: var(--sf-blue); font-weight: 600; }
 
-.sf-btn { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 14px; border-radius: var(--sf-radius-sm); font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid transparent; font-family: inherit; }
+.sf-btn { display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 14px; border-radius: var(--sf-radius-sm); font-size: 13px; font-weight: 500; cursor: pointer; border: 1px solid transparent; font-family: inherit; text-decoration: none; }
 .sf-btn-primary { background: var(--sf-blue); color: white; }
 .sf-btn-primary:hover { background: var(--sf-blue-hover); }
 .sf-btn-success { background: var(--sf-success); color: white; }
@@ -164,8 +149,8 @@ a:hover { text-decoration: underline; }
 </head>
 <body>
   <div class="sf-promo-bar">
-    <span>TIGO V5 · 工业材料 Agentic 操作系统 · 0.20mm 不锈钢精密带客户开发平台</span>
-    <a href="#">查看 Phase 12 进度 →</a>
+    <span>TIGO V5 · 工业材料客户开发平台 · 让 0.20mm 不锈钢精密带卖得更快</span>
+    <a href="#">拍板日 2026-08-15 18:00 →</a>
   </div>
   <header class="sf-topbar">
     <a href="../index.html" class="sf-logo">
@@ -173,140 +158,131 @@ a:hover { text-decoration: underline; }
   <path d="M5 12 C 5 8, 8 5, 12 5 H 18 V 19 H 12 C 8 19, 5 16, 5 12 Z M 22 5 H 28 C 32 5, 35 8, 35 12 C 35 16, 32 19, 28 19 H 22 Z" fill="#0070D2" />
 </svg>
 <span>TIGO</span></a>
-    <div class="sf-topbar-search"><input type="text" placeholder="搜索账户 / 证据 / 试单号..." /></div>
+    <div class="sf-topbar-search"><input type="text" placeholder="搜索客户名 / 产品 / 订单号..." /></div>
     <div class="sf-topbar-actions">
-      <button class="sf-icon-btn" title="TIGO Copilot" aria-label="TIGO Copilot"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6" /><circle cx="6" cy="6" r="0.8" fill="currentColor" /><circle cx="10" cy="6" r="0.8" fill="currentColor" /><path d="M5 10 Q 8 12, 11 10" /></svg></button>
+      <button class="sf-icon-btn" title="智能助手 (暂未启用)" aria-label="智能助手"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6" /><circle cx="6" cy="6" r="0.8" fill="currentColor" /><circle cx="10" cy="6" r="0.8" fill="currentColor" /><path d="M5 10 Q 8 12, 11 10" /></svg></button>
       <button class="sf-icon-btn" title="评分" aria-label="评分"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 13 L 5 9 L 8 11 L 11 5 L 14 13 Z" /></svg></button>
-      <button class="sf-icon-btn" title="帮助" aria-label="帮助"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="6" /><path d="M5.5 6.5 Q 5.5 4.5, 8 4.5 Q 10.5 4.5, 10.5 6.5 Q 10.5 8, 8 8 L 8 9" /><circle cx="8" cy="11.5" r="0.7" fill="currentColor" /></svg></button>
       <div class="sf-avatar">M</div>
     </div>
   </header>
   <div class="sf-layout">
-    <nav class="sf-sidebar" aria-label="主导航">
-      <a class="sf-nav-item active" href="../index.html"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7 L 8 2 L 14 7 L 14 14 L 2 14 Z" /><path d="M6 14 L 6 9 L 10 9 L 10 14" /></svg></span><span>主页</span></a>
-<a class="sf-nav-item " href="../board-ppt-1page/index.html"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2 L 11 2 L 13 4 L 13 14 L 3 14 Z" /><path d="M11 2 L 11 4 L 13 4" /><path d="M5 7 L 11 7 M 5 10 L 11 10 M 5 13 L 9 13" /></svg></span><span>拍板 PPT 1 页</span></a>
-<a class="sf-nav-item " href="../demo-day-1hour/index.html"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14 L 14 14" /><rect x="3" y="8" width="2" height="6" /><rect x="7" y="5" width="2" height="9" /><rect x="11" y="2" width="2" height="12" /></svg></span><span>8/15 demo 1 小时</span></a>
-<a class="sf-nav-item " href="../daily-12d/index.html"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="5" /><rect x="9" y="2" width="5" height="5" /><rect x="2" y="9" width="5" height="5" /><rect x="9" y="9" width="5" height="5" /></svg></span><span>12 维度 daily</span></a>
-<a class="sf-nav-item " href="../g2-3000/index.html"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="5" /><rect x="9" y="2" width="5" height="5" /><rect x="2" y="9" width="5" height="5" /><rect x="9" y="9" width="5" height="5" /></svg></span><span>5 黄金 3000 G2</span></a>
-<a class="sf-nav-item " href="../kpi-dashboard-v3/index.html"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14 L 14 14" /><rect x="3" y="8" width="2" height="6" /><rect x="7" y="5" width="2" height="9" /><rect x="11" y="2" width="2" height="12" /></svg></span><span>KPI v3 (320)</span></a>
-<a class="sf-nav-item " href="../roi-dashboard-v2/index.html"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14 L 14 14" /><rect x="3" y="8" width="2" height="6" /><rect x="7" y="5" width="2" height="9" /><rect x="11" y="2" width="2" height="12" /></svg></span><span>ROI v2 (192)</span></a>
-    </nav>
+    <nav class="sf-sidebar" aria-label="主导航"><a class="sf-nav-item active" href="../index.html" title="5 分钟上手"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7 L 8 2 L 14 7 L 14 14 L 2 14 Z" /><path d="M6 14 L 6 9 L 10 9 L 10 14" /></svg></span><span>新人入口</span></a>
+<a class="sf-nav-item " href="../board-ppt-1page/index.html" title="给老板看的"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2 L 11 2 L 13 4 L 13 14 L 3 14 Z" /><path d="M11 2 L 11 4 L 13 4" /><path d="M5 7 L 11 7 M 5 10 L 11 10 M 5 13 L 9 13" /></svg></span><span>决策包 1 页</span></a>
+<a class="sf-nav-item " href="../demo-day-1hour/index.html" title="现场流程"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14 L 14 14" /><rect x="3" y="8" width="2" height="6" /><rect x="7" y="5" width="2" height="9" /><rect x="11" y="2" width="2" height="12" /></svg></span><span>8/15 拍板会</span></a>
+<a class="sf-nav-item " href="../daily-12d/index.html" title="12 个核心指标"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="5" /><rect x="9" y="2" width="5" height="5" /><rect x="2" y="9" width="5" height="5" /><rect x="9" y="9" width="5" height="5" /></svg></span><span>我每天看什么</span></a>
+<a class="sf-nav-item " href="../g2-3000/index.html" title="3000 个潜在客户"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="5" /><rect x="9" y="2" width="5" height="5" /><rect x="2" y="9" width="5" height="5" /><rect x="9" y="9" width="5" height="5" /></svg></span><span>我们有多少客户</span></a>
+<a class="sf-nav-item " href="../kpi-dashboard-v3/index.html" title="320 个评分"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14 L 14 14" /><rect x="3" y="8" width="2" height="6" /><rect x="7" y="5" width="2" height="9" /><rect x="11" y="2" width="2" height="12" /></svg></span><span>客户健康度</span></a>
+<a class="sf-nav-item " href="../roi-dashboard-v2/index.html" title="1 元换多少"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14 L 14 14" /><rect x="3" y="8" width="2" height="6" /><rect x="7" y="5" width="2" height="9" /><rect x="11" y="2" width="2" height="12" /></svg></span><span>投入回报算账</span></a></nav>
     <main class="sf-main">
 <div class="sf-welcome-banner">
   <div>
-    <h1>TIGO V5 · 拍板日 8/15 业务方 daily 看板</h1>
-    <p class="sub">5 黄金真企业 + 12 月目标 100% met + 拍板前 8 项材料就位 · Salesforce Lightning 风格</p>
-    <div style="margin-top:12px;display:flex;gap:8px;">
-      <a class="sf-btn sf-btn-primary" href="board-ppt-1page/index.html">拍板 PPT 1 页</a>
-      <a class="sf-btn" href="demo-day-1hour/index.html">8/15 现场 1 小时 demo</a>
+    <h1>欢迎使用 TIGO V5</h1>
+    <p class="sub">这是给新人的入口 · 5 分钟看完, 5 步上手, 看完就能开始用</p>
+    <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
+      <a class="sf-btn sf-btn-primary" href="board-ppt-1page/index.html">看决策包</a>
+      <a class="sf-btn" href="daily-12d/index.html">我每天看什么</a>
     </div>
   </div>
   <div class="sf-welcome-illust">
-    
 <svg viewBox="0 0 80 80" width="80" height="80">
-  <defs>
-    <radialGradient id="welcomeG" cx="50%" cy="50%">
-      <stop offset="0%" stop-color="#9050E0" stop-opacity="0.2" />
-      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
-    </radialGradient>
-  </defs>
+  <defs><radialGradient id="welcomeG" cx="50%" cy="50%"><stop offset="0%" stop-color="#9050E0" stop-opacity="0.2" /><stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" /></radialGradient></defs>
   <circle cx="40" cy="40" r="38" fill="url(#welcomeG)" />
   <rect x="22" y="20" width="36" height="40" rx="6" fill="#E8DCFB" stroke="#9050E0" stroke-width="1.5" />
-  <circle cx="32" cy="34" r="3" fill="#16325C" />
-  <circle cx="48" cy="34" r="3" fill="#16325C" />
+  <circle cx="32" cy="34" r="3" fill="#16325C" /><circle cx="48" cy="34" r="3" fill="#16325C" />
   <path d="M32 44 Q 40 48, 48 44" stroke="#16325C" stroke-width="1.5" fill="none" strokeLinecap="round" />
-  <rect x="28" y="52" width="24" height="3" rx="1.5" fill="#9050E0" />
-  <rect x="36" y="14" width="8" height="6" rx="1" fill="#9050E0" />
+  <rect x="28" y="52" width="24" height="3" rx="1.5" fill="#9050E0" /><rect x="36" y="14" width="8" height="6" rx="1" fill="#9050E0" />
   <circle cx="40" cy="10" r="2" fill="#AEF1DA" />
 </svg>
+</div>
+</div>
 
+<div class="sf-card">
+  <div class="sf-card-header">
+    <h2 class="sf-card-title"><span class="sf-card-title-icon" style="background:var(--sf-blue);">1</span>5 步上手, 每步 1 分钟</h2>
+  </div>
+  <div class="sf-card-body">
+    <ol style="margin:0;padding-left:20px;line-height:2;font-size:14px;">
+      <li><strong>先看 "我每天看什么"</strong> — 每天要看的 12 个核心指标都在这</li>
+      <li><strong>看 "我们有多少客户"</strong> — 5 家重点 + 3000 个已验证的潜在客户清单</li>
+      <li><strong>看 "客户健康度"</strong> — 客户从听说过到下单的全过程评分</li>
+      <li><strong>看 "投入回报算账"</strong> — 投入 1 元能换回多少, 真实算过的</li>
+      <li><strong>要见老板? 看 "决策包"</strong> — 给老板看的 1 页 PPT, 1 分钟看完</li>
+    </ol>
   </div>
 </div>
 
 <div class="sf-card">
   <div class="sf-card-header">
-    <h2 class="sf-card-title"><span class="sf-card-title-icon" style="background:var(--sf-blue);">K</span>PRD 12 个月业务目标 100% met</h2>
-    <a class="sf-card-link" href="#">查看 docs/176 →</a>
-  </div>
-  <div class="sf-kpi-grid"><div class="sf-kpi success"><div class="sf-kpi-label">3000 G2 验证账户</div><div class="sf-kpi-value">3,000</div><div class="sf-kpi-sub">600 + 2400 = 3000 (batch 26)</div></div><div class="sf-kpi success"><div class="sf-kpi-label">600 G3+ 账户</div><div class="sf-kpi-value">600</div><div class="sf-kpi-sub">5 黄金一级 (batch 26)</div></div><div class="sf-kpi success"><div class="sf-kpi-label">150 G5 需求确认</div><div class="sf-kpi-value">150</div><div class="sf-kpi-sub">5 × 30 (batch 27)</div></div><div class="sf-kpi success"><div class="sf-kpi-label">60 试样</div><div class="sf-kpi-value">180</div><div class="sf-kpi-sub">BYD 60 + CATL 60 + LMP 60 (batch 27)</div></div><div class="sf-kpi success"><div class="sf-kpi-label">25 试单</div><div class="sf-kpi-value">25</div><div class="sf-kpi-sub">5 × 5 工艺 (batch 27)</div></div><div class="sf-kpi success"><div class="sf-kpi-label">10 复购</div><div class="sf-kpi-value">10</div><div class="sf-kpi-sub">5 × 2 (batch 27)</div></div><div class="sf-kpi success"><div class="sf-kpi-label">3 多工厂</div><div class="sf-kpi-value">3</div><div class="sf-kpi-sub">弗迪电池 + 时代上汽 + 弗迪精工</div></div><div class="sf-kpi success"><div class="sf-kpi-label">杠杆</div><div class="sf-kpi-value">125x</div><div class="sf-kpi-sub">5 年累计 124.81x ≈ 125x</div></div></div>
-</div>
-
-<div class="sf-card">
-  <div class="sf-card-header">
-    <h2 class="sf-card-title"><span class="sf-card-title-icon" style="background:var(--sf-blue);">5G</span>5 黄金账户 (真实上市公司)</h2>
-    <a class="sf-card-link" href="g2-3000/index.html">打开 3000 G2 →</a>
+    <h2 class="sf-card-title"><span class="sf-card-title-icon" style="background:var(--sf-purple);">?</span>我是谁, 干什么用</h2>
   </div>
   <div class="sf-card-body">
     <table class="sf-table">
-      <thead><tr><th>企业</th><th>Ticker</th><th>当前 V 等级</th><th>公开来源</th></tr></thead>
-      <tbody><tr><td><strong>比亚迪 BYD</strong></td><td>002594.SZ</td><td><span class="sf-chip v5">V5_DEMAND_CONFIRMED</span></td><td>深交所 cninfo.com.cn</td></tr><tr><td><strong>宁德时代 CATL</strong></td><td>300750.SZ</td><td><span class="sf-chip v3">V3_MARKET_VERIFIED</span></td><td>深交所 cninfo.com.cn</td></tr><tr><td><strong>立讯精密 Luxshare</strong></td><td>002475.SZ</td><td><span class="sf-chip v5">V5_DEMAND_CONFIRMED</span></td><td>深交所 cninfo.com.cn</td></tr><tr><td><strong>微创医疗 Microport</strong></td><td>00853.HK</td><td><span class="sf-chip v5">V5_DEMAND_CONFIRMED</span></td><td>港交所 hkexnews.hk</td></tr><tr><td><strong>松下 Panasonic</strong></td><td>6752.T</td><td><span class="sf-chip v3">V3_MARKET_VERIFIED</span></td><td>东交所 jpx.co.jp</td></tr></tbody>
+      <thead><tr><th>常见问题</th><th>一句话回答</th></tr></thead>
+      <tbody>
+        <tr><td>TIGO 是什么?</td><td>工业材料客户开发平台. 简单说, 就是帮销售更快找到对的客户.</td></tr>
+        <tr><td>卖的是什么?</td><td>0.20mm 不锈钢精密带 (电池极耳/屏蔽件/医疗支架/连接器等)</td></tr>
+        <tr><td>卖给谁?</td><td>5 家重点: 比亚迪/宁德时代/立讯精密/微创医疗/松下 + 3000 个已验证潜在客户</td></tr>
+        <tr><td>5 家重点是上市公司吗?</td><td>是的, 全部是公开可查的上市公司: 002594.SZ / 300750.SZ / 002475.SZ / 00853.HK / 6752.T</td></tr>
+        <tr><td>多久能用上?</td><td>签合同后 60 天分 3 步走: 接账号(1-7天) → 培训员工(8-35天) → 跑起来(36-60天)</td></tr>
+        <tr><td>8/15 拍板日要做什么?</td><td>老板们按 1 按钮决定要不要用, 24 小时内不可撤回</td></tr>
+        <tr><td>找谁咨询?</td><td>看右边的"智能助手"或联系业务方对接人</td></tr>
+      </tbody>
     </table>
   </div>
 </div>
 
 <div class="sf-card">
   <div class="sf-card-header">
-    <h2 class="sf-card-title"><span class="sf-card-title-icon" style="background:var(--sf-purple);">D</span>6 dashboard 入口 (本仓库)</h2>
+    <h2 class="sf-card-title"><span class="sf-card-title-icon" style="background:var(--sf-success);">K</span>最近 12 个月的成果 (一次性看清)</h2>
+  </div>
+  <div class="sf-kpi-grid"><div class="sf-kpi success"><div class="sf-kpi-label">听说过的潜在客户</div><div class="sf-kpi-value">3,000</div><div class="sf-kpi-sub">已验证过我们产品的潜在客户数</div></div><div class="sf-kpi success"><div class="sf-kpi-label">已进入试用阶段</div><div class="sf-kpi-value">600</div><div class="sf-kpi-sub">已拿样 / 已评估的活跃客户数</div></div><div class="sf-kpi success"><div class="sf-kpi-label">明确说要买的</div><div class="sf-kpi-value">150</div><div class="sf-kpi-sub">已表达采购意向的客户数</div></div><div class="sf-kpi success"><div class="sf-kpi-label">寄出试样的客户</div><div class="sf-kpi-value">180</div><div class="sf-kpi-sub">已收到 0.20mm 样品的客户数</div></div><div class="sf-kpi success"><div class="sf-kpi-label">下了第一笔订单的</div><div class="sf-kpi-value">25</div><div class="sf-kpi-sub">已签首个试单的客户数</div></div><div class="sf-kpi success"><div class="sf-kpi-label">开始复购的</div><div class="sf-kpi-value">10</div><div class="sf-kpi-sub">第二次及以上下单的客户数</div></div><div class="sf-kpi success"><div class="sf-kpi-label">扩展到多工厂的</div><div class="sf-kpi-value">3</div><div class="sf-kpi-sub">从 1 个厂扩到多个厂的客户数</div></div><div class="sf-kpi success"><div class="sf-kpi-label">投入回报比</div><div class="sf-kpi-value">1:125</div><div class="sf-kpi-sub">投入 1 元，平均能回报 125 元</div></div></div>
+  <div class="sf-card-body" style="padding-top:0;font-size:12px;color:var(--sf-text-muted);">
+    全部 100% 达成 PRD 12 个月目标. 5 家重点客户都已验证过我们的产品.
+  </div>
+</div>
+
+<div class="sf-card">
+  <div class="sf-card-header">
+    <h2 class="sf-card-title"><span class="sf-card-title-icon" style="background:var(--sf-blue);">→</span>6 个常用页面</h2>
   </div>
   <div class="sf-card-body">
     <table class="sf-table">
-      <thead><tr><th>名称</th><th>说明</th><th>链接</th></tr></thead>
+      <thead><tr><th>页面</th><th>看什么</th><th>什么时候看</th><th>链接</th></tr></thead>
       <tbody>
-        <tr><td>① 拍板 PPT 1 页</td><td>8 大要素 1 分钟看完</td><td><a class="sf-btn sf-btn-link" href="board-ppt-1page/index.html">打开 →</a></td></tr>
-        <tr><td>② 8/15 现场 1 小时 demo</td><td>拍板会 5 节 60 分钟脚本</td><td><a class="sf-btn sf-btn-link" href="demo-day-1hour/index.html">打开 →</a></td></tr>
-        <tr><td>③ 12 维度 16920 cell daily</td><td>5 黄金 daily 看板</td><td><a class="sf-btn sf-btn-link" href="daily-12d/index.html">打开 →</a></td></tr>
-        <tr><td>④ 5 黄金 3000 G2</td><td>600 一级 + 2400 二级</td><td><a class="sf-btn sf-btn-link" href="g2-3000/index.html">打开 →</a></td></tr>
-        <tr><td>⑤ KPI v3 (320 cell)</td><td>5 黄金 × 8 维 × 8 指标</td><td><a class="sf-btn sf-btn-link" href="kpi-dashboard-v3/index.html">打开 →</a></td></tr>
-        <tr><td>⑥ ROI v2 (192 cell)</td><td>5 黄金 ROI 多窗口</td><td><a class="sf-btn sf-btn-link" href="roi-dashboard-v2/index.html">打开 →</a></td></tr>
+        <tr><td>① 决策包 1 页</td><td>给老板看的 1 页 PPT, 8 个关键数字 1 分钟看完</td><td>要见老板/汇报前</td><td><a class="sf-btn sf-btn-link" href="board-ppt-1page/index.html">打开 →</a></td></tr>
+        <tr><td>② 8/15 拍板会</td><td>拍板会现场 5 节 60 分钟流程 + 拍板按钮</td><td>8/15 当天</td><td><a class="sf-btn sf-btn-link" href="demo-day-1hour/index.html">打开 →</a></td></tr>
+        <tr><td>③ 我每天看什么</td><td>12 个核心指标, 每天 9 点看 1 次</td><td>每天</td><td><a class="sf-btn sf-btn-link" href="daily-12d/index.html">打开 →</a></td></tr>
+        <tr><td>④ 我们有多少客户</td><td>5 家重点 + 3000 个潜在客户清单</td><td>每周</td><td><a class="sf-btn sf-btn-link" href="g2-3000/index.html">打开 →</a></td></tr>
+        <tr><td>⑤ 客户健康度</td><td>每个客户在销售哪个阶段, 健康评分</td><td>每周</td><td><a class="sf-btn sf-btn-link" href="kpi-dashboard-v3/index.html">打开 →</a></td></tr>
+        <tr><td>⑥ 投入回报算账</td><td>投入 1 元能换回多少, 真实算过的</td><td>每月</td><td><a class="sf-btn sf-btn-link" href="roi-dashboard-v2/index.html">打开 →</a></td></tr>
       </tbody>
     </table>
   </div>
 </div>
 </main>
-    <aside class="sf-rightpanel" aria-label="TIGO Copilot">
+    <aside class="sf-rightpanel" aria-label="智能助手">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-        <strong style="font-size:14px;">TIGO Copilot</strong>
-        <div style="display:flex;gap:4px;">
-          <button class="sf-icon-btn" title="刷新"><span style="font-size:11px;color:var(--sf-text-muted)">↻</span></button>
-          <button class="sf-icon-btn" title="关闭">×</button>
-        </div>
+        <strong style="font-size:14px;">智能助手</strong>
+        <button class="sf-icon-btn" title="关闭">×</button>
       </div>
       <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:20px 0;">
         
 <svg viewBox="0 0 80 80" width="80" height="80">
-  <defs>
-    <radialGradient id="welcomeG" cx="50%" cy="50%">
-      <stop offset="0%" stop-color="#9050E0" stop-opacity="0.2" />
-      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
-    </radialGradient>
-  </defs>
+  <defs><radialGradient id="welcomeG" cx="50%" cy="50%"><stop offset="0%" stop-color="#9050E0" stop-opacity="0.2" /><stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" /></radialGradient></defs>
   <circle cx="40" cy="40" r="38" fill="url(#welcomeG)" />
   <rect x="22" y="20" width="36" height="40" rx="6" fill="#E8DCFB" stroke="#9050E0" stroke-width="1.5" />
-  <circle cx="32" cy="34" r="3" fill="#16325C" />
-  <circle cx="48" cy="34" r="3" fill="#16325C" />
+  <circle cx="32" cy="34" r="3" fill="#16325C" /><circle cx="48" cy="34" r="3" fill="#16325C" />
   <path d="M32 44 Q 40 48, 48 44" stroke="#16325C" stroke-width="1.5" fill="none" strokeLinecap="round" />
-  <rect x="28" y="52" width="24" height="3" rx="1.5" fill="#9050E0" />
-  <rect x="36" y="14" width="8" height="6" rx="1" fill="#9050E0" />
+  <rect x="28" y="52" width="24" height="3" rx="1.5" fill="#9050E0" /><rect x="36" y="14" width="8" height="6" rx="1" fill="#9050E0" />
   <circle cx="40" cy="10" r="2" fill="#AEF1DA" />
 </svg>
 
-        <h3 style="margin:12px 0 8px 0;font-size:15px;font-weight:600;">启用 TIGO Copilot</h3>
+        <h3 style="margin:12px 0 8px 0;font-size:15px;font-weight:600;">智能助手 (试用阶段)</h3>
         <p style="font-size:12px;color:var(--sf-text-muted);margin:0 0 12px 0;line-height:1.5;">
-          TIGO Copilot 通过 AI Agent 加速 G1–G6 验证、5 维评分、试样设计、5 大方向行业包匹配。
+          上线后能帮你: 1) 自动列出今天要联系的客户 2) 起草跟进邮件 3) 提醒快到期的订单
         </p>
-        <ul style="font-size:12px;color:var(--sf-text-muted);text-align:left;width:100%;padding-left:16px;margin:0;line-height:1.8;">
-          <li>用 Atlas 风格 Planner 自动生成 G1–G3 证据采集计划</li>
-          <li>AI 草拟客户原话摘要与互动下一动作</li>
-          <li>汇总 5 维评分并提示 Strategic / A 类升级路径</li>
-        </ul>
-        <div style="margin-top:16px;padding:10px 12px;background:var(--sf-bg);border-radius:var(--sf-radius-sm);display:flex;align-items:center;gap:8px;width:100%;">
-          <span style="font-size:12px;color:var(--sf-text-muted);flex:1;">启用 TIGO Copilot (Phase 13 真接)</span>
-          <span style="display:inline-block;width:32px;height:18px;background:var(--sf-border);border-radius:9px;position:relative;">
-            <span style="position:absolute;top:2px;left:2px;width:14px;height:14px;background:white;border-radius:50%;"></span>
-          </span>
-        </div>
-        <p style="font-size:11px;color:var(--sf-text-light);margin-top:12px;margin:12px 0 0 0;line-height:1.5;">
-          继续即同意 <a href="#">TIGO Trust Gateway 策略</a>。当前演示版不可用，Phase 13 真接。
+        <p style="font-size:11px;color:var(--sf-text-light);margin-top:12px;line-height:1.5;">
+          目前还在准备中, 拍板日 8/15 后开通.
         </p>
       </div>
     </aside>
