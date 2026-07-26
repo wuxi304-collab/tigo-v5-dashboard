@@ -1,1231 +1,145 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TIGO V5 业务方 KPI Dashboard v3 — 5 黄金账户 × 8 维 × 8 指标 = 320 cell</title>
-  <meta name="description" content="同钧工业增长操作系统 · 业务方 KPI Dashboard v3 · 8 维 (增长/健康/风险/商业化/内容/渠道/决策/体验) × 8 指标 (V_CONVERSION/G1-G6/ROI/决策周期/联系人覆盖/内容触达/渠道转化/决策人NPS) × 5 黄金 = 320 cell · 业务方 daily 1 页 1 分钟看完" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23171A1F'/%3E%3Ctext x='50' y='65' text-anchor='middle' font-family='Arial' font-size='44' font-weight='bold' fill='%23B7791F'%3EK%3C/text%3E%3C/svg%3E" />
-  <style>
-    /* ===========================================================
-     * TIGO V5 业务方 KPI Dashboard v3
-     * 设计原则: 工业理性 + Salesforce 风格 (跟 roi-dashboard-v2 / analytics-dashboard 一致)
-     * 配色 (docs/10_UX_AND_DESIGN_SYSTEM.md §2):
-     *   炭石墨 #171A1F / 钢青墨 #5E6672 / 不锈钢银 #C7CDD4
-     *   工业蓝 #2563EB / 风险红 #B42318 / 提示琥珀 #B7791F / 通过绿 #1F7A4D
-     *   浅色 Salesforce 风格: 背景 #F4F6F9, 卡片 #FFFFFF, 边框 #D8DDE6
-     *   琥珀色 #B7791F (KPI Dashboard 专用色, 业务方 daily 看板)
-     * =========================================================== */
-
-    :root {
-      --bg-base: #F4F6F9;
-      --bg-card: #FFFFFF;
-      --bg-card-hover: #FAFBFC;
-      --bg-elevated: #F0F2F5;
-      --bg-side: #16325C;
-      --bg-amber: #78350F;        /* KPI Dashboard 专用深琥珀底 */
-      --border: #D8DDE6;
-      --border-light: #E5E9F0;
-      --border-dark: #A8B0BD;
-      --text-primary: #16325C;
-      --text-secondary: #5E6672;
-      --text-muted: #8A8F99;
-      --text-on-dark: #FFFFFF;
-      --text-on-dark-muted: #B5C0D0;
-      --accent: #2563EB;
-      --accent-hover: #1E4FD9;
-      --accent-dim: #4F8AF0;
-      --graphite: #171A1F;
-      --steel: #5E6672;
-      --silver: #C7CDD4;
-      --success: #1F7A4D;
-      --success-bg: #E3F0E8;
-      --warning: #B7791F;
-      --warning-bg: #FCF3DC;
-      --danger: #B42318;
-      --danger-bg: #FCE4E1;
-      --info: #2563EB;
-      --info-bg: #E6EFFE;
-      --amber: #B7791F;           /* 业务方 KPI Dashboard 专用色 */
-      --amber-bg: #FCF3DC;
-      --amber-hover: #92580A;
-      --gold-amber: #B7791F;
-      --biz-color: #2563EB;
-      --gold-color: #B7791F;
-      --integrator-color: #1F7A4D;
-      --baowu-color: #B42318;
-      --shadow-sm: 0 1px 2px rgba(22, 50, 92, 0.06);
-      --shadow-md: 0 2px 6px rgba(22, 50, 92, 0.10);
-      --shadow-lg: 0 4px 12px rgba(22, 50, 92, 0.14);
-      --radius-sm: 4px;
-      --radius-md: 6px;
-      --radius-lg: 8px;
-      --radius-xl: 12px;
-      --font-base: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-      --font-num: "Inter", -apple-system, "Segoe UI", Arial, sans-serif;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html, body {
-      background: var(--bg-base);
-      color: var(--text-primary);
-      font-family: var(--font-base);
-      font-size: 14px;
-      line-height: 1.5;
-      min-height: 100vh;
-    }
-
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    .num { font-variant-numeric: tabular-nums; font-family: var(--font-num); }
-
-    /* ====================================================
-     * Layout: 顶 bar + 8 维 tab + 8 指标热力图
-     * ==================================================== */
-
-    .layout {
-      display: grid;
-      grid-template-columns: 240px 1fr;
-      grid-template-rows: 60px 1fr;
-      grid-template-areas:
-        "side header"
-        "side main";
-      min-height: 100vh;
-    }
-
-    .header {
-      grid-area: header;
-      background: linear-gradient(135deg, var(--bg-amber) 0%, #B7791F 100%);
-      color: var(--text-on-dark);
-      padding: 0 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      box-shadow: var(--shadow-md);
-    }
-
-    .header-left { display: flex; align-items: center; gap: 12px; }
-
-    .header-logo {
-      width: 32px;
-      height: 32px;
-      background: var(--amber);
-      border-radius: var(--radius-md);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 18px;
-    }
-
-    .header-title { font-size: 16px; font-weight: 700; }
-    .header-title-sub {
-      font-size: 11px;
-      color: var(--text-on-dark-muted);
-      font-weight: 400;
-    }
-
-    .header-right { display: flex; align-items: center; gap: 12px; }
-
-    .header-pill {
-      padding: 4px 10px;
-      background: rgba(183, 121, 31, 0.25);
-      border: 1px solid var(--amber);
-      border-radius: var(--radius-md);
-      font-size: 11px;
-      font-weight: 600;
-    }
-
-    .header-pill-warn {
-      padding: 4px 10px;
-      background: rgba(180, 35, 24, 0.25);
-      border: 1px solid var(--danger);
-      border-radius: var(--radius-md);
-      font-size: 11px;
-      font-weight: 600;
-      color: #FCA5A5;
-    }
-
-    /* ====================================================
-     * Sidebar
-     * ==================================================== */
-
-    .side {
-      grid-area: side;
-      background: var(--bg-side);
-      color: var(--text-on-dark);
-      padding: 16px 0;
-      overflow-y: auto;
-    }
-
-    .side-brand {
-      padding: 0 16px 16px;
-      border-bottom: 1px solid rgba(255,255,255,0.10);
-    }
-    .side-brand-name { font-size: 14px; font-weight: 700; color: var(--text-on-dark); }
-    .side-brand-sub {
-      font-size: 10px;
-      color: var(--text-on-dark-muted);
-      margin-top: 2px;
-    }
-
-    .side-nav-section {
-      padding: 12px 16px 4px;
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--text-on-dark-muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .side-nav { list-style: none; }
-    .side-nav-item { margin: 0; }
-    .side-nav-link {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 8px 16px;
-      font-size: 12px;
-      color: var(--text-on-dark-muted);
-      text-decoration: none;
-      border-left: 3px solid transparent;
-      transition: all 0.15s;
-    }
-    .side-nav-link:hover {
-      background: rgba(255,255,255,0.05);
-      color: var(--text-on-dark);
-      text-decoration: none;
-    }
-    .side-nav-link.active {
-      background: rgba(255,255,255,0.10);
-      color: var(--text-on-dark);
-      border-left-color: var(--amber);
-    }
-    .side-nav-icon { font-size: 14px; }
-
-    .side-info {
-      padding: 16px;
-      border-top: 1px solid rgba(255,255,255,0.10);
-      margin-top: 24px;
-    }
-    .side-info-title {
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--text-on-dark);
-      margin-bottom: 8px;
-    }
-    .side-info-text {
-      font-size: 10px;
-      color: var(--text-on-dark-muted);
-      line-height: 1.6;
-    }
-
-    /* ====================================================
-     * Main
-     * ==================================================== */
-
-    .main {
-      grid-area: main;
-      padding: 20px 24px;
-      overflow-y: auto;
-    }
-
-    /* 拍板信息条 */
-    .summary-bar {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    .summary-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 14px 18px;
-      box-shadow: var(--shadow-sm);
-    }
-    .summary-label {
-      font-size: 11px;
-      color: var(--text-muted);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-    }
-    .summary-value {
-      font-size: 22px;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-top: 4px;
-    }
-    .summary-sub {
-      font-size: 11px;
-      color: var(--text-secondary);
-      margin-top: 2px;
-    }
-    .summary-value-amber { color: var(--amber); }
-    .summary-value-green { color: var(--success); }
-    .summary-value-red { color: var(--danger); }
-
-    /* Tab 切换: 8 维 */
-    .dim-tabs {
-      display: flex;
-      gap: 4px;
-      margin-bottom: 16px;
-      background: var(--bg-card);
-      padding: 4px;
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border);
-      overflow-x: auto;
-    }
-    .dim-tab {
-      flex: 1;
-      min-width: 100px;
-      padding: 8px 12px;
-      text-align: center;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      cursor: pointer;
-      border-radius: var(--radius-sm);
-      transition: all 0.15s;
-      white-space: nowrap;
-    }
-    .dim-tab:hover {
-      background: var(--bg-elevated);
-      color: var(--text-primary);
-    }
-    .dim-tab.active {
-      background: var(--amber);
-      color: var(--text-on-dark);
-    }
-
-    /* 8 维说明 */
-    .dim-info {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-left: 4px solid var(--amber);
-      border-radius: var(--radius-md);
-      padding: 12px 16px;
-      margin-bottom: 16px;
-    }
-    .dim-info-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-primary);
-    }
-    .dim-info-desc {
-      font-size: 12px;
-      color: var(--text-secondary);
-      margin-top: 4px;
-    }
-
-    /* 热力图 (8 指标 × 5 黄金 = 40 cell) */
-    .heatmap-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 16px;
-      box-shadow: var(--shadow-sm);
-      margin-bottom: 16px;
-      overflow-x: auto;
-    }
-    .heatmap-card-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 4px;
-    }
-    .heatmap-card-sub {
-      font-size: 11px;
-      color: var(--text-secondary);
-      margin-bottom: 12px;
-    }
-
-    table.heatmap {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 4px;
-      font-size: 11px;
-    }
-    table.heatmap th {
-      padding: 6px 8px;
-      background: var(--bg-elevated);
-      font-weight: 600;
-      color: var(--text-secondary);
-      text-align: center;
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.3px;
-      border-radius: var(--radius-sm);
-    }
-    table.heatmap th.row-header {
-      text-align: left;
-      min-width: 200px;
-      max-width: 200px;
-      white-space: normal;
-    }
-    table.heatmap td {
-      padding: 8px 6px;
-      text-align: center;
-      border-radius: var(--radius-sm);
-      cursor: pointer;
-      transition: transform 0.1s;
-      position: relative;
-    }
-    table.heatmap td:hover {
-      transform: scale(1.05);
-      z-index: 5;
-      box-shadow: var(--shadow-md);
-    }
-    table.heatmap td.cell-green { background: var(--success-bg); color: var(--success); font-weight: 600; }
-    table.heatmap td.cell-yellow { background: var(--warning-bg); color: var(--warning); font-weight: 600; }
-    table.heatmap td.cell-red { background: var(--danger-bg); color: var(--danger); font-weight: 600; }
-    table.heatmap td.cell-label {
-      background: transparent;
-      cursor: default;
-      text-align: left;
-      padding-left: 8px;
-      color: var(--text-primary);
-      font-weight: 500;
-      font-size: 11px;
-    }
-    table.heatmap td.cell-label:hover {
-      transform: none;
-      box-shadow: none;
-    }
-    table.heatmap td.cell-value {
-      font-variant-numeric: tabular-nums;
-      font-family: var(--font-num);
-    }
-
-    /* 图例 */
-    .legend {
-      display: flex;
-      gap: 16px;
-      margin-top: 8px;
-      padding: 8px 12px;
-      background: var(--bg-elevated);
-      border-radius: var(--radius-sm);
-      font-size: 11px;
-    }
-    .legend-item { display: flex; align-items: center; gap: 6px; }
-    .legend-swatch {
-      width: 14px;
-      height: 14px;
-      border-radius: 3px;
-    }
-    .legend-swatch-green { background: var(--success-bg); border: 1px solid var(--success); }
-    .legend-swatch-yellow { background: var(--warning-bg); border: 1px solid var(--warning); }
-    .legend-swatch-red { background: var(--danger-bg); border: 1px solid var(--danger); }
-
-    /* 视图切换 (Daily / 周 / 月 / 年) */
-    .view-tabs {
-      display: flex;
-      gap: 4px;
-      margin-bottom: 16px;
-    }
-    .view-tab {
-      padding: 6px 14px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      cursor: pointer;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-    }
-    .view-tab.active {
-      background: var(--amber);
-      color: var(--text-on-dark);
-      border-color: var(--amber);
-    }
-
-    /* 工具区域: V_CONVERSION 字典 + ROI 多窗口 */
-    .tools-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-    .tool-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      padding: 16px;
-      box-shadow: var(--shadow-sm);
-    }
-    .tool-card-title {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-primary);
-      margin-bottom: 8px;
-    }
-    .tool-card-desc {
-      font-size: 11px;
-      color: var(--text-secondary);
-      margin-bottom: 12px;
-      line-height: 1.5;
-    }
-    .tool-card table {
-      width: 100%;
-      font-size: 11px;
-    }
-    .tool-card table th, .tool-card table td {
-      padding: 4px 6px;
-      text-align: left;
-    }
-    .tool-card table th {
-      font-weight: 600;
-      color: var(--text-secondary);
-      border-bottom: 1px solid var(--border);
-    }
-    .tool-card table td {
-      color: var(--text-primary);
-    }
-    .tool-card table td.num-cell {
-      text-align: right;
-      font-variant-numeric: tabular-nums;
-      font-family: var(--font-num);
-      font-weight: 600;
-    }
-    .tool-card table td.prob-cell {
-      color: var(--amber);
-      font-weight: 700;
-    }
-
-    /* 8 维 summary mini card */
-    .dim-summary-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-    .dim-mini-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      padding: 10px 12px;
-      box-shadow: var(--shadow-sm);
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .dim-mini-card:hover {
-      background: var(--bg-card-hover);
-      box-shadow: var(--shadow-md);
-    }
-    .dim-mini-card.active {
-      border-color: var(--amber);
-      background: var(--amber-bg);
-    }
-    .dim-mini-name {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-primary);
-    }
-    .dim-mini-stats {
-      display: flex;
-      gap: 8px;
-      margin-top: 4px;
-      font-size: 10px;
-    }
-    .dim-mini-stat-r { color: var(--danger); font-weight: 600; }
-    .dim-mini-stat-y { color: var(--warning); font-weight: 600; }
-    .dim-mini-stat-g { color: var(--success); font-weight: 600; }
-
-    /* Tooltip */
-    .tooltip {
-      position: absolute;
-      bottom: 100%;
-      left: 50%;
-      transform: translateX(-50%) translateY(-4px);
-      background: var(--graphite);
-      color: var(--text-on-dark);
-      padding: 6px 10px;
-      border-radius: var(--radius-sm);
-      font-size: 11px;
-      white-space: nowrap;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.15s;
-      z-index: 10;
-      box-shadow: var(--shadow-md);
-    }
-    td:hover .tooltip { opacity: 1; }
-
-    /* 5 黄金账户选择器 */
-    .tenant-selector {
-      display: flex;
-      gap: 4px;
-      padding: 4px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-    }
-    .tenant-btn {
-      flex: 1;
-      padding: 6px 8px;
-      text-align: center;
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-secondary);
-      cursor: pointer;
-      border-radius: var(--radius-sm);
-      transition: all 0.15s;
-    }
-    .tenant-btn:hover { background: var(--bg-elevated); }
-    .tenant-btn.active {
-      background: var(--amber);
-      color: var(--text-on-dark);
-    }
-
-    /* Footer */
-    .footer {
-      margin-top: 24px;
-      padding: 12px 16px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      font-size: 11px;
-      color: var(--text-secondary);
-      text-align: center;
-    }
-    .footer a { color: var(--amber); }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TIGO V5 · KPI v3 (320 cell)</title>
+<style>
+:root {
+  --graphite: #171A1F;
+  --steel: #5E6672;
+  --silver: #C7CDD4;
+  --industrial-blue: #2563EB;
+  --risk-red: #B42318;
+  --warning-amber: #B7791F;
+  --success-green: #1F7A4D;
+  --bg-base: #FFFFFF;
+  --bg-elevated: #F4F6F9;
+  --border: #D8DDE6;
+  --border-light: #E5E9F0;
+  --text-primary: #16325C;
+  --text-secondary: #5E6672;
+  --text-muted: #8A8F99;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --shadow-sm: 0 1px 2px rgba(22, 50, 92, 0.06);
+  --shadow-md: 0 2px 6px rgba(22, 50, 92, 0.10);
+  --font-base: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-num: "Inter", -apple-system, "Segoe UI", Arial, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--bg-elevated); color: var(--text-primary); font-family: var(--font-base); font-size: 14px; line-height: 1.5; min-height: 100vh; }
+a { color: var(--industrial-blue); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.num { font-variant-numeric: tabular-nums; font-family: var(--font-num); }
+.layout { display: grid; grid-template-columns: 240px 1fr; grid-template-rows: 56px 1fr; grid-template-areas: "side header" "side main"; min-height: 100vh; }
+.side { grid-area: side; background: var(--graphite); color: #FFFFFF; padding: 16px 0; overflow-y: auto; }
+.side-brand { padding: 0 16px 16px; border-bottom: 1px solid rgba(255,255,255,0.10); }
+.side-brand-name { font-size: 14px; font-weight: 700; }
+.side-brand-sub { font-size: 11px; color: var(--silver); margin-top: 2px; }
+.side-section { padding: 12px 16px 4px; font-size: 10px; font-weight: 700; color: var(--silver); text-transform: uppercase; letter-spacing: 0.5px; }
+.side-link { display: block; padding: 6px 16px; font-size: 13px; color: #FFFFFF; text-decoration: none; border-left: 3px solid transparent; }
+.side-link:hover { background: rgba(255,255,255,0.08); text-decoration: none; }
+.side-link.active { background: rgba(37,99,235,0.30); border-left-color: var(--industrial-blue); }
+.header { grid-area: header; background: var(--bg-base); border-bottom: 1px solid var(--border); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; }
+.header-title { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+.header-sub { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.header-meta { font-size: 12px; color: var(--text-secondary); }
+.header-meta strong { color: var(--text-primary); }
+.main { grid-area: main; padding: 20px 24px; overflow-y: auto; }
+.card { background: var(--bg-base); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 20px; box-shadow: var(--shadow-sm); margin-bottom: 16px; }
+.card-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px; }
+.card-sub { font-size: 12px; color: var(--text-secondary); margin-bottom: 12px; }
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.kpi-cell { background: var(--bg-base); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 14px; }
+.kpi-label { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: var(--industrial-blue); margin-top: 4px; }
+.kpi-value-amber { color: var(--warning-amber); }
+.kpi-value-green { color: var(--success-green); }
+.kpi-value-red { color: var(--risk-red); }
+.kpi-sub { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border-light); }
+th { background: var(--bg-elevated); font-weight: 600; color: var(--text-secondary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.3px; }
+tr:hover td { background: var(--bg-elevated); }
+.badge { display: inline-block; padding: 2px 8px; border-radius: var(--radius-sm); font-size: 11px; font-weight: 600; }
+.badge-success { background: #E3F0E8; color: var(--success-green); }
+.badge-warn { background: #FCF3DC; color: var(--warning-amber); }
+.badge-danger { background: #FCE4E1; color: var(--risk-red); }
+.badge-info { background: #E6EFFE; color: var(--industrial-blue); }
+.footer { margin-top: 24px; padding: 12px 16px; background: var(--bg-base); border: 1px solid var(--border); border-radius: var(--radius-md); font-size: 11px; color: var(--text-muted); text-align: center; }
+h2 { font-size: 16px; color: var(--text-primary); margin-bottom: 12px; font-weight: 700; }
+h3 { font-size: 14px; color: var(--text-primary); margin-bottom: 8px; font-weight: 700; }
+.gate-section { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 1024px) { .gate-section { grid-template-columns: 1fr; } .layout { grid-template-columns: 1fr; grid-template-areas: "header" "main"; } .side { display: none; } }
+</style>
 </head>
 <body>
-  <div class="layout">
-    <!-- Sidebar -->
-    <aside class="side">
-      <div class="side-brand">
-        <div class="side-brand-name">TIGO V5</div>
-        <div class="side-brand-sub">KPI Dashboard v3 · 业务方 daily</div>
-      </div>
-      <div class="side-nav-section">业务方 daily 看板</div>
-      <ul class="side-nav">
-        <li class="side-nav-item">
-          <a href="#dashboard" class="side-nav-link active">
-            <span class="side-nav-icon">📊</span>
-            <span>320 cell Dashboard</span>
-          </a>
-        </li>
-        <li class="side-nav-item">
-          <a href="#heatmap" class="side-nav-link">
-            <span class="side-nav-icon">🔥</span>
-            <span>热力图 (8 维 × 5 黄金)</span>
-          </a>
-        </li>
-        <li class="side-nav-item">
-          <a href="#v-conversion" class="side-nav-link">
-            <span class="side-nav-icon">📈</span>
-            <span>V_CONVERSION 字典</span>
-          </a>
-        </li>
-        <li class="side-nav-item">
-          <a href="#roi-window" class="side-nav-link">
-            <span class="side-nav-icon">💰</span>
-            <span>ROI 多窗口</span>
-          </a>
-        </li>
-      </ul>
-      <div class="side-nav-section">业务方 5 黄金账户</div>
-      <ul class="side-nav">
-        <li class="side-nav-item">
-          <a href="#byd" class="side-nav-link">
-            <span class="side-nav-icon">🚗</span>
-            <span>BYD 比亚迪 (002594.SZ)</span>
-          </a>
-        </li>
-        <li class="side-nav-item">
-          <a href="#catl" class="side-nav-link">
-            <span class="side-nav-icon">🔋</span>
-            <span>CATL 宁德时代 (300750.SZ)</span>
-          </a>
-        </li>
-        <li class="side-nav-item">
-          <a href="#luxshare" class="side-nav-link">
-            <span class="side-nav-icon">🔌</span>
-            <span>Luxshare 立讯 (002475.SZ)</span>
-          </a>
-        </li>
-        <li class="side-nav-item">
-          <a href="#microport" class="side-nav-link">
-            <span class="side-nav-icon">🏥</span>
-            <span>Microport 微创 (00853.HK)</span>
-          </a>
-        </li>
-        <li class="side-nav-item">
-          <a href="#panasonic" class="side-nav-link">
-            <span class="side-nav-icon">🌏</span>
-            <span>Panasonic 松下 (6752.T)</span>
-          </a>
-        </li>
-      </ul>
-      <div class="side-info">
-        <div class="side-info-title">业务方硬门禁</div>
-        <div class="side-info-text">
-          • 拍板日 8/15 演示<br/>
-          • 30 天 trial 试用<br/>
-          • 60 天例会共用<br/>
-          • 凭证脱敏 9 regex<br/>
-          • AGENTS §11 append-only
-        </div>
-      </div>
-    </aside>
-
-    <!-- Header -->
-    <header class="header">
-      <div class="header-left">
-        <div class="header-logo">K</div>
-        <div>
-          <div class="header-title">KPI Dashboard v3 — 业务方 daily 拍板 1 页 1 分钟看完</div>
-          <div class="header-title-sub">
-            5 黄金 × 8 维 × 8 指标 = 320 cell · V_CONVERSION 字典真算 · 125x 杠杆
-          </div>
-        </div>
-      </div>
-      <div class="header-right">
-        <span class="header-pill">Phase 12.24</span>
-        <span class="header-pill-warn">拍板 8/15 18:00</span>
-        <span class="header-pill">320 cell</span>
-      </div>
-    </header>
-
-    <!-- Main -->
-    <main class="main">
-      <!-- 拍板信息条 -->
-      <section class="summary-bar">
-        <div class="summary-card">
-          <div class="summary-label">5 黄金 × 8 维 × 8 指标</div>
-          <div class="summary-value num summary-value-amber">320</div>
-          <div class="summary-sub">cell (业务方 daily 1 页看完)</div>
-        </div>
-        <div class="summary-card">
-          <div class="summary-label">V5→V6 升级率 (5 黄金)</div>
-          <div class="summary-value num summary-value-amber">16.67×</div>
-          <div class="summary-sub">¥3万 → ¥50万 (cost_ledger 真值)</div>
-        </div>
-        <div class="summary-card">
-          <div class="summary-label">业务方 125x 杠杆 (gross)</div>
-          <div class="summary-value num summary-value-green">125×</div>
-          <div class="summary-sub">1 元投入 → 125 元价值 (多年统计)</div>
-        </div>
-        <div class="summary-card">
-          <div class="summary-label">决策人覆盖 (5 黄金)</div>
-          <div class="summary-value num summary-value-green">100%</div>
-          <div class="summary-sub">5 决策人 placeholder</div>
-        </div>
-      </section>
-
-      <!-- 视图切换 -->
-      <div class="view-tabs">
-        <div class="view-tab active" data-view="daily">业务方 daily</div>
-        <div class="view-tab" data-view="weekly">业务方 周</div>
-        <div class="view-tab" data-view="monthly">业务方 月</div>
-        <div class="view-tab" data-view="yearly">业务方 年</div>
-      </div>
-
-      <!-- 8 维 mini cards -->
-      <section class="dim-summary-grid" id="dim-mini-grid">
-        <!-- JS 动态填充 -->
-      </section>
-
-      <!-- 8 维 tab -->
-      <div class="dim-tabs" id="dim-tabs">
-        <div class="dim-tab active" data-dim="growth">📈 增长</div>
-        <div class="dim-tab" data-dim="health">💚 健康</div>
-        <div class="dim-tab" data-dim="risk">⚠️ 风险</div>
-        <div class="dim-tab" data-dim="monetization">💵 商业化</div>
-        <div class="dim-tab" data-dim="content">📝 内容</div>
-        <div class="dim-tab" data-dim="channel">📡 渠道</div>
-        <div class="dim-tab" data-dim="decision">🧠 决策</div>
-        <div class="dim-tab" data-dim="experience">⭐ 体验</div>
-      </div>
-
-      <!-- 8 维说明 -->
-      <div class="dim-info" id="dim-info">
-        <div class="dim-info-title">📈 增长 维</div>
-        <div class="dim-info-desc">5 黄金账户 ARR 累计 / V 推进速率 / 新客户转化 (业务方 1 年路线图)</div>
-      </div>
-
-      <!-- 热力图 (8 指标 × 5 黄金 = 40 cell) -->
-      <section class="heatmap-card" id="heatmap">
-        <div class="heatmap-card-title">8 指标 × 5 黄金 = 40 cell 热力图</div>
-        <div class="heatmap-card-sub">
-          颜色编码: 🟢 GREEN (达成 95%+), 🟡 YELLOW (达成 70-95%), 🔴 RED (达成 &lt; 70%, 风险预警)
-        </div>
-        <table class="heatmap" id="heatmap-table">
-          <thead>
-            <tr>
-              <th class="row-header">指标 \\ 5 黄金</th>
-              <th>BYD 比亚迪<br/>002594.SZ</th>
-              <th>CATL 宁德时代<br/>300750.SZ</th>
-              <th>Luxshare 立讯<br/>002475.SZ</th>
-              <th>Microport 微创<br/>00853.HK</th>
-              <th>Panasonic 松下<br/>6752.T</th>
-            </tr>
-          </thead>
-          <tbody id="heatmap-body">
-            <!-- JS 动态填充 -->
-          </tbody>
-        </table>
-        <div class="legend">
-          <div class="legend-item">
-            <div class="legend-swatch legend-swatch-green"></div>
-            <span>🟢 GREEN (达成 ≥ 95%)</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-swatch legend-swatch-yellow"></div>
-            <span>🟡 YELLOW (达成 70-95%)</span>
-          </div>
-          <div class="legend-item">
-            <div class="legend-swatch legend-swatch-red"></div>
-            <span>🔴 RED (达成 &lt; 70%, 风险预警)</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- 工具区域: V_CONVERSION + ROI 多窗口 -->
-      <section class="tools-grid">
-        <div class="tool-card" id="v-conversion">
-          <div class="tool-card-title">📈 V_CONVERSION 字典真算 (cost_ledger.V_LEVEL_G6_PROBABILITY)</div>
-          <div class="tool-card-desc">
-            5 黄金账户 V 等级 → G6 转化率真值表, 业务方 daily V5→V6 升级率 16.67x 真算
-            (¥3万 → ¥50万 = 16.67x, G6 概率 0.65, 期望 ARR ¥325,000)
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>V 等级</th>
-                <th>G6 概率</th>
-                <th>业务方语义</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>V0_UNVERIFIED</td><td class="num-cell prob-cell">0.02</td><td>0.02x (G1 漏斗起步)</td></tr>
-              <tr><td>V1_ENTITY_VERIFIED</td><td class="num-cell prob-cell">0.05</td><td>0.05x (G2 实体已验证)</td></tr>
-              <tr><td>V2_PRODUCT_VERIFIED</td><td class="num-cell prob-cell">0.10</td><td>0.10x (G3 产品已验证)</td></tr>
-              <tr><td>V3_MARKET_VERIFIED</td><td class="num-cell prob-cell">0.18</td><td>0.18x (G4 市场已验证)</td></tr>
-              <tr><td>V4_SUPPLY_CHAIN_VERIFIED</td><td class="num-cell prob-cell">0.35</td><td>0.35x (G5 供应链已验证)</td></tr>
-              <tr><td><strong>V5_DEMAND_CONFIRMED</strong></td><td class="num-cell prob-cell"><strong>0.65</strong></td><td><strong>0.65x (G6 需求已确认, 5 黄金 V5 起步)</strong></td></tr>
-              <tr><td>V6_COMMERCIAL_PROVEN</td><td class="num-cell prob-cell">1.00</td><td>1.0x (G6 PASSED, 商业已证明)</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="tool-card" id="roi-window">
-          <div class="tool-card-title">💰 ROI 多窗口 (D30 / D90 / D365 / POST_V6)</div>
-          <div class="tool-card-desc">
-            业务方多年统计 ROI 4 窗口: 30 天 1.5x / 90 天 8.0x / 365 天 25.0x (净) / POST_V6 125.0x (gross)
-            业务方投入 ¥1 → 业务方产生 ¥125 价值
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>窗口</th>
-                <th>ROI 倍数</th>
-                <th>业务方语义</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr><td>D30</td><td class="num-cell prob-cell">1.5×</td><td>V5 起步期, 试运行</td></tr>
-              <tr><td>D90</td><td class="num-cell prob-cell">8.0×</td><td>V6 落地, 5 黄金 V6 跑通</td></tr>
-              <tr><td>D365</td><td class="num-cell prob-cell">25.0×</td><td>净 25x, 1 年 5 黄金纯投入 → ARR</td></tr>
-              <tr><td><strong>POST_V6</strong></td><td class="num-cell prob-cell"><strong>125.0×</strong></td><td><strong>gross 125x, 含 V7/V8 续约 + 品牌 + 工具摊销</strong></td></tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- Footer -->
-      <div class="footer">
-        TIGO V5 业务方 KPI Dashboard v3 (Phase 12.24 batch 24) · 8 维 × 8 指标 × 5 黄金 = 320 cell
-        · V_CONVERSION 字典真算 · 125x 杠杆 · 凭证脱敏 9 regex
-        · AGENTS §0/§3/§10/§11/§14 硬门禁
-        · 拍板日 8/15 演示 + 30 天 trial + 60 天例会 共用
-      </div>
-    </main>
+<div class="layout">
+  
+<aside class="side">
+  <div class="side-brand">
+    <div class="side-brand-name">TIGO V5</div>
+    <div class="side-brand-sub">拍板日 8/15 业务方 daily 看板</div>
   </div>
+  <div class="side-section">拍板日 8/15 业务方看板</div>
+  <a class="side-link " href="../index.html">主页入口</a>
+  <a class="side-link " href="../board-ppt-1page/index.html">拍板 PPT 1 页</a>
+  <a class="side-link " href="../demo-day-1hour/index.html">8/15 现场 1 小时 demo</a>
+  <a class="side-link " href="../daily-12d/index.html">12 维度 16920 cell daily</a>
+  <a class="side-link " href="../g2-3000/index.html">5 黄金 3000 G2</a>
+  <a class="side-link active" href="../kpi-dashboard-v3/index.html">KPI v3 (320 cell)</a>
+  <a class="side-link " href="../roi-dashboard-v2/index.html">ROI v2 (192 cell)</a>
+  <div class="side-section">业务方硬门禁</div>
+  <div style="padding: 8px 16px; font-size: 11px; color: var(--silver); line-height: 1.6;">
+    AGENTS §0 default-deny<br>
+    AGENTS §3 真实数据<br>
+    AGENTS §4 不买不推断<br>
+    AGENTS §11 append-only<br>
+    AGENTS §14 凭证脱敏 9 regex<br>
+    7 年 SOX audit_log
+  </div>
+</aside>
 
-  <script>
-    // ============================================
-    // 8 维 enum + 8 指标 enum + 5 黄金 tenant
-    // ============================================
-    const KPI_DIMENSIONS = [
-      "growth", "health", "risk", "monetization",
-      "content", "channel", "decision", "experience"
-    ];
-    const KPI_METRICS = [
-      "v_conversion", "g_funnel", "roi", "decision_cycle",
-      "contact_coverage", "content_reach", "channel_conversion", "decision_nps"
-    ];
-    const GOLD_5 = [
-      { id: "t_byd",       name_zh: "比亚迪",     name_en: "BYD",       ticker: "002594.SZ", decision_maker: "{{BYD 采购总监}}",            current_v: "V5_DEMAND_CONFIRMED" },
-      { id: "t_catl",      name_zh: "宁德时代",   name_en: "CATL",      ticker: "300750.SZ", decision_maker: "{{CATL 电池研究院负责人}}",     current_v: "V3_MARKET_VERIFIED" },
-      { id: "t_luxshare",  name_zh: "立讯精密",   name_en: "Luxshare",  ticker: "002475.SZ", decision_maker: "{{Luxshare 商务总监}}",         current_v: "V5_DEMAND_CONFIRMED" },
-      { id: "t_microport", name_zh: "微创医疗",   name_en: "Microport", ticker: "00853.HK",  decision_maker: "{{Microport 质量总监}}",        current_v: "V5_DEMAND_CONFIRMED" },
-      { id: "t_panasonic", name_zh: "松下",       name_en: "Panasonic", ticker: "6752.T",    decision_maker: "{{Panasonic 采购经理}}",        current_v: "V3_MARKET_VERIFIED" }
-    ];
+  
+<header class="header">
+  <div>
+    <div class="header-title">TIGO V5 · KPI v3 (320 cell)</div>
+    <div class="header-sub">8 维 × 8 指标 × 5 黄金 = 320 cell · V_CONVERSION 字典真算</div>
+  </div>
+  <div class="header-meta">拍板日 <strong>2026-08-15 18:00</strong></div>
+</header>
 
-    // 8 维 description
-    const DIM_DESCRIPTIONS = {
-      "growth":       "增长 — 5 黄金账户 ARR 累计 / V 推进速率 / 新客户转化 (业务方 1 年路线图)",
-      "health":       "健康 — 5 黄金账户 V 等级 / G1-G6 闸门 / N1-N3 推进节点 (V_CONVERSION 字典真算)",
-      "risk":         "风险 — 5 黄金账户 R1-R5 风险 / L1-L3 升级路径 (决策变更 / 闸门失分 / 资金冻结 / 战略调整 / 竞品抢单)",
-      "monetization": "商业化 — V_CONVERSION 字典真算 / ARR / 续约率 (5 黄金 ¥3万→¥50万 = 16.67x 升级, 业务方 125x 杠杆)",
-      "content":      "内容 — 5 黄金账户 内容触达 / 文档覆盖 / 决策包生成 (25 邮件模板 + 30 节点 LMS)",
-      "channel":      "渠道 — 4 渠道 (邮件/短信/微信/LinkedIn) × 5 黄金 + 5 类集成商 + 30+ 宝武 (Phase 12.22 marketing_automation)",
-      "decision":     "决策 — 5 黄金账户 决策人覆盖 / 决策周期 D0-D365 / 决策人 NPS (5 类决策人 placeholder)",
-      "experience":   "体验 — 5 黄金账户 NPS / 满意度 / 转化 (业务方多年跑通 Promoter 70% / Passive 20% / Detractor 10%)"
-    };
+  <main class="main">
+    <div class="card">
+      <div class="card-title">8 维 × 8 指标 × 5 黄金 = 320 cell</div>
+      <div class="card-sub">V_CONVERSION 字典真算 + 125x 杠杆 · 非 V_CONVERSION/ROI 字段标记需真实数据接入 (Phase 13 真接)</div>
+      <table>
+        <thead><tr><th>维度 \\ 5 黄金</th><th>比亚迪<br>002594.SZ</th><th>宁德时代<br>300750.SZ</th><th>立讯精密<br>002475.SZ</th><th>微创医疗<br>00853.HK</th><th>松下<br>6752.T</th></tr></thead>
+        <tbody><tr><td colspan="6" style="background:var(--bg-elevated); font-weight:700; color:var(--text-primary);">增长</td></tr><tr><td><strong>V_CONVERSION</strong></td><td class="num">65%</td><td class="num">18%</td><td class="num">65%</td><td class="num">65%</td><td class="num">18%</td></tr><tr><td><strong>G1-G6 漏斗</strong></td><td class="num">6</td><td class="num">4</td><td class="num">6</td><td class="num">6</td><td class="num">4</td></tr><tr><td><strong>ROI 多窗口</strong></td><td class="num">125x (POST_V6)</td><td class="num">67x (D365)</td><td class="num">125x (POST_V6)</td><td class="num">125x (POST_V6)</td><td class="num">67x (D365)</td></tr><tr><td><strong>决策周期</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>联系人覆盖</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>内容触达</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>渠道转化</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>决策人 NPS</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td colspan="6" style="background:var(--bg-elevated); font-weight:700; color:var(--text-primary);">健康</td></tr><tr><td><strong>V_CONVERSION</strong></td><td class="num">65%</td><td class="num">18%</td><td class="num">65%</td><td class="num">65%</td><td class="num">18%</td></tr><tr><td><strong>G1-G6 漏斗</strong></td><td class="num">6</td><td class="num">4</td><td class="num">6</td><td class="num">6</td><td class="num">4</td></tr><tr><td><strong>ROI 多窗口</strong></td><td class="num">125x (POST_V6)</td><td class="num">67x (D365)</td><td class="num">125x (POST_V6)</td><td class="num">125x (POST_V6)</td><td class="num">67x (D365)</td></tr><tr><td><strong>决策周期</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>联系人覆盖</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>内容触达</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>渠道转化</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>决策人 NPS</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td colspan="6" style="background:var(--bg-elevated); font-weight:700; color:var(--text-primary);">风险</td></tr><tr><td><strong>V_CONVERSION</strong></td><td class="num">65%</td><td class="num">18%</td><td class="num">65%</td><td class="num">65%</td><td class="num">18%</td></tr><tr><td><strong>G1-G6 漏斗</strong></td><td class="num">6</td><td class="num">4</td><td class="num">6</td><td class="num">6</td><td class="num">4</td></tr><tr><td><strong>ROI 多窗口</strong></td><td class="num">125x (POST_V6)</td><td class="num">67x (D365)</td><td class="num">125x (POST_V6)</td><td class="num">125x (POST_V6)</td><td class="num">67x (D365)</td></tr><tr><td><strong>决策周期</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>联系人覆盖</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>内容触达</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>渠道转化</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>决策人 NPS</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td colspan="6" style="background:var(--bg-elevated); font-weight:700; color:var(--text-primary);">商业化</td></tr><tr><td><strong>V_CONVERSION</strong></td><td class="num">65%</td><td class="num">18%</td><td class="num">65%</td><td class="num">65%</td><td class="num">18%</td></tr><tr><td><strong>G1-G6 漏斗</strong></td><td class="num">6</td><td class="num">4</td><td class="num">6</td><td class="num">6</td><td class="num">4</td></tr><tr><td><strong>ROI 多窗口</strong></td><td class="num">125x (POST_V6)</td><td class="num">67x (D365)</td><td class="num">125x (POST_V6)</td><td class="num">125x (POST_V6)</td><td class="num">67x (D365)</td></tr><tr><td><strong>决策周期</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>联系人覆盖</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>内容触达</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>渠道转化</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>决策人 NPS</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td colspan="6" style="background:var(--bg-elevated); font-weight:700; color:var(--text-primary);">内容</td></tr><tr><td><strong>V_CONVERSION</strong></td><td class="num">65%</td><td class="num">18%</td><td class="num">65%</td><td class="num">65%</td><td class="num">18%</td></tr><tr><td><strong>G1-G6 漏斗</strong></td><td class="num">6</td><td class="num">4</td><td class="num">6</td><td class="num">6</td><td class="num">4</td></tr><tr><td><strong>ROI 多窗口</strong></td><td class="num">125x (POST_V6)</td><td class="num">67x (D365)</td><td class="num">125x (POST_V6)</td><td class="num">125x (POST_V6)</td><td class="num">67x (D365)</td></tr><tr><td><strong>决策周期</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>联系人覆盖</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>内容触达</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>渠道转化</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>决策人 NPS</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td colspan="6" style="background:var(--bg-elevated); font-weight:700; color:var(--text-primary);">渠道</td></tr><tr><td><strong>V_CONVERSION</strong></td><td class="num">65%</td><td class="num">18%</td><td class="num">65%</td><td class="num">65%</td><td class="num">18%</td></tr><tr><td><strong>G1-G6 漏斗</strong></td><td class="num">6</td><td class="num">4</td><td class="num">6</td><td class="num">6</td><td class="num">4</td></tr><tr><td><strong>ROI 多窗口</strong></td><td class="num">125x (POST_V6)</td><td class="num">67x (D365)</td><td class="num">125x (POST_V6)</td><td class="num">125x (POST_V6)</td><td class="num">67x (D365)</td></tr><tr><td><strong>决策周期</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>联系人覆盖</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>内容触达</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>渠道转化</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>决策人 NPS</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td colspan="6" style="background:var(--bg-elevated); font-weight:700; color:var(--text-primary);">决策</td></tr><tr><td><strong>V_CONVERSION</strong></td><td class="num">65%</td><td class="num">18%</td><td class="num">65%</td><td class="num">65%</td><td class="num">18%</td></tr><tr><td><strong>G1-G6 漏斗</strong></td><td class="num">6</td><td class="num">4</td><td class="num">6</td><td class="num">6</td><td class="num">4</td></tr><tr><td><strong>ROI 多窗口</strong></td><td class="num">125x (POST_V6)</td><td class="num">67x (D365)</td><td class="num">125x (POST_V6)</td><td class="num">125x (POST_V6)</td><td class="num">67x (D365)</td></tr><tr><td><strong>决策周期</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>联系人覆盖</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>内容触达</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>渠道转化</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>决策人 NPS</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td colspan="6" style="background:var(--bg-elevated); font-weight:700; color:var(--text-primary);">体验</td></tr><tr><td><strong>V_CONVERSION</strong></td><td class="num">65%</td><td class="num">18%</td><td class="num">65%</td><td class="num">65%</td><td class="num">18%</td></tr><tr><td><strong>G1-G6 漏斗</strong></td><td class="num">6</td><td class="num">4</td><td class="num">6</td><td class="num">6</td><td class="num">4</td></tr><tr><td><strong>ROI 多窗口</strong></td><td class="num">125x (POST_V6)</td><td class="num">67x (D365)</td><td class="num">125x (POST_V6)</td><td class="num">125x (POST_V6)</td><td class="num">67x (D365)</td></tr><tr><td><strong>决策周期</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>联系人覆盖</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>内容触达</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>渠道转化</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr><tr><td><strong>决策人 NPS</strong></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td><td class="num"><span class="badge badge-warn">需真实数据接入</span></td></tr></tbody>
+      </table>
+    </div>
 
-    // 8 指标 description
-    const METRIC_DESCRIPTIONS = {
-      "v_conversion":       "V_CONVERSION 字典真算 — 5 黄金 V5→V6 升级率 (cost_ledger.V_LEVEL_G6_PROBABILITY)",
-      "g_funnel":           "G1-G6 漏斗累计 — V0→V1→V2→V3→V4→V5→V6 转化率 (5 黄金 + 5 类 + 12 户 累计)",
-      "roi":                "ROI 多窗口 — 30 天 / 90 天 / 365 天 / post-V6 (业务方 125x 杠杆 + 净 25x 验证)",
-      "decision_cycle":     "决策周期 — D0→D30→D60→D90→D120→D365 6 节点 (5 黄金 5 户差异化 D60-D120)",
-      "contact_coverage":   "联系人覆盖率 — 5 黄金 5 决策人 placeholder 100% 覆盖 ({{BYD 采购总监}} 等)",
-      "content_reach":      "内容触达 — 4 渠道 (邮件/短信/微信/LinkedIn) × 5 黄金 (Phase 12.22 marketing_automation)",
-      "channel_conversion": "渠道转化 — 4 渠道 × 5 黄金 + 5 类集成商 (Phase 12.22 + Phase 12.18 batch 18)",
-      "decision_nps":       "决策人 NPS — Promoter 70% / Passive 20% / Detractor 10% (业务方多年统计)"
-    };
+    <div class="card">
+      <div class="card-title">V_CONVERSION 字典 (cost_ledger 真值)</div>
+      <div class="card-sub">V5 = 65% G6 概率 · V5→V6 16.67x 升级率 (¥3 万 → ¥50 万)</div>
+      <table>
+        <thead><tr><th>V 等级</th><th>G6 概率</th><th>业务方语义</th></tr></thead>
+        <tbody><tr><td class="num"><strong>V0_UNVERIFIED</strong></td><td class="num">2%</td><td>V0 Unverified</td></tr>
+<tr><td class="num"><strong>V1_ENTITY_VERIFIED</strong></td><td class="num">5%</td><td>V1 Entity Verified</td></tr>
+<tr><td class="num"><strong>V2_PRODUCT_VERIFIED</strong></td><td class="num">10%</td><td>V2 Product Verified</td></tr>
+<tr><td class="num"><strong>V3_MARKET_VERIFIED</strong></td><td class="num">18%</td><td>V3 Market Verified</td></tr>
+<tr><td class="num"><strong>V4_SUPPLY_CHAIN_VERIFIED</strong></td><td class="num">35%</td><td>V4 Supply Chain Verified</td></tr>
+<tr><td class="num"><strong>V5_DEMAND_CONFIRMED</strong></td><td class="num">65%</td><td>V5 Demand Confirmed</td></tr>
+<tr><td class="num"><strong>V6_COMMERCIAL_PROVEN</strong></td><td class="num">100%</td><td>V6 Commercial Proven</td></tr></tbody>
+      </table>
+    </div>
 
-    // V 等级 → G 阶段 (业务方 daily)
-    const V_TO_G = {
-      "V0_UNVERIFIED": 1, "V1_ENTITY_VERIFIED": 2, "V2_PRODUCT_VERIFIED": 3,
-      "V3_MARKET_VERIFIED": 4, "V4_SUPPLY_CHAIN_VERIFIED": 5,
-      "V5_DEMAND_CONFIRMED": 6, "V6_COMMERCIAL_PROVEN": 6
-    };
-
-    // V 等级 → G6 概率
-    const V_TO_PROB = {
-      "V0_UNVERIFIED": 0.02, "V1_ENTITY_VERIFIED": 0.05, "V2_PRODUCT_VERIFIED": 0.10,
-      "V3_MARKET_VERIFIED": 0.18, "V4_SUPPLY_CHAIN_VERIFIED": 0.35,
-      "V5_DEMAND_CONFIRMED": 0.65, "V6_COMMERCIAL_PROVEN": 1.00
-    };
-
-    // 5 黄金 4 渠道触达率
-    const GOLD_5_REACH_4CH = {
-      "t_byd":       { "EMAIL": 95, "SMS": 85, "WECHAT": 75, "LINKEDIN": 60 },
-      "t_catl":      { "EMAIL": 90, "SMS": 80, "WECHAT": 70, "LINKEDIN": 55 },
-      "t_luxshare":  { "EMAIL": 92, "SMS": 82, "WECHAT": 72, "LINKEDIN": 58 },
-      "t_microport": { "EMAIL": 88, "SMS": 75, "WECHAT": 65, "LINKEDIN": 50 },
-      "t_panasonic": { "EMAIL": 85, "SMS": 70, "WECHAT": 60, "LINKEDIN": 45 }
-    };
-
-    // 5 黄金 4 渠道转化率
-    const GOLD_5_CONV_4CH = {
-      "t_byd":       { "EMAIL": 12.0, "SMS": 8.0, "WECHAT": 6.0, "LINKEDIN": 4.0 },
-      "t_catl":      { "EMAIL": 10.0, "SMS": 7.0, "WECHAT": 5.0, "LINKEDIN": 3.5 },
-      "t_luxshare":  { "EMAIL": 11.0, "SMS": 7.5, "WECHAT": 5.5, "LINKEDIN": 3.8 },
-      "t_microport": { "EMAIL": 9.0,  "SMS": 6.5, "WECHAT": 4.5, "LINKEDIN": 3.0 },
-      "t_panasonic": { "EMAIL": 8.0,  "SMS": 5.5, "WECHAT": 4.0, "LINKEDIN": 2.5 }
-    };
-
-    // 5 黄金决策人 NPS
-    const GOLD_5_NPS = {
-      "t_byd":       { PROMOTER: 75, PASSIVE: 18, DETRACTOR: 7 },
-      "t_catl":      { PROMOTER: 65, PASSIVE: 25, DETRACTOR: 10 },
-      "t_luxshare":  { PROMOTER: 72, PASSIVE: 20, DETRACTOR: 8 },
-      "t_microport": { PROMOTER: 70, PASSIVE: 22, DETRACTOR: 8 },
-      "t_panasonic": { PROMOTER: 60, PASSIVE: 25, DETRACTOR: 15 }
-    };
-
-    // 5 黄金决策周期 D0→D365
-    const GOLD_5_CYCLE = {
-      "t_byd":       { D0: 0, D30: 25, D60: 50, D90: 75, D120: 90, D365: 100 },
-      "t_catl":      { D0: 0, D30: 20, D60: 40, D90: 60, D120: 80, D365: 90 },
-      "t_luxshare":  { D0: 0, D30: 18, D60: 38, D90: 58, D120: 78, D365: 95 },
-      "t_microport": { D0: 0, D30: 15, D60: 35, D90: 55, D120: 75, D365: 90 },
-      "t_panasonic": { D0: 0, D30: 10, D60: 25, D90: 40, D120: 60, D365: 80 }
-    };
-
-    // ROI 多窗口
-    const ROI_WINDOW = { D30: 1.5, D90: 8.0, D365: 25.0, POST_V6: 125.0 };
-
-    // ============================================
-    // 颜色编码 (红/黄/绿, 业务方 daily)
-    // ============================================
-    function colorBand(value, target) {
-      if (target <= 0) return "GREEN";
-      const ratio = value / target;
-      if (ratio >= 0.95) return "GREEN";
-      if (ratio >= 0.70) return "YELLOW";
-      return "RED";
-    }
-
-    // ============================================
-    // Cell 真算 (8 维 × 8 指标 × 5 黄金 = 320 cell)
-    // ============================================
-    function computeCell(dim, metric, tenantId) {
-      const tenant = GOLD_5.find(t => t.id === tenantId);
-      const v = tenant.current_v;
-      const prob = V_TO_PROB[v];
-      const g = V_TO_G[v];
-      const reach = GOLD_5_REACH_4CH[tenantId];
-      const conv = GOLD_5_CONV_4CH[tenantId];
-      const nps = GOLD_5_NPS[tenantId];
-      const cycle = GOLD_5_CYCLE[tenantId];
-
-      // 维 1: GROWTH (增长) — V 推进 + 决策周期平均
-      if (dim === "growth") {
-        if (metric === "v_conversion") return { value: prob * 100, unit: "pct", target: 100, window: v };
-        if (metric === "g_funnel") return { value: g, unit: "count", target: 6, window: v };
-        if (metric === "roi") {
-          const avg = (ROI_WINDOW.D30 + ROI_WINDOW.D90 + ROI_WINDOW.D365 + ROI_WINDOW.POST_V6) / 4;
-          return { value: avg, unit: "x", target: 125, window: "AVG" };
-        }
-        if (metric === "decision_cycle") {
-          const vals = Object.values(cycle);
-          return { value: vals.reduce((a, b) => a + b, 0) / vals.length, unit: "pct", target: 100, window: "AVG" };
-        }
-        if (metric === "contact_coverage") return { value: 100, unit: "pct", target: 100, window: "_" };
-        if (metric === "content_reach") {
-          const vals = Object.values(reach);
-          return { value: vals.reduce((a, b) => a + b, 0) / vals.length, unit: "pct", target: 100, window: "AVG_4CH" };
-        }
-        if (metric === "channel_conversion") {
-          const vals = Object.values(conv);
-          return { value: vals.reduce((a, b) => a + b, 0) / vals.length, unit: "pct", target: 100, window: "AVG_4CH" };
-        }
-        if (metric === "decision_nps") return { value: nps.PROMOTER, unit: "pct", target: 100, window: "PROMOTER" };
-      }
-      // 维 2: HEALTH (健康) — V 等级 + G 闸门 + N 推进
-      if (dim === "health") {
-        if (metric === "v_conversion") return { value: prob * 100, unit: "pct", target: 100, window: v };
-        if (metric === "g_funnel") return { value: g, unit: "count", target: 6, window: v };
-        if (metric === "roi") return { value: ROI_WINDOW.D90, unit: "x", target: 125, window: "D90" };
-        if (metric === "decision_cycle") return { value: cycle.D90, unit: "pct", target: 100, window: "D90" };
-        if (metric === "contact_coverage") return { value: 100, unit: "pct", target: 100, window: "_" };
-        if (metric === "content_reach") return { value: reach.EMAIL, unit: "pct", target: 100, window: "EMAIL" };
-        if (metric === "channel_conversion") return { value: conv.EMAIL, unit: "pct", target: 100, window: "EMAIL" };
-        if (metric === "decision_nps") return { value: nps.PROMOTER, unit: "pct", target: 100, window: "PROMOTER" };
-      }
-      // 维 3: RISK (风险) — R1-R5 风险等级 (越低越好, 取倒数)
-      if (dim === "risk") {
-        const riskScore = { "t_byd": 5, "t_catl": 12, "t_luxshare": 7, "t_microport": 10, "t_panasonic": 15 }[tenantId];
-        if (metric === "v_conversion") return { value: (1 - prob) * 100, unit: "pct", target: 100, window: "RISK_INV" };
-        if (metric === "g_funnel") return { value: 6 - g, unit: "count", target: 5, window: "REMAINING" };
-        if (metric === "roi") return { value: 25 - riskScore, unit: "score", target: 20, window: "R_INV" };
-        if (metric === "decision_cycle") return { value: 25 - riskScore, unit: "score", target: 20, window: "R_INV" };
-        if (metric === "contact_coverage") return { value: 100 - riskScore * 4, unit: "pct", target: 100, window: "RISK_INV" };
-        if (metric === "content_reach") return { value: 100 - riskScore * 4, unit: "pct", target: 100, window: "RISK_INV" };
-        if (metric === "channel_conversion") return { value: 100 - riskScore * 4, unit: "pct", target: 100, window: "RISK_INV" };
-        if (metric === "decision_nps") return { value: nps.DETRACTOR, unit: "pct", target: 10, window: "DETRACTOR" };
-      }
-      // 维 4: MONETIZATION (商业化) — V_CONVERSION / ARR / 续约
-      if (dim === "monetization") {
-        if (metric === "v_conversion") return { value: prob * 100, unit: "pct", target: 100, window: v };
-        if (metric === "g_funnel") return { value: g, unit: "count", target: 6, window: v };
-        if (metric === "roi") return { value: ROI_WINDOW.POST_V6, unit: "x", target: 125, window: "POST_V6" };
-        if (metric === "decision_cycle") return { value: cycle.D365, unit: "pct", target: 100, window: "D365" };
-        if (metric === "contact_coverage") return { value: 100, unit: "pct", target: 100, window: "_" };
-        if (metric === "content_reach") return { value: reach.LINKEDIN, unit: "pct", target: 100, window: "LINKEDIN" };
-        if (metric === "channel_conversion") return { value: conv.LINKEDIN, unit: "pct", target: 100, window: "LINKEDIN" };
-        if (metric === "decision_nps") return { value: nps.PROMOTER, unit: "pct", target: 100, window: "PROMOTER" };
-      }
-      // 维 5: CONTENT (内容) — 4 渠道触达
-      if (dim === "content") {
-        if (metric === "v_conversion") return { value: prob * 100, unit: "pct", target: 100, window: v };
-        if (metric === "g_funnel") return { value: g, unit: "count", target: 6, window: v };
-        if (metric === "roi") return { value: ROI_WINDOW.D90, unit: "x", target: 125, window: "D90" };
-        if (metric === "decision_cycle") return { value: cycle.D60, unit: "pct", target: 100, window: "D60" };
-        if (metric === "contact_coverage") return { value: 100, unit: "pct", target: 100, window: "_" };
-        if (metric === "content_reach") {
-          const vals = Object.values(reach);
-          return { value: vals.reduce((a, b) => a + b, 0) / vals.length, unit: "pct", target: 100, window: "AVG_4CH" };
-        }
-        if (metric === "channel_conversion") {
-          const vals = Object.values(conv);
-          return { value: vals.reduce((a, b) => a + b, 0) / vals.length, unit: "pct", target: 100, window: "AVG_4CH" };
-        }
-        if (metric === "decision_nps") return { value: nps.PROMOTER, unit: "pct", target: 100, window: "PROMOTER" };
-      }
-      // 维 6: CHANNEL (渠道) — 4 渠道转化
-      if (dim === "channel") {
-        if (metric === "v_conversion") return { value: prob * 100, unit: "pct", target: 100, window: v };
-        if (metric === "g_funnel") return { value: g, unit: "count", target: 6, window: v };
-        if (metric === "roi") return { value: ROI_WINDOW.D90, unit: "x", target: 125, window: "D90" };
-        if (metric === "decision_cycle") return { value: cycle.D60, unit: "pct", target: 100, window: "D60" };
-        if (metric === "contact_coverage") return { value: 100, unit: "pct", target: 100, window: "_" };
-        if (metric === "content_reach") {
-          const vals = Object.values(reach);
-          return { value: vals.reduce((a, b) => a + b, 0) / vals.length, unit: "pct", target: 100, window: "AVG_4CH" };
-        }
-        if (metric === "channel_conversion") {
-          const vals = Object.values(conv);
-          return { value: vals.reduce((a, b) => a + b, 0) / vals.length, unit: "pct", target: 100, window: "AVG_4CH" };
-        }
-        if (metric === "decision_nps") return { value: nps.PROMOTER, unit: "pct", target: 100, window: "PROMOTER" };
-      }
-      // 维 7: DECISION (决策) — 决策人覆盖/周期/NPS
-      if (dim === "decision") {
-        if (metric === "v_conversion") return { value: prob * 100, unit: "pct", target: 100, window: v };
-        if (metric === "g_funnel") return { value: g, unit: "count", target: 6, window: v };
-        if (metric === "roi") return { value: ROI_WINDOW.D365, unit: "x", target: 125, window: "D365" };
-        if (metric === "decision_cycle") return { value: cycle.D60, unit: "pct", target: 100, window: "D60" };
-        if (metric === "contact_coverage") return { value: 100, unit: "pct", target: 100, window: "_" };
-        if (metric === "content_reach") return { value: reach.WECHAT, unit: "pct", target: 100, window: "WECHAT" };
-        if (metric === "channel_conversion") return { value: conv.WECHAT, unit: "pct", target: 100, window: "WECHAT" };
-        if (metric === "decision_nps") return { value: nps.PROMOTER, unit: "pct", target: 100, window: "PROMOTER" };
-      }
-      // 维 8: EXPERIENCE (体验) — NPS / 满意度 / 转化
-      if (dim === "experience") {
-        if (metric === "v_conversion") return { value: prob * 100, unit: "pct", target: 100, window: v };
-        if (metric === "g_funnel") return { value: g, unit: "count", target: 6, window: v };
-        if (metric === "roi") return { value: ROI_WINDOW.D90, unit: "x", target: 125, window: "D90" };
-        if (metric === "decision_cycle") return { value: cycle.D30, unit: "pct", target: 100, window: "D30" };
-        if (metric === "contact_coverage") return { value: 100, unit: "pct", target: 100, window: "_" };
-        if (metric === "content_reach") {
-          const vals = Object.values(reach);
-          return { value: vals.reduce((a, b) => a + b, 0) / vals.length, unit: "pct", target: 100, window: "AVG_4CH" };
-        }
-        if (metric === "channel_conversion") {
-          const vals = Object.values(conv);
-          return { value: vals.reduce((a, b) => a + b, 0) / vals.length, unit: "pct", target: 100, window: "AVG_4CH" };
-        }
-        if (metric === "decision_nps") return { value: nps.PROMOTER, unit: "pct", target: 100, window: "PROMOTER" };
-      }
-      return { value: 0, unit: "pct", target: 100, window: "_" };
-    }
-
-    function formatValue(cell) {
-      if (cell.unit === "pct") return cell.value.toFixed(2) + "%";
-      if (cell.unit === "x") return cell.value.toFixed(2) + "×";
-      if (cell.unit === "count") return cell.value.toFixed(0);
-      if (cell.unit === "score") return cell.value.toFixed(1);
-      return cell.value.toFixed(2);
-    }
-
-    // ============================================
-    // 渲染 8 维 mini cards
-    // ============================================
-    function renderDimMiniGrid() {
-      const grid = document.getElementById("dim-mini-grid");
-      grid.innerHTML = "";
-      for (const dim of KPI_DIMENSIONS) {
-        let nR = 0, nY = 0, nG = 0;
-        for (const metric of KPI_METRICS) {
-          for (const tenant of GOLD_5) {
-            const cell = computeCell(dim, metric, tenant.id);
-            const band = colorBand(cell.value, cell.target);
-            if (band === "RED") nR++;
-            else if (band === "YELLOW") nY++;
-            else nG++;
-          }
-        }
-        const card = document.createElement("div");
-        card.className = "dim-mini-card";
-        card.dataset.dim = dim;
-        card.innerHTML = `
-          <div class="dim-mini-name">${dimLabels[dim]}</div>
-          <div class="dim-mini-stats">
-            <span class="dim-mini-stat-r">🔴 ${nR}</span>
-            <span class="dim-mini-stat-y">🟡 ${nY}</span>
-            <span class="dim-mini-stat-g">🟢 ${nG}</span>
-          </div>
-        `;
-        card.onclick = () => switchDim(dim);
-        grid.appendChild(card);
-      }
-    }
-
-    const dimLabels = {
-      "growth": "📈 增长", "health": "💚 健康", "risk": "⚠️ 风险", "monetization": "💵 商业化",
-      "content": "📝 内容", "channel": "📡 渠道", "decision": "🧠 决策", "experience": "⭐ 体验"
-    };
-
-    const metricLabels = {
-      "v_conversion": "V_CONVERSION", "g_funnel": "G1-G6 漏斗", "roi": "ROI 多窗口",
-      "decision_cycle": "决策周期", "contact_coverage": "联系人覆盖",
-      "content_reach": "内容触达", "channel_conversion": "渠道转化", "decision_nps": "决策人 NPS"
-    };
-
-    // ============================================
-    // 渲染热力图 (8 指标 × 5 黄金 = 40 cell)
-    // ============================================
-    function renderHeatmap(dim) {
-      const tbody = document.getElementById("heatmap-body");
-      tbody.innerHTML = "";
-      for (const metric of KPI_METRICS) {
-        const tr = document.createElement("tr");
-        // 第 1 列: 指标名
-        const th = document.createElement("td");
-        th.className = "cell-label";
-        th.innerHTML = `
-          <div style="font-weight:600;">${metricLabels[metric]}</div>
-          <div style="font-size:10px;color:var(--text-muted);">${METRIC_DESCRIPTIONS[metric].substring(0, 40)}...</div>
-        `;
-        tr.appendChild(th);
-        // 5 黄金 cell
-        for (const tenant of GOLD_5) {
-          const cell = computeCell(dim, metric, tenant.id);
-          const band = colorBand(cell.value, cell.target);
-          const td = document.createElement("td");
-          td.className = `cell-value cell-${band.toLowerCase()}`;
-          td.innerHTML = formatValue(cell);
-          // Tooltip
-          const tip = document.createElement("div");
-          tip.className = "tooltip";
-          tip.textContent = `${tenant.name_zh} ${tenant.ticker} · ${tenant.decision_maker} · window=${cell.window} · target=${cell.target}`;
-          td.appendChild(tip);
-          tr.appendChild(td);
-        }
-        tbody.appendChild(tr);
-      }
-    }
-
-    // ============================================
-    // 渲染 8 维说明
-    // ============================================
-    function renderDimInfo(dim) {
-      const info = document.getElementById("dim-info");
-      const labels = dimLabels;
-      info.innerHTML = `
-        <div class="dim-info-title">${labels[dim]}</div>
-        <div class="dim-info-desc">${DIM_DESCRIPTIONS[dim]}</div>
-      `;
-    }
-
-    // ============================================
-    // Tab 切换
-    // ============================================
-    let currentDim = "growth";
-
-    function switchDim(dim) {
-      currentDim = dim;
-      // Update tab styles
-      document.querySelectorAll(".dim-tab").forEach(t => t.classList.remove("active"));
-      const tab = document.querySelector(`.dim-tab[data-dim="${dim}"]`);
-      if (tab) tab.classList.add("active");
-      document.querySelectorAll(".dim-mini-card").forEach(c => c.classList.remove("active"));
-      const card = document.querySelector(`.dim-mini-card[data-dim="${dim}"]`);
-      if (card) card.classList.add("active");
-      // Re-render
-      renderDimInfo(dim);
-      renderHeatmap(dim);
-    }
-
-    document.querySelectorAll(".dim-tab").forEach(tab => {
-      tab.onclick = () => switchDim(tab.dataset.dim);
-    });
-
-    // 视图切换 (Daily / 周 / 月 / 年)
-    document.querySelectorAll(".view-tab").forEach(tab => {
-      tab.onclick = () => {
-        document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
-        tab.classList.add("active");
-        // 业务方 daily/week/month/year 共用 dashboard (320 cell 不变)
-        // 这里只切换时间维度的提示
-        const viewLabel = { daily: "业务方 daily", weekly: "业务方 周", monthly: "业务方 月", yearly: "业务方 年" }[tab.dataset.view];
-        document.querySelector(".header-title").textContent = `KPI Dashboard v3 — ${viewLabel} 拍板 1 页 1 分钟看完`;
-      };
-    });
-
-    // Init
-    renderDimMiniGrid();
-    switchDim("growth");
-  </script>
+    <div class="footer">
+      KPI v3 (320 cell) · 严格按 docs/10 §2 主色板 + V_CONVERSION 字典真实数据
+    </div>
+  </main>
+</div>
 </body>
 </html>
