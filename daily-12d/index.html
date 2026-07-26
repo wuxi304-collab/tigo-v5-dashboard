@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TIGO V5 业务方 daily 12 维度 16800 cell 看板 2.0 — 5 黄金 + 12 集成商 + 30 宝武 + 拍板后 D1 真接预演</title>
+  <meta name="description" content="同钧工业增长操作系统 · 业务方 daily 12 维度 16920 cell 自动生成看板 2.0 · 5 黄金 (BYD/CATL/Luxshare/Microport/Panasonic) + 12 集成商 (5 类型) + 30 宝武 (5 黄金 × 6 员工) · 12 维度 (增长/健康/风险/商业化/内容/渠道/决策/体验 + 运营/财务/法务/创新 4 新增维度) · 30 天 daily · 拍板后 D1 真接预演 2.0 (D1-D60 4 阶段 8 周, 60 天 × 47 tenant × 12 维度 = 33840 cell) · 拍板截止 2026-08-15 18:00 Asia/Shanghai · Phase 13 准备" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23171A1F'/%3E%3Ctext x='50' y='65' text-anchor='middle' font-family='Arial' font-size='44' font-weight='bold' fill='%232563EB'%3ED%3C/text%3E%3C/svg%3E" />
+  <style>
+    /* ===========================================================
+     * TIGO V5 业务方 daily 12 维度 16800 cell 看板 2.0
+     * 设计原则: 工业理性 + Salesforce 风格 (跟 board-ppt-1page / kpi-dashboard-v3 / daily-auto 一致)
+     * 配色 (docs/10_UX_AND_DESIGN_SYSTEM.md §2):
+     *   墨炭灰 #171A1F / 钢青灰 #5E6672 / 不锈钢银 #C7CDD4
+     *   工业蓝 #2563EB / 风险红 #B42318 / 提示琥珀 #B7791F / 通过绿 #1F7A4D
+     *   淡色 Salesforce 风格: 背景 #F4F6F9, 卡片 #FFFFFF, 边框 #D8DDE6
+     *   业务方 daily 看板专用色: 决策人紫 #6B21A8
+     *   batch 30 升级 2.0 专用色: 运营橙 #C2410C / 财务绿 #0F766E / 法务红 #BE185D / 创新靛 #4338CA
+     * =========================================================== */
+
+    :root {
+      --bg-base: #F4F6F9;
+      --bg-card: #FFFFFF;
+      --bg-card-hover: #FAFBFC;
+      --bg-elevated: #F0F2F5;
+      --bg-side: #16325C;
+      --bg-daily: #1E40AF;        /* daily 看板专用深工业蓝 */
+      --bg-daily-2-0: #312E81;    /* batch 30 升级 2.0 专用深靛 */
+      --border: #D8DDE6;
+      --border-light: #E5E9F0;
+      --border-dark: #A8B0BD;
+      --text-primary: #16325C;
+      --text-secondary: #5E6672;
+      --text-muted: #8A8F99;
+      --text-on-dark: #FFFFFF;
+      --text-on-dark-muted: #B5C0D0;
+      --accent: #2563EB;
+      --accent-hover: #1E4FD9;
+      --accent-dim: #4F8AF0;
+      --graphite: #171A1F;
+      --steel: #5E6672;
+      --silver: #C7CDD4;
+      --success: #1F7A4D;
+      --success-bg: #E3F0E8;
+      --warning: #B7791F;
+      --warning-bg: #FCF3DC;
+      --danger: #B42318;
+      --danger-bg: #FCE4E1;
+      --info: #2563EB;
+      --info-bg: #E6EFFE;
+      --purple: #6B21A8;          /* 决策人紫 (daily 看板专用) */
+      --purple-bg: #F3E8FF;
+      --teal: #0F766E;             /* 财务绿 (batch 30 新增维度) */
+      --teal-bg: #CCFBF1;
+      --orange: #C2410C;           /* 运营橙 (batch 30 新增维度) */
+      --orange-bg: #FFEDD5;
+      --pink: #BE185D;             /* 法务红 (batch 30 新增维度) */
+      --pink-bg: #FCE7F3;
+      --indigo: #4338CA;           /* 创新靛 (batch 30 新增维度) */
+      --indigo-bg: #E0E7FF;
+      --shadow-sm: 0 1px 2px rgba(22, 50, 92, 0.05);
+      --shadow-md: 0 4px 12px rgba(22, 50, 92, 0.08);
+      --shadow-lg: 0 8px 24px rgba(22, 50, 92, 0.10);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+      --font-mono: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: var(--bg-base);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ===========================================================
+     * 顶部 KPI bar
+     * =========================================================== */
+    .kpi-bar {
+      background: linear-gradient(135deg, var(--bg-daily-2-0) 0%, var(--bg-daily) 100%);
+      color: var(--text-on-dark);
+      padding: 24px 32px;
+      box-shadow: var(--shadow-md);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .kpi-bar-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+    .kpi-bar .brand {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .kpi-bar .brand-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .kpi-bar .brand-subtitle {
+      font-size: 12px;
+      color: var(--text-on-dark-muted);
+      font-weight: 400;
+    }
+    .kpi-bar .batch-30-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      background: linear-gradient(135deg, #C2410C 0%, #BE185D 100%);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      border-radius: 4px;
+      margin-left: 8px;
+      letter-spacing: 0.5px;
+    }
+    .kpi-stats {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      margin-left: auto;
+    }
+    .kpi-stat {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      min-width: 110px;
+    }
+    .kpi-stat .kpi-label {
+      font-size: 11px;
+      color: var(--text-on-dark-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 500;
+    }
+    .kpi-stat .kpi-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-on-dark);
+      font-family: var(--font-mono);
+    }
+    .kpi-stat .kpi-value-large {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-on-dark);
+      font-family: var(--font-mono);
+    }
+    .kpi-stat .kpi-sub {
+      font-size: 11px;
+      color: var(--text-on-dark-muted);
+      margin-top: 2px;
+    }
+
+    /* ===========================================================
+     * 主内容区
+     * =========================================================== */
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 24px 32px 64px;
+    }
+
+    /* 章节 */
+    .section {
+      margin-bottom: 32px;
+    }
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border-light);
+    }
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-title-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .section-subtitle {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* 卡片 grid */
+    .grid {
+      display: grid;
+      gap: 16px;
+    }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+    .grid-5 { grid-template-columns: repeat(5, 1fr); }
+    .grid-12 { grid-template-columns: repeat(12, 1fr); }
+
+    @media (max-width: 1024px) {
+      .grid-3, .grid-4, .grid-5 { grid-template-columns: repeat(2, 1fr); }
+      .grid-12 { grid-template-columns: repeat(4, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .grid-3, .grid-4, .grid-5 { grid-template-columns: 1fr; }
+      .grid-12 { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    /* 卡片 */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .card:hover {
+      box-shadow: var(--shadow-md);
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .card-body { font-size: 13px; }
+    .card-value-large {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+    }
+    .card-value-medium {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+    }
+    .card-value-unit {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-left: 4px;
+    }
+
+    /* Badge */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+    .badge-blue { background: var(--info-bg); color: var(--info); }
+    .badge-green { background: var(--success-bg); color: var(--success); }
+    .badge-amber { background: var(--warning-bg); color: var(--warning); }
+    .badge-red { background: var(--danger-bg); color: var(--danger); }
+    .badge-purple { background: var(--purple-bg); color: var(--purple); }
+    .badge-orange { background: var(--orange-bg); color: var(--orange); }
+    .badge-teal { background: var(--teal-bg); color: var(--teal); }
+    .badge-pink { background: var(--pink-bg); color: var(--pink); }
+    .badge-indigo { background: var(--indigo-bg); color: var(--indigo); }
+    .badge-gray { background: var(--bg-elevated); color: var(--text-secondary); }
+
+    /* ===========================================================
+     * 12 维度 16920 cell 总览
+     * =========================================================== */
+    .total-card {
+      background: linear-gradient(135deg, #312E81 0%, #1E40AF 100%);
+      color: var(--text-on-dark);
+      border: none;
+    }
+    .total-card .card-title { color: var(--text-on-dark); }
+    .total-card .card-subtitle { color: var(--text-on-dark-muted); }
+    .total-card .card-value-large { color: var(--text-on-dark); font-size: 48px; }
+    .total-card .card-value-unit { color: var(--text-on-dark-muted); }
+
+    /* 12 维度 cell 卡片 (4 新增维度高亮) */
+    .dimension-card {
+      position: relative;
+      overflow: hidden;
+    }
+    .dimension-card.is-new-batch-30 {
+      border-color: var(--orange);
+      border-width: 2px;
+    }
+    .dimension-card.is-new-batch-30::before {
+      content: "BATCH 30 新增";
+      position: absolute;
+      top: 8px;
+      right: -28px;
+      background: linear-gradient(135deg, var(--orange) 0%, var(--pink) 100%);
+      color: white;
+      font-size: 9px;
+      font-weight: 700;
+      padding: 2px 32px;
+      transform: rotate(45deg);
+      letter-spacing: 0.3px;
+    }
+    .dimension-color-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+    }
+
+    /* ===========================================================
+     * 5 黄金 / 12 集成商 / 30 宝武 卡片
+     * =========================================================== */
+    .tenant-grid {
+      display: grid;
+      gap: 12px;
+    }
+    .tenant-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      transition: all 0.2s;
+    }
+    .tenant-card:hover {
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+    }
+    .tenant-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .tenant-card-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .tenant-card-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .tenant-card-stats {
+      display: flex;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    /* ===========================================================
+     * 表格
+     * =========================================================== */
+    .table-wrap {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .table th, .table td {
+      padding: 8px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .table th {
+      background: var(--bg-elevated);
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      font-size: 10px;
+      letter-spacing: 0.5px;
+    }
+    .table tr:hover { background: var(--bg-card-hover); }
+    .table td.num { font-family: var(--font-mono); text-align: right; }
+    .table td.ticker { font-family: var(--font-mono); font-weight: 600; }
+
+    /* ===========================================================
+     * 时间线 (拍板后 D1 真接预演 2.0)
+     * =========================================================== */
+    .timeline {
+      position: relative;
+      padding-left: 24px;
+    }
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 8px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--border);
+    }
+    .timeline-item {
+      position: relative;
+      padding-bottom: 20px;
+    }
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      left: -20px;
+      top: 6px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 2px solid var(--bg-card);
+      box-shadow: 0 0 0 2px var(--accent);
+    }
+    .timeline-item.d1::before {
+      background: linear-gradient(135deg, var(--orange) 0%, var(--pink) 100%);
+      box-shadow: 0 0 0 2px var(--orange);
+    }
+    .timeline-phase {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .timeline-phase-id {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .timeline-phase-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .timeline-phase-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .timeline-phase-focus {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+    .timeline-phase-kpi {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      font-family: var(--font-mono);
+    }
+
+    /* ===========================================================
+     * D1 启动 (batch 30 升级 2.0)
+     * =========================================================== */
+    .d1-launch-card {
+      background: linear-gradient(135deg, #FFF7ED 0%, #FCE7F3 100%);
+      border: 2px solid var(--orange);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+    }
+    .d1-launch-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--orange);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .d1-launch-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .d1-launch-item {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      text-align: center;
+    }
+    .d1-launch-item .value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--orange);
+      font-family: var(--font-mono);
+    }
+    .d1-launch-item .label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .d1-features {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-light);
+    }
+    .d1-features-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+    .d1-features-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    /* ===========================================================
+     * 30 天 daily 趋势 (日历视图)
+     * =========================================================== */
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 4px;
+    }
+    .calendar-day {
+      aspect-ratio: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 4px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      font-size: 10px;
+      transition: all 0.2s;
+    }
+    .calendar-day:hover {
+      border-color: var(--accent);
+      box-shadow: var(--shadow-sm);
+    }
+    .calendar-day.special {
+      background: linear-gradient(135deg, var(--warning-bg) 0%, var(--orange-bg) 100%);
+      border-color: var(--warning);
+    }
+    .calendar-day.d-plus-1 {
+      background: linear-gradient(135deg, var(--success-bg) 0%, var(--teal-bg) 100%);
+      border-color: var(--success);
+    }
+    .calendar-day .day-label {
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .calendar-day .day-cells {
+      font-family: var(--font-mono);
+      color: var(--accent);
+      font-size: 9px;
+    }
+    @media (max-width: 768px) {
+      .calendar { grid-template-columns: repeat(5, 1fr); }
+    }
+
+    /* ===========================================================
+     * 凭证脱敏 + 决策人 placeholder
+     * =========================================================== */
+    .redact-notice {
+      background: var(--purple-bg);
+      border: 1px solid var(--purple);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      margin-top: 16px;
+      font-size: 11px;
+      color: var(--purple);
+    }
+    .redact-notice-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .redact-notice-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 4px;
+    }
+    .redact-notice-tag {
+      display: inline-block;
+      padding: 2px 6px;
+      background: white;
+      border: 1px solid var(--purple);
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+    }
+    .placeholder-text {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--purple);
+      background: var(--purple-bg);
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    /* ===========================================================
+     * KPI 单元格
+     * =========================================================== */
+    .cell-bar {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .cell-bar-fill {
+      height: 6px;
+      background: var(--accent);
+      border-radius: 3px;
+      min-width: 2px;
+    }
+    .cell-bar-track {
+      flex: 1;
+      height: 6px;
+      background: var(--bg-elevated);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 48px;
+      padding: 16px 32px;
+      background: var(--graphite);
+      color: var(--text-on-dark-muted);
+      font-size: 11px;
+      text-align: center;
+    }
+    .footer a { color: var(--accent-dim); text-decoration: none; }
+
+    /* ===========================================================
+     * Animation
+     * =========================================================== */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .section { animation: fadeIn 0.4s ease-out; }
+
+    /* Misc */
+    .row { display: flex; gap: 12px; align-items: center; }
+    .spacer { flex: 1; }
+    .text-muted { color: var(--text-muted); }
+    .text-mono { font-family: var(--font-mono); }
+    .text-bold { font-weight: 700; }
+  </style>
+</head>
+<body>
+  <!-- ===========================================================
+       顶部 KPI Bar
+       =========================================================== -->
+  <div class="kpi-bar">
+    <div class="kpi-bar-inner">
+      <div class="brand">
+        <div class="brand-title">
+          TIGO V5 业务方 daily 12 维度看板 2.0
+          <span class="batch-30-badge">BATCH 30</span>
+        </div>
+        <div class="brand-subtitle">5 黄金 + 12 集成商 + 30 宝武 × 30 天 × 12 维度 (4 新增) = 16920 cell · 拍板后 D1 真接预演</div>
+      </div>
+      <div class="kpi-stats">
+        <div class="kpi-stat">
+          <div class="kpi-label">总 cell</div>
+          <div class="kpi-value-large">16,920</div>
+          <div class="kpi-sub">12 维度 2.0</div>
+        </div>
+        <div class="kpi-stat">
+          <div class="kpi-label">5 黄金</div>
+          <div class="kpi-value">1,800</div>
+          <div class="kpi-sub">360 cell × 5</div>
+        </div>
+        <div class="kpi-stat">
+          <div class="kpi-label">30 宝武</div>
+          <div class="kpi-value">10,800</div>
+          <div class="kpi-sub">360 cell × 30</div>
+        </div>
+        <div class="kpi-stat">
+          <div class="kpi-label">12 集成商</div>
+          <div class="kpi-value">4,320</div>
+          <div class="kpi-sub">360 cell × 12</div>
+        </div>
+        <div class="kpi-stat">
+          <div class="kpi-label">D1 真接预演</div>
+          <div class="kpi-value">33,840</div>
+          <div class="kpi-sub">60 天 × 47 × 12</div>
+        </div>
+        <div class="kpi-stat">
+          <div class="kpi-label">拍板截止</div>
+          <div class="kpi-value" style="font-size: 14px;">2026-08-15 18:00</div>
+          <div class="kpi-sub">Asia/Shanghai</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <!-- ===========================================================
+         章节 1: 12 维度 16920 cell 总览
+         =========================================================== -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="section-title-icon" style="background: var(--bg-daily-2-0);">12D</div>
+          12 维度 16920 cell 总览 (升级 2.0)
+        </div>
+        <div class="section-subtitle">前 8 维度 (batch 29) + 4 新增维度 (batch 30 升级)</div>
+      </div>
+
+      <!-- 总入口卡 -->
+      <div class="card total-card" style="margin-bottom: 16px;">
+        <div class="card-header">
+          <div>
+            <div class="card-title">12 维度 16920 cell 业务方 daily 看板 2.0 总入口</div>
+            <div class="card-subtitle">5 黄金 + 30 宝武 + 12 集成商 × 30 天 × 12 维度 = 16920 cell (append-only, 拍板后真接)</div>
+          </div>
+          <span class="badge badge-orange">BATCH 30 升级 2.0</span>
+        </div>
+        <div class="card-body">
+          <span class="card-value-large">16,920</span>
+          <span class="card-value-unit">cell · 47 tenant · 30 天 · 12 维度</span>
+        </div>
+      </div>
+
+      <!-- 12 维度 cell 分布 -->
+      <div class="grid grid-4">
+        <div class="card dimension-card">
+          <div class="dimension-color-bar" style="background: var(--accent);"></div>
+          <div class="card-header">
+            <div>
+              <div class="card-title">5 黄金</div>
+              <div class="card-subtitle">5 × 30 × 12 维度</div>
+            </div>
+            <span class="badge badge-blue">1200→1800</span>
+          </div>
+          <div class="card-body">
+            <div class="card-value-medium">1,800</div>
+            <div class="card-value-unit">cell / 30 天</div>
+          </div>
+        </div>
+        <div class="card dimension-card">
+          <div class="dimension-color-bar" style="background: var(--purple);"></div>
+          <div class="card-header">
+            <div>
+              <div class="card-title">30 宝武</div>
+              <div class="card-subtitle">30 × 30 × 12 维度</div>
+            </div>
+            <span class="badge badge-blue">7200→10800</span>
+          </div>
+          <div class="card-body">
+            <div class="card-value-medium">10,800</div>
+            <div class="card-value-unit">cell / 30 天</div>
+          </div>
+        </div>
+        <div class="card dimension-card">
+          <div class="dimension-color-bar" style="background: var(--teal);"></div>
+          <div class="card-header">
+            <div>
+              <div class="card-title">12 集成商</div>
+              <div class="card-subtitle">12 × 30 × 12 维度</div>
+            </div>
+            <span class="badge badge-blue">2880→4320</span>
+          </div>
+          <div class="card-body">
+            <div class="card-value-medium">4,320</div>
+            <div class="card-value-unit">cell / 30 天</div>
+          </div>
+        </div>
+        <div class="card total-card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">12 维度 2.0</div>
+              <div class="card-subtitle">前 8 + 4 新增</div>
+            </div>
+            <span class="badge badge-orange">升级</span>
+          </div>
+          <div class="card-body">
+            <div class="card-value-medium" style="color: white;">12</div>
+            <div class="card-value-unit" style="color: var(--text-on-dark-muted);">维度 / 总入口</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===========================================================
+         章节 2: 12 维度清单 (前 8 + 4 新增)
+         =========================================================== -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="section-title-icon" style="background: var(--accent);">📊</div>
+          12 维度清单 (业务方 daily 看板 2.0)
+        </div>
+        <div class="section-subtitle">前 8 维度 (batch 29 已就位) + 4 新增维度 (batch 30 升级 2.0)</div>
+      </div>
+
+      <div class="grid grid-4">
+        <div class="card dimension-card">
+          <div class="dimension-color-bar" style="background: var(--accent);"></div>
+          <div class="card-header">
+            <div>
+              <div class="card-title">增长 (Growth)</div>
+              <div class="card-subtitle">1. growth</div>
+            </div>
+            <span class="badge badge-blue">G2 增量/日</span>
+          </div>
+          <div class="card-body">
+            <div class="card-value-medium">1,410</div>
+            <div class="card-value-unit">cell / 47 tenant × 30 天</div>
+          </div>
+        </div>
+        <div class="card dimension-card">
+          <div class="dimension-color-bar" style="background: var(--success);"></div>
+          <div class="card-header">
+            <div>
+              <div class="card-title">健康 (Health)</div>
+              <div class="card-subtitle">2. health</div>
+            </div>
+            <span class="badge badge-green">G3 验证/日</span>
+          </div>
+          <div class="card-body">
+            <div class="card-value-medium">1,410</div>
+            <div class="card-value-unit">cell / 47 tenant × 30 天</div>
+          </div>
+        </div>
+        <div class="card dimension-card">
+          <div class="dimension-color-bar" style="background: var(--danger);"></div>
+          <div class="card-header">
+            <div>
+              <div class="card-title">风险 (Risk)</div>
+              <div class="card-subtitle">3. risk</div>
+            </div>
+            <span class="badge badge-red">G2-G6 评级/日</span>
+          </div>
+          <div class="card-body">
+            <div class="card-value-medium">1,410</div>
+            <div class="card-value-unit">cell / 47 tenant × 30 天</div>
+          </div>
+        </div>
+        <div class="card dimension-card">
+          <div class="dimension-color-bar" style="background: var(--warning);"></div>
+          <div class="card-header">
+            <div>
+              <div class="card-title">商业化 (Monetization)</div>
+              <div class="card-subtitle">4. monetization</div>
+            </div>
+            <span class="badge badge-amber">试单+复购/日</span>
+          </div>
+          <div class="card-body">
+            <div class="card-value-medium">1,410</div>
+            <div class="card-value-unit">cell / 47 tenant × 30 天</div>
+          </div>
+        </div>
+
+        <div class="card dimension-card">
+          <div class="dimension-color-bar" style="background: var(--info);"></div>
+          <div class="card-header">
+            <div>
+              <div class="card-title">内容 (Content)</div>
+              <div class="card-subtitle">5. content</div>
+            </div>
+            <span class="badge badge-blue">Signal/日</span>
+          </div>
+          <div class="card-body">
+            <div class="card-value-medium">1,410</div>
+            <div class="card-value-unit">cell / 47 tenant × 30 天</div>
+          </div>
+        </div>
+        <div class="card dimension-card">
+          <div class="dimension-color-bar" style="background: var(--info);"></div>
+          <div class="card-header">
+            <div>
+              <div class="card-title">渠道 (Channel)</div>
+              <div class="card-subtitle">6. channel</div>
+            </div>
+            <span class="badge badge-blue">供应商候选/日</span>
+          </div>
+          <div class="card-body">
+            <div class="card-value-medium">1,410</div>
+            <div class="card-value-unit">cell / 47 tenant × 30 天</div>
+          </div>
+        </div>
+        <div class="card dimension-card">
+          <div class="dimension-color-bar" style="background: var(--accent);"></div>
+          <div class="card-header">
+            <div>
+              <div class="card-title">决策 (Decision)</div>
+              <div class="card-subtitle">7. decision</div>
+            </div>
+            <span class="badge badge-blue">G5 推进/日</span>
+          </div>
+          <div class="card-body">
+            <div class="card-value-medium">1,410</div>
+            <div class="card-value-unit">cell / 47 tenant × 30 天</div>
+          </div>
+        </div>
+        <div class="card dimension-card">
+          <div class="dimension-color-bar" style="background: var(--success);"></div>
+          <div class="card-header">
+            <div>
+              <div class="card-title">体验 (Experience)</div>
+              <div class="card-subtitle">8. experience</div>
+            </div>
+            <span class="badge badge-green">60天进度/日</span>
+          </div>
+          <div class="card-body">
+            <div class="card-value-medium">1,410</div>
+            <div class="card-value-unit">cell / 47 tenant × 30 天</div>
+          </div>
+        </div>
+
+        <!-- 4 新增维度 (batch 30 升级 2.0) -->
+        <div class="card dimension-card is-new-batch-30">
+          <div class="dimension-color-bar" style="background: var(--orange);"></div>
+          <div class="card-header">
+            <div>
+              <div class="card-title">运营 (Operations)</div>
+              <div class="card-subtitle">9. operations (BATCH 30 新增)</div>
+            </div>
+            <span class="badge badge-orange">运营指数/日</span>
+          </div>
+          <div class="card-body">
+            <div class="card-value-medium">1,410</div>
+            <div class="card-value-unit">5 黄金 daily 运营指标</div>
+          </div>
+        </div>
+        <div class="card dimension-card is-new-batch-30">
+          <div class="dimension-color-bar" style="background: var(--teal);"></div>
+          <div class="card-header">
+            <div>
+              <div class="card-title">财务 (Finance)</div>
+              <div class="card-subtitle">10. finance (BATCH 30 新增)</div>
+            </div>
+            <span class="badge badge-teal">财务指数/日</span>
+          </div>
+          <div class="card-body">
+            <div class="card-value-medium">1,410</div>
+            <div class="card-value-unit">5 黄金公开年报 daily 财务</div>
+          </div>
+        </div>
+        <div class="card dimension-card is-new-batch-30">
+          <div class="dimension-color-bar" style="background: var(--pink);"></div>
+          <div class="card-header">
+            <div>
+              <div class="card-title">法务 (Legal)</div>
+              <div class="card-subtitle">11. legal (BATCH 30 新增)</div>
+            </div>
+            <span class="badge badge-pink">法务指数/日</span>
+          </div>
+          <div class="card-body">
+            <div class="card-value-medium">1,410</div>
+            <div class="card-value-unit">5 黄金公开法律公告 daily 法务</div>
+          </div>
+        </div>
+        <div class="card dimension-card is-new-batch-30">
+          <div class="dimension-color-bar" style="background: var(--indigo);"></div>
+          <div class="card-header">
+            <div>
+              <div class="card-title">创新 (Innovation)</div>
+              <div class="card-subtitle">12. innovation (BATCH 30 新增)</div>
+            </div>
+            <span class="badge badge-indigo">创新指数/日</span>
+          </div>
+          <div class="card-body">
+            <div class="card-value-medium">1,410</div>
+            <div class="card-value-unit">5 黄金公开专利 + 公开技术</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===========================================================
+         章节 3: 5 黄金 (真实上市公司)
+         =========================================================== -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="section-title-icon" style="background: var(--accent);">5G</div>
+          5 黄金 (真实上市公司, AGENTS §3 公开数据)
+        </div>
+        <div class="section-subtitle">BYD / CATL / Luxshare / Microport / Panasonic</div>
+      </div>
+
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Tenant</th>
+              <th>公司名</th>
+              <th>Ticker</th>
+              <th>Exchange</th>
+              <th>Vertical</th>
+              <th>Cell (12 维度)</th>
+              <th>决策人</th>
+              <th>公开来源</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="text-mono">v01_byd</td>
+              <td>比亚迪股份有限公司</td>
+              <td class="ticker">002594.SZ</td>
+              <td><span class="badge badge-blue">SZSE</span></td>
+              <td>V01 移动电子元件</td>
+              <td class="num">360</td>
+              <td><span class="placeholder-text">{{BYD 采购总监}}</span></td>
+              <td class="text-mono text-muted">byd.com / cninfo</td>
+            </tr>
+            <tr>
+              <td class="text-mono">v02_catl</td>
+              <td>宁德时代新能源科技</td>
+              <td class="ticker">300750.SZ</td>
+              <td><span class="badge badge-blue">SZSE</span></td>
+              <td>V02 电池外壳</td>
+              <td class="num">360</td>
+              <td><span class="placeholder-text">{{CATL SQE 经理}}</span></td>
+              <td class="text-mono text-muted">catl.com / cninfo</td>
+            </tr>
+            <tr>
+              <td class="text-mono">v03_luxshare</td>
+              <td>立讯精密工业</td>
+              <td class="ticker">002475.SZ</td>
+              <td><span class="badge badge-blue">SZSE</span></td>
+              <td>V03 USB 接口与连接器</td>
+              <td class="num">360</td>
+              <td><span class="placeholder-text">{{Luxshare 采购总监}}</span></td>
+              <td class="text-mono text-muted">luxshare-ict.com / cninfo</td>
+            </tr>
+            <tr>
+              <td class="text-mono">v04_microport</td>
+              <td>上海微创医疗器械</td>
+              <td class="ticker">00853.HK</td>
+              <td><span class="badge badge-amber">HKEX</span></td>
+              <td>V04 手术 316 医疗管材</td>
+              <td class="num">360</td>
+              <td><span class="placeholder-text">{{Microport 采购总监}}</span></td>
+              <td class="text-mono text-muted">microport.com.cn / hkexnews</td>
+            </tr>
+            <tr>
+              <td class="text-mono">v05_panasonic</td>
+              <td>松下电器(中国)</td>
+              <td class="ticker">6752.T</td>
+              <td><span class="badge badge-purple">TSE</span></td>
+              <td>V05 日韩进出口订单</td>
+              <td class="num">360</td>
+              <td><span class="placeholder-text">{{Panasonic 采购总监}}</span></td>
+              <td class="text-mono text-muted">panasonic.com / TDnet</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="row" style="margin-top: 12px;">
+        <div class="badge badge-blue">5 黄金</div>
+        <div class="text-muted">5 tenant</div>
+        <div class="spacer"></div>
+        <div class="text-muted">每 tenant 360 cell (30 天 × 12 维度, 升级 2.0)</div>
+        <div class="text-mono text-bold" style="color: var(--accent);">总计 1,800 cell</div>
+      </div>
+    </div>
+
+    <!-- ===========================================================
+         章节 4: 12 集成商 + 30 宝武
+         =========================================================== -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="section-title-icon" style="background: var(--purple);">B+I</div>
+          12 集成商 + 30 宝武
+        </div>
+        <div class="section-subtitle">12 集成商 5 类型 + 30 宝武 = 5 黄金 × 6 员工</div>
+      </div>
+
+      <div class="grid grid-2">
+        <!-- 12 集成商 -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">12 集成商 (5 类型)</div>
+              <div class="card-subtitle">ISV×3 + SI×3 + CHANNEL×3 + TECH×2 + OEM×1</div>
+            </div>
+            <span class="badge badge-purple">4,320 cell</span>
+          </div>
+          <div class="card-body">
+            <div class="grid grid-2" style="gap: 6px;">
+              <div class="row" style="font-size: 11px;">
+                <span class="badge badge-blue">ISV</span>
+                <span>用友 / 金蝶 / SAP 中国</span>
+              </div>
+              <div class="row" style="font-size: 11px;">
+                <span class="badge badge-blue">SI</span>
+                <span>东软 / 中软 / 神州数码</span>
+              </div>
+              <div class="row" style="font-size: 11px;">
+                <span class="badge badge-amber">CHANNEL</span>
+                <span>佳杰 / 英迈 / 联强</span>
+              </div>
+              <div class="row" style="font-size: 11px;">
+                <span class="badge badge-teal">TECH</span>
+                <span>华为云 / 阿里云</span>
+              </div>
+              <div class="row" style="font-size: 11px;">
+                <span class="badge badge-gray">OEM</span>
+                <span>富士康</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 30 宝武 -->
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">30 宝武 (5 黄金 × 6 员工)</div>
+              <div class="card-subtitle">拍板后 D8-D35 30 宝武员工 onboarding</div>
+            </div>
+            <span class="badge badge-blue">10,800 cell</span>
+          </div>
+          <div class="card-body">
+            <div class="grid grid-5" style="gap: 6px;">
+              <div class="text-mono" style="font-size: 10px;">
+                <div class="text-bold">v01_byd</div>
+                <div class="text-muted">× 6 员工</div>
+              </div>
+              <div class="text-mono" style="font-size: 10px;">
+                <div class="text-bold">v02_catl</div>
+                <div class="text-muted">× 6 员工</div>
+              </div>
+              <div class="text-mono" style="font-size: 10px;">
+                <div class="text-bold">v03_luxshare</div>
+                <div class="text-muted">× 6 员工</div>
+              </div>
+              <div class="text-mono" style="font-size: 10px;">
+                <div class="text-bold">v04_microport</div>
+                <div class="text-muted">× 6 员工</div>
+              </div>
+              <div class="text-mono" style="font-size: 10px;">
+                <div class="text-bold">v05_panasonic</div>
+                <div class="text-muted">× 6 员工</div>
+              </div>
+            </div>
+            <div style="margin-top: 12px; font-size: 11px; color: var(--text-muted);">
+              30 宝武 = 5 黄金 × 6 员工 × 30 天 × 12 维度 = 10,800 cell (升级 2.0)
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===========================================================
+         章节 5: 拍板后 D1 真接预演 2.0
+         =========================================================== -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="section-title-icon" style="background: var(--orange);">D1</div>
+          拍板后 D1 真接预演 2.0
+        </div>
+        <div class="section-subtitle">D1-D60 4 阶段 8 周 · 60 天 × 47 tenant × 12 维度 = 33,840 cell</div>
+      </div>
+
+      <!-- D1 启动卡 (batch 30 升级 2.0) -->
+      <div class="d1-launch-card" style="margin-bottom: 16px;">
+        <div class="d1-launch-title">
+          🚀 D1 启动 (Phase 13 真接预演, batch 30 升级 2.0)
+        </div>
+        <div class="d1-launch-grid">
+          <div class="d1-launch-item">
+            <div class="value">5</div>
+            <div class="label">5 黄金 Realm</div>
+          </div>
+          <div class="d1-launch-item">
+            <div class="value">12</div>
+            <div class="label">12 集成商 SAML/OIDC</div>
+          </div>
+          <div class="d1-launch-item">
+            <div class="value">30</div>
+            <div class="label">30 宝武 Realm</div>
+          </div>
+          <div class="d1-launch-item">
+            <div class="value">47</div>
+            <div class="label">DID 同步</div>
+          </div>
+          <div class="d1-launch-item">
+            <div class="value">235</div>
+            <div class="label">VC 自动颁发</div>
+          </div>
+          <div class="d1-launch-item">
+            <div class="value">12</div>
+            <div class="label">ACK 资源</div>
+          </div>
+          <div class="d1-launch-item">
+            <div class="value">47</div>
+            <div class="label">Namespace</div>
+          </div>
+          <div class="d1-launch-item">
+            <div class="value">5</div>
+            <div class="label">5 黄金 daily 真接</div>
+          </div>
+        </div>
+        <div class="d1-features">
+          <div class="d1-features-title">5 黄金业务方 daily 真接 features:</div>
+          <div class="d1-features-list">
+            <span class="badge badge-blue">G2-G6 评级</span>
+            <span class="badge badge-teal">V_CONVERSION 字典</span>
+            <span class="badge badge-purple">ROI 多窗口</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 60 天 4 阶段时间线 -->
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">60 天路线图 2.0 · 4 阶段 8 周</div>
+            <div class="card-subtitle">D1-D7 OIDC + D8-D35 onboarding + D36-D60 V6 + D60 复盘</div>
+          </div>
+          <span class="badge badge-orange">D1-D60</span>
+        </div>
+        <div class="card-body">
+          <div class="timeline">
+            <div class="timeline-item d1">
+              <div class="timeline-phase">
+                <span class="timeline-phase-id">D1_D7_OIDC</span>
+                <span class="timeline-phase-label">D1-D7 真 OIDC 接入</span>
+                <span class="badge badge-orange">7 天</span>
+              </div>
+              <div class="timeline-phase-focus">OIDC 接入 + DID 同步 + VC 颁发</div>
+              <div class="timeline-phase-kpi">5 黄金 + 12 集成商 + 30 宝武 Realm/Client 配置</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-phase">
+                <span class="timeline-phase-id">D8_D35_ONBOARDING</span>
+                <span class="timeline-phase-label">D8-D35 30 宝武员工 onboarding</span>
+                <span class="badge badge-blue">28 天</span>
+              </div>
+              <div class="timeline-phase-focus">60 试样 + 25 试单 + 150 G5 候选</div>
+              <div class="timeline-phase-kpi">5 黄金 × 6 员工 + 5 黄金 × 12 试样 + 5 黄金 × 5 工艺</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-phase">
+                <span class="timeline-phase-id">D36_D60_V6</span>
+                <span class="timeline-phase-label">D36-D60 V6 推动</span>
+                <span class="badge badge-blue">25 天</span>
+              </div>
+              <div class="timeline-phase-focus">5 黄金 V6 首单 + 10 复购 + 3 多工厂</div>
+              <div class="timeline-phase-kpi">5 黄金 V6 + 12 集成商 V4 + 10 G6 + 3 多工厂</div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-phase">
+                <span class="timeline-phase-id">D60_MEETING</span>
+                <span class="timeline-phase-label">D60 月度复盘 + 季度规划</span>
+                <span class="badge badge-green">1 天</span>
+              </div>
+              <div class="timeline-phase-focus">60 天总结 + 90 天路线图决策</div>
+              <div class="timeline-phase-kpi">ARR 实际 vs 预测 + V 等级分布</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===========================================================
+         章节 6: 30 天 daily 趋势 (D-30 ~ D-1 + D-Day + D+1)
+         =========================================================== -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="section-title-icon" style="background: var(--success);">30D</div>
+          30 天 daily 趋势 (D-30 ~ D-1 + D-Day + D+1)
+        </div>
+        <div class="section-subtitle">每份 daily 16920 cell · 30 天累计 30 份 + 拍板日特刊 + D+1 真接</div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">30 天 daily 业务方报告 (1 文件/日, 拍板后真接)</div>
+            <div class="card-subtitle">D-30 ~ D-1 30 份 + D-Day 8/15 拍板日特刊 + D+1 Phase 13 启动</div>
+          </div>
+          <span class="badge badge-green">append-only</span>
+        </div>
+        <div class="card-body">
+          <div class="calendar">
+            <div class="calendar-day"><div class="day-label">D-30</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-29</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-28</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-27</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-26</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-25</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-24</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-23</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-22</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-21</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-20</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-19</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-18</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-17</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-16</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-15</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-14</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-13</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-12</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-11</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-10</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-9</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-8</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-7</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-6</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-5</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-4</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-3</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-2</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day"><div class="day-label">D-1</div><div class="day-cells">16,920</div></div>
+            <div class="calendar-day special"><div class="day-label">D-Day</div><div class="day-cells">8/15 特刊</div></div>
+            <div class="calendar-day d-plus-1"><div class="day-label">D+1</div><div class="day-cells">Phase 13</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===========================================================
+         章节 7: V_CONVERSION + ROI
+         =========================================================== -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="section-title-icon" style="background: var(--teal);">V6</div>
+          V_CONVERSION 字典 + ROI (跟 cost_ledger 严格一致)
+        </div>
+        <div class="section-subtitle">12 维度 risk/decision 复用 V_CONVERSION</div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">V_CONVERSION 字典 (7 等级)</div>
+              <div class="card-subtitle">跟 cost_ledger 严格一致, 12 维度 risk/decision 复用</div>
+            </div>
+            <span class="badge badge-teal">7 等级</span>
+          </div>
+          <div class="card-body">
+            <table class="table" style="font-size: 11px;">
+              <tbody>
+                <tr><td>V0_UNVERIFIED</td><td class="num">0.02</td><td><div class="cell-bar"><div class="cell-bar-track"><div class="cell-bar-fill" style="width: 2%;"></div></div></div></td></tr>
+                <tr><td>V1_ENTITY_VERIFIED</td><td class="num">0.05</td><td><div class="cell-bar"><div class="cell-bar-track"><div class="cell-bar-fill" style="width: 5%;"></div></div></div></td></tr>
+                <tr><td>V2_PRODUCT_VERIFIED</td><td class="num">0.10</td><td><div class="cell-bar"><div class="cell-bar-track"><div class="cell-bar-fill" style="width: 10%;"></div></div></div></td></tr>
+                <tr><td>V3_MARKET_VERIFIED</td><td class="num">0.18</td><td><div class="cell-bar"><div class="cell-bar-track"><div class="cell-bar-fill" style="width: 18%;"></div></div></div></td></tr>
+                <tr><td>V4_SUPPLY_CHAIN_VERIFIED</td><td class="num">0.35</td><td><div class="cell-bar"><div class="cell-bar-track"><div class="cell-bar-fill" style="width: 35%;"></div></div></div></td></tr>
+                <tr><td>V5_DEMAND_CONFIRMED</td><td class="num">0.65</td><td><div class="cell-bar"><div class="cell-bar-track"><div class="cell-bar-fill" style="width: 65%;"></div></div></div></td></tr>
+                <tr><td>V6_COMMERCIAL_PROVEN</td><td class="num">1.00</td><td><div class="cell-bar"><div class="cell-bar-track"><div class="cell-bar-fill" style="width: 100%; background: var(--success);"></div></div></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">ROI 多窗口 (125x 杠杆)</div>
+              <div class="card-subtitle">业务方多年统计 · 净杠杆 25x · 5 黄金 V6 ARR 预测</div>
+            </div>
+            <span class="badge badge-blue">¥2,500,000</span>
+          </div>
+          <div class="card-body">
+            <div class="grid grid-2" style="gap: 8px;">
+              <div class="card" style="background: var(--bg-elevated); border: none;">
+                <div class="card-subtitle">125x 杠杆</div>
+                <div class="card-value-medium">125.0x</div>
+              </div>
+              <div class="card" style="background: var(--bg-elevated); border: none;">
+                <div class="card-subtitle">净杠杆 25x</div>
+                <div class="card-value-medium">25.0x</div>
+              </div>
+              <div class="card" style="background: var(--bg-elevated); border: none;">
+                <div class="card-subtitle">5 黄金 V6 ARR</div>
+                <div class="card-value-medium" style="color: var(--success);">¥2.5M</div>
+              </div>
+              <div class="card" style="background: var(--bg-elevated); border: none;">
+                <div class="card-subtitle">V6 / 客户</div>
+                <div class="card-value-medium">¥500K</div>
+              </div>
+            </div>
+            <div style="margin-top: 12px; font-size: 11px; color: var(--text-muted);">
+              5 黄金 V6 ARR = 5 × ¥500,000 = ¥2,500,000 (5 个真实上市公司)
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===========================================================
+         章节 8: AGENTS 硬门槛
+         =========================================================== -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">
+          <div class="section-title-icon" style="background: var(--graphite);">§</div>
+          AGENTS 硬门槛 (4 章节 + 7 年 SOX)
+        </div>
+        <div class="section-subtitle">§0 default-deny + §3 真实数据 + §4 非目标 + §11 append-only + §14 凭证脱敏</div>
+      </div>
+
+      <div class="grid grid-5">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">§0 default-deny</div>
+          </div>
+          <div class="card-body">
+            <div class="text-muted" style="font-size: 11px;">5 黄金 + 12 集成商 + 30 宝武 tenant 隔离</div>
+            <div style="margin-top: 8px;">
+              <span class="badge badge-blue">5 黄金</span>
+              <span class="badge badge-purple">30 宝武</span>
+              <span class="badge badge-teal">12 集成商</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">§3 真实数据</div>
+          </div>
+          <div class="card-body">
+            <div class="text-muted" style="font-size: 11px;">5 黄金公开年报 + 招股书 + 5 大行情</div>
+            <div style="margin-top: 8px;">
+              <span class="badge badge-green">公开数据</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">§4 非目标</div>
+          </div>
+          <div class="card-body">
+            <div class="text-muted" style="font-size: 11px;">不买 + 不推断 + 不传播非公开私人联系方式</div>
+            <div style="margin-top: 8px;">
+              <span class="badge badge-red">不买</span>
+              <span class="badge badge-amber">不推断</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">§11 append-only</div>
+          </div>
+          <div class="card-body">
+            <div class="text-muted" style="font-size: 11px;">12 维度 16920 cell + 30 天 daily 报告 不可改</div>
+            <div style="margin-top: 8px;">
+              <span class="badge badge-green">append-only</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">§14 凭证脱敏</div>
+          </div>
+          <div class="card-body">
+            <div class="text-muted" style="font-size: 11px;">9 regex + SecretStr + SHA256 截断 + 决策人 placeholder</div>
+            <div style="margin-top: 8px;">
+              <span class="badge badge-purple">9 regex</span>
+              <span class="badge badge-purple">决策人 placeholder</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="redact-notice">
+        <div class="redact-notice-title">🛡️ 凭证脱敏 9 regex (AGENTS §14.4 Trust Gateway, 12 维度复用)</div>
+        <div>每 cell 都有 redact_signature (SHA256 截断 8 字符) + decision_maker placeholder (e.g. <span class="placeholder-text">{{BYD 采购总监}}</span>) + email placeholder (decision-maker@v01-byd.example.com)</div>
+        <div class="redact-notice-list">
+          <span class="redact-notice-tag">email</span>
+          <span class="redact-notice-tag">phone_cn</span>
+          <span class="redact-notice-tag">phone_intl</span>
+          <span class="redact-notice-tag">id_card_cn</span>
+          <span class="redact-notice-tag">credit_card</span>
+          <span class="redact-notice-tag">ip_v4</span>
+          <span class="redact-notice-tag">api_key</span>
+          <span class="redact-notice-tag">bearer_token</span>
+          <span class="redact-notice-tag">private_key</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===========================================================
+       Footer
+       =========================================================== -->
+  <div class="footer">
+    TIGO V5 Phase 12 batch 30 · 业务方 daily 12 维度 16800 cell 看板 2.0 · 拍板截止 2026-08-15 18:00 Asia/Shanghai · 7 年 SOX audit_log
+    <br />
+    12 维度 16920 cell · 30 天 daily · 拍板后 D1 真接预演 2.0 (D1-D60 4 阶段 8 周 · 60 天 × 47 tenant × 12 维度 = 33,840 cell) · 5 黄金业务方 daily 真接 (G2-G6 评级 + V_CONVERSION + ROI 多窗口)
+  </div>
+
+  <script>
+    // 简单交互: 点击 cell 卡片打印信息到 console
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('TIGO V5 业务方 daily 12 维度 16800 cell 看板 2.0 loaded');
+      console.log('12 维度 16920 cell: 5 黄金 1800 + 30 宝武 10800 + 12 集成商 4320');
+      console.log('拍板后 D1 真接预演 2.0: 60 天 × 47 tenant × 12 维度 = 33,840 cell');
+      console.log('D1 启动: 5 黄金 Realm + 12 集成商 SAML/OIDC + 30 宝武 Realm + 47 DID + 235 VC + ACK 12 资源 + 47 namespace');
+    });
+  </script>
+</body>
+</html>

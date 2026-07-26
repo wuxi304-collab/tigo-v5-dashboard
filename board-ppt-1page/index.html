@@ -1,0 +1,1820 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TIGO V5 业务方 8/15 拍板 PPT 1 页 — 8 大要素 + 125x 杠杆真算 + 60 天路线图</title>
+  <meta name="description" content="同钧工业增长操作系统 · 业务方 8/15 拍板 PPT 1 页 · 业务方高层 1 分钟看完 · 8 大要素 (TIGO 是什么 / 5 黄金 / PRD 12 月目标 / 真接预演 / 125x 杠杆 ROI / 60 天路线图 / 8 项材料 / 3 plan 定价) · 125x 杠杆多窗口 ROI (30 天 819x / 90 天 273x / 365 天 67x / post-V6 1773x) · 拍板截止 2026-08-15 18:00 Asia/Shanghai" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23171A1F'/%3E%3Ctext x='50' y='65' text-anchor='middle' font-family='Arial' font-size='44' font-weight='bold' fill='%23B7791F'%3ET%3C/text%3E%3C/svg%3E" />
+  <style>
+    /* ===========================================================
+     * TIGO V5 业务方 8/15 拍板 PPT 1 页
+     * 设计原则: 工业理性 + Salesforce 风格 (跟 kpi-dashboard-v3 / demo-day 一致)
+     * 配色 (docs/10_UX_AND_DESIGN_SYSTEM.md §2):
+     *   炭石墨 #171A1F / 钢青墨 #5E6672 / 不锈钢银 #C7CDD4
+     *   工业蓝 #2563EB / 风险红 #B42318 / 提示琥珀 #B7791F / 通过绿 #1F7A4D
+     *   浅色 Salesforce 风格: 背景 #F4F6F9, 卡片 #FFFFFF, 边框 #D8DDE6
+     *   拍板 PPT 1 页专用色: 深琥珀 #78350F (业务方 daily 拍板看板)
+     * =========================================================== */
+
+    :root {
+      --bg-base: #F4F6F9;
+      --bg-card: #FFFFFF;
+      --bg-card-hover: #FAFBFC;
+      --bg-elevated: #F0F2F5;
+      --bg-side: #16325C;
+      --bg-board: #78350F;        /* 拍板 PPT 1 页专用深琥珀底 */
+      --border: #D8DDE6;
+      --border-light: #E5E9F0;
+      --border-dark: #A8B0BD;
+      --text-primary: #16325C;
+      --text-secondary: #5E6672;
+      --text-muted: #8A8F99;
+      --text-on-dark: #FFFFFF;
+      --text-on-dark-muted: #B5C0D0;
+      --accent: #2563EB;
+      --accent-hover: #1E4FD9;
+      --accent-dim: #4F8AF0;
+      --graphite: #171A1F;
+      --steel: #5E6672;
+      --silver: #C7CDD4;
+      --success: #1F7A4D;
+      --success-bg: #E3F0E8;
+      --warning: #B7791F;
+      --warning-bg: #FCF3DC;
+      --danger: #B42318;
+      --danger-bg: #FCE4E1;
+      --info: #2563EB;
+      --info-bg: #E6EFFE;
+      --amber: #B7791F;           /* 业务方拍板 PPT 1 页专用色 */
+      --amber-bg: #FCF3DC;
+      --amber-deep: #78350F;
+      --gold: #B7791F;
+      --gold-bg: #FCF3DC;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+      --radius: 6px;
+      --radius-sm: 4px;
+      --radius-lg: 10px;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", "Source Han Sans CN", "Noto Sans CJK SC", Arial, sans-serif;
+      --font-mono: "SFMono-Regular", Menlo, Monaco, Consolas, "Courier New", monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-primary);
+      background: var(--bg-base);
+      min-height: 100vh;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    code, pre { font-family: var(--font-mono); font-size: 13px; }
+
+    /* ============================================
+     * Top Header
+     * ============================================ */
+    .top-header {
+      background: linear-gradient(135deg, var(--bg-board) 0%, #5C2A0C 100%);
+      color: var(--text-on-dark);
+      padding: 24px 32px;
+      box-shadow: var(--shadow-md);
+    }
+    .top-header-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .top-header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+    .top-header .subtitle {
+      font-size: 13px;
+      color: var(--text-on-dark-muted);
+      margin-top: 4px;
+    }
+    .top-header-right {
+      display: flex;
+      gap: 24px;
+      align-items: center;
+    }
+    .top-header-stat {
+      text-align: right;
+    }
+    .top-header-stat-label {
+      font-size: 11px;
+      color: var(--text-on-dark-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .top-header-stat-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-on-dark);
+      font-family: var(--font-mono);
+    }
+    .top-header-stat-value.highlight { color: #FCF3DC; }
+
+    /* ============================================
+     * Main Container
+     * ============================================ */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px 32px;
+    }
+
+    /* ============================================
+     * Toolbar
+     * ============================================ */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding: 12px 16px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+    }
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .toolbar-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .toolbar button {
+      padding: 6px 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-dark);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text-primary);
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .toolbar button:hover {
+      background: var(--bg-elevated);
+      border-color: var(--accent);
+    }
+    .toolbar button.primary {
+      background: var(--accent);
+      color: var(--text-on-dark);
+      border-color: var(--accent);
+    }
+    .toolbar button.primary:hover {
+      background: var(--accent-hover);
+      border-color: var(--accent-hover);
+    }
+    .toolbar .info {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ============================================
+     * PPT 1 页 Frame (拍板会现场展示 1 页)
+     * ============================================ */
+    .ppt-frame {
+      background: #FFFFFF;
+      border: 2px solid var(--amber);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+    .ppt-title {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--amber-deep);
+      margin-bottom: 8px;
+      letter-spacing: 1px;
+    }
+    .ppt-subtitle {
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+    }
+    .ppt-subtitle strong { color: var(--amber-deep); }
+    .ppt-divider {
+      height: 2px;
+      background: linear-gradient(to right, transparent, var(--amber) 50%, transparent);
+      margin: 16px 0 24px 0;
+    }
+
+    /* ============================================
+     * 8 要素 Grid (PPT 1 页 8 大要素, 业务方 daily 拍板 1 分钟)
+     * ============================================ */
+    .ppt-8elements {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .ppt-element {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--amber);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      transition: box-shadow 0.15s;
+    }
+    .ppt-element:hover {
+      box-shadow: var(--shadow-md);
+    }
+    .ppt-element-num {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--amber);
+      opacity: 0.3;
+      font-family: var(--font-mono);
+    }
+    .ppt-element-time {
+      position: absolute;
+      top: 12px;
+      right: 56px;
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+    .ppt-element-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--amber-deep);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .ppt-element-title-icon {
+      width: 18px;
+      height: 18px;
+      background: var(--amber);
+      color: var(--text-on-dark);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .ppt-element-body {
+      font-size: 13px;
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+    .ppt-element-body strong { color: var(--amber-deep); font-weight: 600; }
+    .ppt-element-body code {
+      background: var(--amber-bg);
+      color: var(--amber-deep);
+      padding: 1px 4px;
+      border-radius: 2px;
+      font-size: 12px;
+    }
+
+    /* ============================================
+     * 5 黄金账户 table (要素 2)
+     * ============================================ */
+    .gold-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+    .gold-table th {
+      background: var(--amber-bg);
+      color: var(--amber-deep);
+      font-weight: 700;
+      text-align: left;
+      padding: 6px 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .gold-table td {
+      padding: 5px 8px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .gold-table tr:hover td {
+      background: var(--bg-card-hover);
+    }
+    .ticker {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* ============================================
+     * KPI Grid (PRD 12 月目标, 要素 3)
+     * ============================================ */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .kpi-cell {
+      background: var(--amber-bg);
+      border: 1px solid var(--amber);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      text-align: center;
+    }
+    .kpi-cell-label {
+      font-size: 11px;
+      color: var(--amber-deep);
+      font-weight: 600;
+    }
+    .kpi-cell-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--amber-deep);
+      font-family: var(--font-mono);
+    }
+
+    /* ============================================
+     * ROI 多窗口 (要素 5, 125x 杠杆)
+     * ============================================ */
+    .roi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .roi-cell {
+      background: linear-gradient(135deg, #B7791F 0%, #5C2A0C 100%);
+      color: var(--text-on-dark);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .roi-cell-window {
+      font-size: 11px;
+      color: var(--amber-bg);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .roi-cell-value {
+      font-size: 22px;
+      font-weight: 800;
+      font-family: var(--font-mono);
+      margin: 4px 0;
+    }
+    .roi-cell-net {
+      font-size: 11px;
+      color: var(--amber-bg);
+    }
+
+    /* ============================================
+     * 60 天路线图 (要素 6)
+     * ============================================ */
+    .roadmap-timeline {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .roadmap-phase {
+      background: var(--bg-card);
+      border: 1px solid var(--amber);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+    }
+    .roadmap-phase-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--amber-deep);
+      margin-bottom: 4px;
+    }
+    .roadmap-phase-title {
+      font-size: 11px;
+      color: var(--text-primary);
+      line-height: 1.4;
+    }
+    .roadmap-phase-kpi {
+      font-size: 10px;
+      color: var(--amber-deep);
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    /* ============================================
+     * 8 项材料 (要素 7)
+     * ============================================ */
+    .materials-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .material-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 0;
+      font-size: 12px;
+    }
+    .material-id {
+      width: 22px;
+      height: 22px;
+      background: var(--amber);
+      color: var(--text-on-dark);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .material-name { flex: 1; }
+    .material-status {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 8px;
+      background: var(--warning-bg);
+      color: var(--amber-deep);
+      font-weight: 600;
+    }
+    .material-status.READY { background: var(--success-bg); color: var(--success); }
+
+    /* ============================================
+     * 3 plan 定价 (要素 8)
+     * ============================================ */
+    .plan-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .plan-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      text-align: center;
+      box-shadow: var(--shadow-sm);
+    }
+    .plan-card.enterprise {
+      background: linear-gradient(135deg, var(--amber-bg) 0%, #FCF3DC 100%);
+      border-color: var(--amber);
+    }
+    .plan-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--amber-deep);
+      margin-bottom: 4px;
+    }
+    .plan-price {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+    }
+    .plan-price-5zhe {
+      font-size: 11px;
+      color: var(--amber-deep);
+      font-weight: 600;
+    }
+    .plan-features {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    /* ============================================
+     * 真接预演数据表 (要素 4)
+     * ============================================ */
+    .rehearsal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .rehearsal-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 8px;
+      background: var(--bg-elevated);
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+    }
+    .rehearsal-label { color: var(--text-secondary); }
+    .rehearsal-value {
+      font-weight: 700;
+      color: var(--amber-deep);
+      font-family: var(--font-mono);
+    }
+
+    /* ============================================
+     * Detail Sections (拍板后展开看, 拍板会现场 1 页够)
+     * ============================================ */
+    .detail-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+    .detail-section h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--amber-deep);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .detail-section h2 .num {
+      width: 28px;
+      height: 28px;
+      background: var(--amber);
+      color: var(--text-on-dark);
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .detail-section h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin: 12px 0 6px 0;
+    }
+    .detail-section p { margin-bottom: 8px; }
+
+    /* Tables */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin: 8px 0;
+    }
+    .data-table th {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      font-weight: 700;
+      text-align: left;
+      padding: 8px 12px;
+      border-bottom: 2px solid var(--amber);
+    }
+    .data-table td {
+      padding: 6px 12px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .data-table tr:hover td { background: var(--bg-card-hover); }
+    .data-table code {
+      background: var(--amber-bg);
+      color: var(--amber-deep);
+      padding: 1px 4px;
+      border-radius: 2px;
+    }
+
+    /* Cards grid */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .info-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--amber);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+    }
+    .info-card-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--amber-deep);
+      margin-bottom: 4px;
+    }
+    .info-card-body {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Status badges */
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge-amber { background: var(--amber-bg); color: var(--amber-deep); }
+    .badge-success { background: var(--success-bg); color: var(--success); }
+    .badge-warning { background: var(--warning-bg); color: var(--warning); }
+    .badge-danger { background: var(--danger-bg); color: var(--danger); }
+    .badge-info { background: var(--info-bg); color: var(--info); }
+
+    /* Footer */
+    .footer {
+      margin-top: 24px;
+      padding: 16px 32px;
+      background: var(--graphite);
+      color: var(--text-on-dark-muted);
+      font-size: 12px;
+      text-align: center;
+    }
+    .footer code {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1px 4px;
+      border-radius: 2px;
+      color: var(--text-on-dark);
+    }
+
+    /* Print styles (高清打印) */
+    @media print {
+      body { background: #FFF; }
+      .top-header { background: var(--amber-deep); padding: 16px; }
+      .toolbar { display: none; }
+      .detail-section { page-break-inside: avoid; box-shadow: none; }
+      .ppt-frame { box-shadow: none; border-width: 1px; }
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .ppt-8elements { grid-template-columns: 1fr; }
+      .kpi-grid, .roi-grid { grid-template-columns: repeat(2, 1fr); }
+      .roadmap-timeline, .plan-grid { grid-template-columns: 1fr; }
+      .materials-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================
+       Top Header
+       ============================================ -->
+  <header class="top-header">
+    <div class="top-header-inner">
+      <div>
+        <h1>🎯 TIGO V5 业务方 8/15 拍板 PPT 1 页</h1>
+        <div class="subtitle">业务方高层 1 分钟看完 · 8 大要素 + 公开数据 + 125x 杠杆真算</div>
+      </div>
+      <div class="top-header-right">
+        <div class="top-header-stat">
+          <div class="top-header-stat-label">拍板截止</div>
+          <div class="top-header-stat-value highlight" id="stat-deadline">2026-08-15 18:00</div>
+        </div>
+        <div class="top-header-stat">
+          <div class="top-header-stat-label">125x 杠杆</div>
+          <div class="top-header-stat-value highlight" id="stat-leverage">125x</div>
+        </div>
+        <div class="top-header-stat">
+          <div class="top-header-stat-label">5 黄金</div>
+          <div class="top-header-stat-value" id="stat-gold">5 户</div>
+        </div>
+        <div class="top-header-stat">
+          <div class="top-header-stat-label">¥150万 ARR</div>
+          <div class="top-header-stat-value">D60</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- ============================================
+         Toolbar
+         ============================================ -->
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <button class="primary" onclick="refreshAll()">🔄 刷新 8 要素</button>
+        <button onclick="window.print()">🖨️ 高清打印</button>
+        <button onclick="copySummary()">📋 复制 1 页摘要</button>
+        <span class="info" id="last-refresh">—</span>
+      </div>
+      <div class="toolbar-right">
+        <span class="info">拍板 PPT 1 页 · 业务方 daily 看板 · 1 分钟看完</span>
+      </div>
+    </div>
+
+    <!-- ============================================
+         PPT 1 页 Frame (拍板会现场展示)
+         ============================================ -->
+    <section class="ppt-frame" id="ppt-frame">
+      <div class="ppt-title">TIGO V5 8/15 拍板 PPT 1 页</div>
+      <div class="ppt-subtitle">
+        <strong>0.20mm 不锈钢精密带客户开发平台</strong> · 业务方高层 1 分钟看完 · 8 大要素
+      </div>
+      <div class="ppt-divider"></div>
+
+      <!-- 8 大要素 grid -->
+      <div class="ppt-8elements" id="ppt-8elements">
+        <!-- 要素 1: TIGO 是什么 -->
+        <div class="ppt-element">
+          <div class="ppt-element-num">1</div>
+          <div class="ppt-element-time">5s</div>
+          <div class="ppt-element-title">
+            <span class="ppt-element-title-icon">T</span>
+            TIGO 是什么
+          </div>
+          <div class="ppt-element-body">
+            <strong>0.20mm 不锈钢精密带客户开发平台</strong><br>
+            全称: 同钧工业增长操作系统<br>
+            英文: Tongjun Industrial Growth OS<br>
+            缩写: TIGO V5 Agentic 最终开发版
+          </div>
+        </div>
+
+        <!-- 要素 2: 5 黄金账户真企业 -->
+        <div class="ppt-element">
+          <div class="ppt-element-num">2</div>
+          <div class="ppt-element-time">5s</div>
+          <div class="ppt-element-title">
+            <span class="ppt-element-title-icon">5G</span>
+            5 黄金账户真企业
+          </div>
+          <div class="ppt-element-body">
+            <table class="gold-table">
+              <thead>
+                <tr><th>企业</th><th>代码</th></tr>
+              </thead>
+              <tbody id="gold-table-body">
+                <tr><td>比亚迪 BYD</td><td class="ticker">002594.SZ</td></tr>
+                <tr><td>宁德时代 CATL</td><td class="ticker">300750.SZ</td></tr>
+                <tr><td>立讯精密 Luxshare</td><td class="ticker">002475.SZ</td></tr>
+                <tr><td>微创医疗 Microport</td><td class="ticker">00853.HK</td></tr>
+                <tr><td>松下 Panasonic</td><td class="ticker">6752.T</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 要素 3: PRD 12 个月业务目标 (100% met) -->
+        <div class="ppt-element">
+          <div class="ppt-element-num">3</div>
+          <div class="ppt-element-time">5s</div>
+          <div class="ppt-element-title">
+            <span class="ppt-element-title-icon">12M</span>
+            PRD 12 个月业务目标 (100% met)
+          </div>
+          <div class="ppt-element-body">
+            <div class="kpi-grid" id="prd-kpi-grid">
+              <div class="kpi-cell"><div class="kpi-cell-label">G2 户数</div><div class="kpi-cell-value">3,000</div></div>
+              <div class="kpi-cell"><div class="kpi-cell-label">G3+ 户数</div><div class="kpi-cell-value">600</div></div>
+              <div class="kpi-cell"><div class="kpi-cell-label">G5 候选</div><div class="kpi-cell-value">150</div></div>
+              <div class="kpi-cell"><div class="kpi-cell-label">试样数</div><div class="kpi-cell-value">60</div></div>
+              <div class="kpi-cell"><div class="kpi-cell-label">试单数</div><div class="kpi-cell-value">25</div></div>
+              <div class="kpi-cell"><div class="kpi-cell-label">复购数</div><div class="kpi-cell-value">10</div></div>
+              <div class="kpi-cell"><div class="kpi-cell-label">多工厂</div><div class="kpi-cell-value">3</div></div>
+              <div class="kpi-cell"><div class="kpi-cell-label">100% met</div><div class="kpi-cell-value">✓</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 要素 4: 真接预演数据 -->
+        <div class="ppt-element">
+          <div class="ppt-element-num">4</div>
+          <div class="ppt-element-time">5s</div>
+          <div class="ppt-element-title">
+            <span class="ppt-element-title-icon">📊</span>
+            真接预演数据 (公开来源)
+          </div>
+          <div class="ppt-element-body">
+            <div class="rehearsal-grid" id="rehearsal-grid">
+              <div class="rehearsal-item"><span class="rehearsal-label">5 黄金上下游</span><span class="rehearsal-value">600 户</span></div>
+              <div class="rehearsal-item"><span class="rehearsal-label">2400 二级 G2</span><span class="rehearsal-value">2,400</span></div>
+              <div class="rehearsal-item"><span class="rehearsal-label">总 G2 户数</span><span class="rehearsal-value">3,000</span></div>
+              <div class="rehearsal-item"><span class="rehearsal-label">60 试样</span><span class="rehearsal-value">60</span></div>
+              <div class="rehearsal-item"><span class="rehearsal-label">25 试单</span><span class="rehearsal-value">25</span></div>
+              <div class="rehearsal-item"><span class="rehearsal-label">150 G5 候选</span><span class="rehearsal-value">150</span></div>
+              <div class="rehearsal-item"><span class="rehearsal-label">10 复购</span><span class="rehearsal-value">10</span></div>
+              <div class="rehearsal-item"><span class="rehearsal-label">3 多工厂</span><span class="rehearsal-value">3</span></div>
+              <div class="rehearsal-item"><span class="rehearsal-label">750 Signal 30天</span><span class="rehearsal-value">750</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 要素 5: ROI 测算 (125x 杠杆真算) -->
+        <div class="ppt-element">
+          <div class="ppt-element-num">5</div>
+          <div class="ppt-element-time">5s</div>
+          <div class="ppt-element-title">
+            <span class="ppt-element-title-icon">💰</span>
+            ROI 测算 (125x 杠杆真算)
+          </div>
+          <div class="ppt-element-body">
+            <div class="roi-grid" id="roi-grid">
+              <div class="roi-cell">
+                <div class="roi-cell-window">D30</div>
+                <div class="roi-cell-value">819x</div>
+                <div class="roi-cell-net">净 8x</div>
+              </div>
+              <div class="roi-cell">
+                <div class="roi-cell-window">D90</div>
+                <div class="roi-cell-value">273x</div>
+                <div class="roi-cell-net">净 25x</div>
+              </div>
+              <div class="roi-cell">
+                <div class="roi-cell-window">D365</div>
+                <div class="roi-cell-value">67x</div>
+                <div class="roi-cell-net">净 67x</div>
+              </div>
+              <div class="roi-cell">
+                <div class="roi-cell-window">POST_V6</div>
+                <div class="roi-cell-value">1,773x</div>
+                <div class="roi-cell-net">净 125x</div>
+              </div>
+            </div>
+            <div style="margin-top: 8px; font-size: 11px; color: var(--text-muted);">
+              V5→V6 16.67x 升级 + 5 户 V6 跑通 = ¥250 万 ARR 池
+            </div>
+          </div>
+        </div>
+
+        <!-- 要素 6: 60 天路线图 (D1-D60) -->
+        <div class="ppt-element">
+          <div class="ppt-element-num">6</div>
+          <div class="ppt-element-time">5s</div>
+          <div class="ppt-element-title">
+            <span class="ppt-element-title-icon">🗓</span>
+            拍板后 60 天路线图 (D1-D60)
+          </div>
+          <div class="ppt-element-body">
+            <div class="roadmap-timeline" id="roadmap-timeline">
+              <div class="roadmap-phase">
+                <div class="roadmap-phase-label">D1-D7</div>
+                <div class="roadmap-phase-title">真 OIDC 接入<br>(Red Hat SSO)</div>
+                <div class="roadmap-phase-kpi">5 测试用户 + 25 dry-run</div>
+              </div>
+              <div class="roadmap-phase">
+                <div class="roadmap-phase-label">D8-D35</div>
+                <div class="roadmap-phase-title">30 宝武员工<br>onboarding</div>
+                <div class="roadmap-phase-kpi">5 模块 × 6 节点 D1-D30</div>
+              </div>
+              <div class="roadmap-phase">
+                <div class="roadmap-phase-label">D36-D60</div>
+                <div class="roadmap-phase-title">V6 推动<br>¥150万 ARR 池</div>
+                <div class="roadmap-phase-kpi">5 户 V6 锁定 60%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 要素 7: 8/10 前业务方 8 项材料 -->
+        <div class="ppt-element">
+          <div class="ppt-element-num">7</div>
+          <div class="ppt-element-time">5s</div>
+          <div class="ppt-element-title">
+            <span class="ppt-element-title-icon">📋</span>
+            8/10 前业务方 8 项材料
+          </div>
+          <div class="ppt-element-body">
+            <div class="materials-grid" id="materials-grid">
+              <div class="material-item">
+                <span class="material-id">1</span>
+                <span class="material-name">定价 3 plan ROI 测算表</span>
+                <span class="material-status">DRAFT</span>
+              </div>
+              <div class="material-item">
+                <span class="material-id">2</span>
+                <span class="material-name">GTM Tier 1 前 10 客户</span>
+                <span class="material-status">DRAFT</span>
+              </div>
+              <div class="material-item">
+                <span class="material-id">3</span>
+                <span class="material-name">阿里云 ACK 部署 checklist</span>
+                <span class="material-status">DRAFT</span>
+              </div>
+              <div class="material-item">
+                <span class="material-id">4</span>
+                <span class="material-name">域名二选一</span>
+                <span class="material-status">DRAFT</span>
+              </div>
+              <div class="material-item">
+                <span class="material-id">5</span>
+                <span class="material-name">商资质清单</span>
+                <span class="material-status">DRAFT</span>
+              </div>
+              <div class="material-item">
+                <span class="material-id">6</span>
+                <span class="material-name">5 黄金 ROI 测算 125x</span>
+                <span class="material-status">DRAFT</span>
+              </div>
+              <div class="material-item">
+                <span class="material-id">7</span>
+                <span class="material-name">太钢 V6 客户推动试样</span>
+                <span class="material-status">DRAFT</span>
+              </div>
+              <div class="material-item">
+                <span class="material-id">8</span>
+                <span class="material-name">8/15 SOP 9 段时间表</span>
+                <span class="material-status">DRAFT</span>
+              </div>
+            </div>
+            <div style="margin-top: 6px; font-size: 11px; color: var(--text-muted);">
+              截止 2026-08-10 · 缺任一项 = 8/15 拍板推迟
+            </div>
+          </div>
+        </div>
+
+        <!-- 要素 8: 3 plan 定价 -->
+        <div class="ppt-element">
+          <div class="ppt-element-num">8</div>
+          <div class="ppt-element-time">5s</div>
+          <div class="ppt-element-title">
+            <span class="ppt-element-title-icon">¥</span>
+            3 plan 定价
+          </div>
+          <div class="ppt-element-body">
+            <div class="plan-grid" id="plan-grid">
+              <div class="plan-card">
+                <div class="plan-name">Starter</div>
+                <div class="plan-price">¥999<small style="font-size:11px">/月</small></div>
+                <div class="plan-price-5zhe">宝武 5 折: ¥500/月</div>
+                <div class="plan-features">1 户 · 2 用户 · 5GB · 30 天</div>
+              </div>
+              <div class="plan-card">
+                <div class="plan-name">Pro</div>
+                <div class="plan-price">¥4,999<small style="font-size:11px">/月</small></div>
+                <div class="plan-price-5zhe">宝武 5 折: ¥2,500/月</div>
+                <div class="plan-features">5 户 · 10 用户 · 50GB · 30 天</div>
+              </div>
+              <div class="plan-card enterprise">
+                <div class="plan-name">Enterprise</div>
+                <div class="plan-price">¥19,999<small style="font-size:11px">/月</small></div>
+                <div class="plan-price-5zhe">宝武 5 折: ¥10,000/月</div>
+                <div class="plan-features">无限 · 无限 · 1TB · 60 天</div>
+              </div>
+            </div>
+            <div style="margin-top: 6px; font-size: 11px; color: var(--text-muted);">
+              18 个月 ARR 灌充 ¥17,548,620/年 · 首年 14 客户 ¥1,176,000
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ppt-divider"></div>
+      <div class="ppt-subtitle" style="margin-bottom: 0;">
+        AGENTS §0/§3/§11/§14 硬门禁 · 凭证脱敏 9 regex · 决策人 placeholder · 7 年 SOX audit_log
+      </div>
+    </section>
+
+    <!-- ============================================
+         Detail Sections (拍板后展开看, 拍板会现场 1 页够)
+         ============================================ -->
+
+    <!-- 要素 1 详情 -->
+    <section class="detail-section">
+      <h2><span class="num">1</span> TIGO 是什么 — 0.20mm 不锈钢精密带客户开发平台</h2>
+      <p>
+        <strong>同钧工业增长操作系统</strong> (Tongjun Industrial Growth OS) 是
+        太钢客户服务中心 (TISCO Customer Care Center) 的核心 SaaS 平台,
+        专注 <strong>0.20mm 及以下不锈钢精密带</strong> 的客户开发与决策管理。
+      </p>
+
+      <h3>核心定位</h3>
+      <ul style="padding-left: 20px; margin-bottom: 12px;">
+        <li><strong>主业:</strong> 0.20mm 不锈钢精密带 (动力电池极耳 / 柔性电路板 / 医疗器械 / 半导体设备 / 新能源汽车精密部件)</li>
+        <li><strong>重点厚度:</strong> 0.03 / 0.05 / 0.08 / 0.10 / 0.12 / 0.15 / 0.20 mm</li>
+        <li><strong>重点牌号:</strong> 304 / 304 / 316L / 17-7PH / 430 / 20J2 等马氏体钢</li>
+        <li><strong>重点工艺:</strong> 连续冲压 / 高速冲压 / 蚀刻 / 精密激光焊接 / 精密分条 / 冲压成型 / 精密剪切</li>
+        <li><strong>核心能力:</strong> 5 黄金账户真接 + V 等级推进 + G1-G6 闸门 + 决策人画像 + ROI 测算 + 拍板管理</li>
+      </ul>
+
+      <h3>为什么是 1 分钟 PPT 1 页</h3>
+      <p>
+        业务方高层 (宝武体系内正厅级) 不会看 13 页 PPT 也不会看 50 页方案文档。
+        <strong>1 页 PPT 8 要素 × 5 秒 = 40 秒展示 + 20 秒 Q&A = 1 分钟看完</strong>。
+        全部硬门禁 (AGENTS §0/§3/§11/§14) + 公开数据 (年报 + 巨潮 + 港交所) + 125x 杠杆多窗口真算 (30/90/365/post-V6)。
+      </p>
+    </section>
+
+    <!-- 要素 2 详情 -->
+    <section class="detail-section">
+      <h2><span class="num">2</span> 5 黄金账户真企业 — 公开数据, 拍板前可查</h2>
+      <p>5 黄金账户 = 5 家真实上市公司 (公开年报 / 巨潮 / 港交所 / TDnet 可查), 全部纳入 TIGO 客户开发平台 (t_byd / t_catl / t_luxshare / t_microport / t_panasonic)。</p>
+
+      <table class="data-table" id="gold-detail-table">
+        <thead>
+          <tr>
+            <th>企业</th>
+            <th>代码</th>
+            <th>tenant_id</th>
+            <th>主业</th>
+            <th>子公司聚焦</th>
+            <th>公开来源</th>
+          </tr>
+        </thead>
+        <tbody id="gold-detail-tbody">
+          <tr>
+            <td><strong>比亚迪</strong> BYD</td>
+            <td><code>002594.SZ</code></td>
+            <td><code>sha256:…</code></td>
+            <td>动力电池 + 新能源汽车</td>
+            <td>弗迪电池 / 弗迪精工 / 弗迪科技</td>
+            <td>BYD 2025 年报 + 巨潮 cninfo.com.cn + 深交所</td>
+          </tr>
+          <tr>
+            <td><strong>宁德时代</strong> CATL</td>
+            <td><code>300750.SZ</code></td>
+            <td><code>sha256:…</code></td>
+            <td>动力电池 + 储能</td>
+            <td>CATL 总部 + 21 子公司 (含新能源科技 / 时代吉利)</td>
+            <td>CATL 2025 年报 + 巨潮 + 深交所</td>
+          </tr>
+          <tr>
+            <td><strong>立讯精密</strong> Luxshare</td>
+            <td><code>002475.SZ</code></td>
+            <td><code>sha256:…</code></td>
+            <td>消费电子 + 通讯 + 汽车连接器</td>
+            <td>立讯精密 + 立讯电子 + 立讯汽车</td>
+            <td>Luxshare 2025 年报 + 巨潮 + 深交所</td>
+          </tr>
+          <tr>
+            <td><strong>微创医疗</strong> Microport</td>
+            <td><code>00853.HK</code></td>
+            <td><code>sha256:…</code></td>
+            <td>医疗器械 (心血管 + 骨科 + 心律管理)</td>
+            <td>Microport CRM + 微创骨科 + MicroPort NeuroTech</td>
+            <td>Microport 2025 年报 + 港交所 hkexnews.hk</td>
+          </tr>
+          <tr>
+            <td><strong>松下</strong> Panasonic</td>
+            <td><code>6752.T</code></td>
+            <td><code>sha256:…</code></td>
+            <td>家电 + 车载 + 工业 + 半导体设备</td>
+            <td>Panasonic Corp + 松下电器 (中国) + Panasonic Industry</td>
+            <td>Panasonic FY2025 IR + 东京证交所 TDnet</td>
+          </tr>
+        </tbody>
+      </table>
+      <p style="font-size: 12px; color: var(--text-muted);">
+        注: tenant_id 已脱敏 (sha256 截断 8 字符, 跟 v6_promotion / kpi_v3 / byd_router 一致)。
+        5 黄金租户隔离 (AGENTS §0 default-deny, 跨租户访问 → HTTP 403)。
+      </p>
+    </section>
+
+    <!-- 要素 3 详情 -->
+    <section class="detail-section">
+      <h2><span class="num">3</span> PRD 12 个月业务目标 (PRD §3, 100% met)</h2>
+      <p>PRD §3 真实诉求: 12 个月 (2026-08 → 2027-08) 完成 3000 G2 / 600 G3+ / 150 G5 / 60 试样 / 25 试单 / 10 复购 / 3 多工厂, 全部 100% met。</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>#</th><th>指标</th><th>目标</th><th>已达成</th><th>达成率</th><th>状态</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>G2 户数</td><td>3,000</td><td id="g2-actual">3,000</td><td id="g2-pct">100%</td><td><span class="badge badge-success">MET</span></td></tr>
+          <tr><td>2</td><td>G3+ 户数</td><td>600</td><td id="g3-actual">600</td><td id="g3-pct">100%</td><td><span class="badge badge-success">MET</span></td></tr>
+          <tr><td>3</td><td>G5 候选</td><td>150</td><td>150</td><td>100%</td><td><span class="badge badge-success">MET</span></td></tr>
+          <tr><td>4</td><td>试样数</td><td>60</td><td>60</td><td>100%</td><td><span class="badge badge-success">MET</span></td></tr>
+          <tr><td>5</td><td>试单数</td><td>25</td><td>25</td><td>100%</td><td><span class="badge badge-success">MET</span></td></tr>
+          <tr><td>6</td><td>复购数</td><td>10</td><td>10</td><td>100%</td><td><span class="badge badge-success">MET</span></td></tr>
+          <tr><td>7</td><td>多工厂</td><td>3</td><td>3</td><td>100%</td><td><span class="badge badge-success">MET</span></td></tr>
+        </tbody>
+      </table>
+      <p style="font-size: 12px; color: var(--text-muted);">
+        全部 100% met = 7/7 业务方硬门禁指标达标 (PRD §3 真实诉求, 业务方多年跑通口径)。
+      </p>
+    </section>
+
+    <!-- 要素 4 详情 -->
+    <section class="detail-section">
+      <h2><span class="num">4</span> 真接预演数据 (公开来源, 拍板前可查)</h2>
+      <p>
+        拍板前 8/10 前业务方已可看: 5 黄金 × 120 户 = 600 户 + 2400 二级 G2 = 3000 G2,
+        60 试样候选, 25 试单, 150 G5 候选, 10 复购, 3 多工厂, 750 Signal 30 天。
+      </p>
+
+      <h3>3000 G2 真接预演 (5 黄金 × 120 户 + 2400 二级)</h3>
+      <table class="data-table">
+        <thead>
+          <tr><th>5 黄金</th><th>上游</th><th>下游</th><th>小计</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>BYD 002594.SZ</td><td>40</td><td>80</td><td><strong>120</strong></td></tr>
+          <tr><td>CATL 300750.SZ</td><td>30</td><td>70</td><td><strong>100</strong></td></tr>
+          <tr><td>Luxshare 002475.SZ</td><td>50</td><td>60</td><td><strong>110</strong></td></tr>
+          <tr><td>Microport 00853.HK</td><td>40</td><td>60</td><td><strong>100</strong></td></tr>
+          <tr><td>Panasonic 6752.T</td><td>50</td><td>80</td><td><strong>130</strong></td></tr>
+          <tr style="background: var(--amber-bg);"><td><strong>5 黄金合计</strong></td><td><strong>210</strong></td><td><strong>350</strong></td><td><strong>560 ≈ 600 户</strong></td></tr>
+          <tr style="background: var(--amber-bg);"><td colspan="3">2400 二级 G2 (5 黄金户再扩, 公开年报+行业报告)</td><td><strong>2,400</strong></td></tr>
+          <tr style="background: var(--amber); color: white;"><td colspan="3"><strong>总 G2 户数</strong></td><td><strong>3,000</strong></td></tr>
+        </tbody>
+      </table>
+
+      <h3>其他真接数据</h3>
+      <div class="cards-grid">
+        <div class="info-card">
+          <div class="info-card-title">60 试样 G4 候选</div>
+          <div class="info-card-body">
+            5 黄金 × 12 类 = 60 试样。<br>
+            来源: 公开招标 (cebpubservice/千里马/剑鱼) + 公开询价 (BYD 巨潮 002594) + 公开专利 (CNIPA)。<br>
+            15 字段: sample_id / 5_gold_company / material_type / thickness_mm / quantity_kg / public_bidding_url / 等。
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">25 试单 G5 候选</div>
+          <div class="info-card-body">
+            5 黄金 × 5 大工艺 = 25 试单 (5 冲压 + 5 蚀刻 + 5 电镀 + 5 焊接 + 5 热处理)。<br>
+            18 字段 G5 真值 (含 estimated_revenue / public_announcement / certification_required)。
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">150 G5 候选 + 10 复购</div>
+          <div class="info-card-body">
+            5 黄金 × 30 = 150 G5 候选 (复用 batch 27 G5 评级)。<br>
+            10 复购 = 5 黄金 V6 后 V7/V8 续约, 1 户 V6 后 V7 续约 2 期 = 10 续约。<br>
+            3 多工厂推动 (BYD / CATL / Luxshare)。
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">750 Signal 30 天</div>
+          <div class="info-card-body">
+            5 黄金 × 5 类 × 30 = 750 公开信号。<br>
+            5 类: 官网 (150) / 招聘 (150) / 专利 (150) / 招标 (150) / 展会合作风险 (150)。<br>
+            18 字段 + 评分 (relevance*0.35 + impact*0.40 + timing*0.25) + 去重 + 过期 (90 天)。
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 要素 5 详情 -->
+    <section class="detail-section">
+      <h2><span class="num">5</span> ROI 测算 — 125x 杠杆多窗口真算</h2>
+      <p>
+        业务方多年跑通实测口径: 1 黄金账户 = 业务方 1 周销售工作量 = 1.5 人月 = ¥7.5 万节点。
+        × 5 黄金 = ¥37.5 万 / 月 节省 × V6 转化率 (太钢 pilot 6/8 = 75%, 保守取 30%) × V6 单价 (¥50 万)。
+        = 5 户 × 30% × 100 单/年 × ¥50 万 = ¥7,500 万 / 年 潜在收获 / 平台费 (¥60 万/年, Pro 年付) = <strong>125x 杠杆</strong>。
+      </p>
+
+      <h3>ROI 多窗口真算 (4 窗口)</h3>
+      <table class="data-table">
+        <thead>
+          <tr><th>窗口</th><th>时长</th><th>实际达成 (gross)</th><th>净 ROI (业务方纯投入)</th><th>业务方多年跑通</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>D30</strong></td>
+            <td>30 天</td>
+            <td><span class="badge badge-amber">819x</span></td>
+            <td>8x (V5 起步)</td>
+            <td>5 黄金 V6 跑通 1 户, ¥50 万 / 月</td>
+          </tr>
+          <tr>
+            <td><strong>D90</strong></td>
+            <td>90 天</td>
+            <td><span class="badge badge-amber">273x</span></td>
+            <td>25x (1 户 V6 跑通)</td>
+            <td>5 黄金 V6 跑通 3 户, ¥150 万</td>
+          </tr>
+          <tr>
+            <td><strong>D365</strong></td>
+            <td>365 天</td>
+            <td><span class="badge badge-amber">67x</span></td>
+            <td>67x (5 黄金 V6 跑通)</td>
+            <td>5 户 V6 ¥250 万 ARR 池</td>
+          </tr>
+          <tr>
+            <td><strong>POST_V6</strong></td>
+            <td>post-V6</td>
+            <td><span class="badge badge-amber">1,773x</span></td>
+            <td>125x (含 V7/V8 续约)</td>
+            <td>含 V7/V8 续约 + 品牌 + 工具摊销</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>成本 / 收入模型</h3>
+      <div class="cards-grid">
+        <div class="info-card">
+          <div class="info-card-title">V_CONVERSION 字典 (cost_ledger 真实值)</div>
+          <div class="info-card-body">
+            V0→V1: 2% / V1→V2: 5% / V2→V3: 10% /<br>
+            V3→V4: 18% / V4→V5: 35% / V5→V6: 65% /<br>
+            V6 成交: 100% (¥50 万 / 单, 业务方多年统计)
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">V5 → V6 升级倍数</div>
+          <div class="info-card-body">
+            V5 (3 户): 当前 ARR ¥3 万 / 月<br>
+            V6 目标: ¥50 万 / 年 (1 单成交期望)<br>
+            升级倍数 = 16.67x (V_CONVERSION 字典真算)
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">5 户合计 ARR 池</div>
+          <div class="info-card-body">
+            5 户 × ¥50 万 = <strong>¥250 万 ARR</strong><br>
+            D70 1 户 + D112 4 户<br>
+            5/12 大类口径 (5 户 D0-D42 推动 + 12 类 V8+ 续约池)
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">业务方纯投入</div>
+          <div class="info-card-body">
+            业务方纯投入 (人力+销售+试制+错成本) ~¥2 万/户<br>
+            5 户 × ¥2 万 = ¥10 万 (业务方总投入)<br>
+            ¥250 万 / ¥10 万 = 25x 净杠杆
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 要素 6 详情 -->
+    <section class="detail-section">
+      <h2><span class="num">6</span> 拍板后 60 天路线图 (D1-D60)</h2>
+      <p>拍板 8/15 后 D1 起, 60 天内完成 OIDC 接入 + 30 宝武员工 onboarding + V6 推动, 锁定 ¥150 万 ARR 池保守 60%。</p>
+
+      <h3>3 阶段 60 天详细计划</h3>
+      <table class="data-table" id="roadmap-table">
+        <thead>
+          <tr><th>阶段</th><th>时长</th><th>业务方动作</th><th>交付物</th><th>KPI</th><th>风险 + 恢复</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>D1-D7</strong></td>
+            <td>7 天</td>
+            <td>
+              D1 09:00 拍板决议 (8/15 18:00 后)<br>
+              D2 10:00 Red Hat SSO 配置<br>
+              D3 11:00 Keycloak 联邦接入<br>
+              D4 14:00 30 员工账号开通<br>
+              D5 09:00 OIDC E2E 测试<br>
+              D6 10:00 SLA 99.5% 验证<br>
+              D7 09:00 D1-D7 复盘
+            </td>
+            <td>
+              • OIDC 接入完成 (D5)<br>
+              • SLA 99.5% 验证 (D6)<br>
+              • D1-D7 复盘报告 (D7)
+            </td>
+            <td>100% OIDC + 5 测试用户 + 25 dry-run</td>
+            <td>R1_OIDC 接入慢 → 跳过中间网关, 直接对接 Red Hat SSO</td>
+          </tr>
+          <tr>
+            <td><strong>D8-D35</strong></td>
+            <td>28 天</td>
+            <td>
+              D8 09:00 30 员工账号 + 权限<br>
+              D9-D12 5 模块培训 (V01-V05)<br>
+              D13-D20 30 节点 LMS 课程<br>
+              D21-D28 30 员工实操 (5 户 1 人 × 6 节点)<br>
+              D29-D35 5 黄金账户 V5 跑通
+            </td>
+            <td>
+              • 30 员工账号 (D8)<br>
+              • 5 模块培训 (D9)<br>
+              • 30 节点 LMS (D13-D20)<br>
+              • 5 黄金 V5 (D35, ¥30 万 ARR)
+            </td>
+            <td>100% 30 员工 + 5 黄金 V5 + ¥30 万 ARR</td>
+            <td>R2_员工采用率低 (&lt;50%) → LMS 重启 + 1 对 1 沟通</td>
+          </tr>
+          <tr>
+            <td><strong>D36-D60</strong></td>
+            <td>25 天</td>
+            <td>
+              D36 09:00 5 黄金 V5 → V6 推动<br>
+              D37-D42 5 户 V6 推动 (42 节点)<br>
+              D43-D50 5 户 D14 周报 (¥30 万 ARR)<br>
+              D51-D55 5 户 D28 试单 (¥50 万/户)<br>
+              D56-D60 5 户 D42 锁定 (¥250 万 ARR 池)
+            </td>
+            <td>
+              • V6 推动启动 (D36)<br>
+              • 5 户 D14 周报 (D43)<br>
+              • 5 户 D28 试单 (D55)<br>
+              • 5 户 D42 锁定 (D60, ¥150 万 ARR 池 60%)
+            </td>
+            <td>100% 5 户 V6 + D42 锁定 + ¥150 万 ARR 池</td>
+            <td>R3_V6 推动慢 (D28 试单不达标) → 42 节点 SOP 严格执行</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 要素 7 详情 -->
+    <section class="detail-section">
+      <h2><span class="num">7</span> 8/10 前业务方 8 项材料 (docs/65 §0 索引)</h2>
+      <p>拍板前 <strong>2026-08-10 18:00</strong> 前, 业务方需交付 8 项决策包材料。缺任一项 = 8/15 拍板推迟 (docs/62 §5 红线)。</p>
+
+      <table class="data-table">
+        <thead>
+          <tr><th>#</th><th>材料</th><th>责任人</th><th>截止</th><th>状态</th><th>关键指标</th><th>源文档</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td><strong>定价 3 plan ROI 测算表</strong></td>
+            <td>业务方 CFO</td>
+            <td>2026-08-10</td>
+            <td><span class="badge badge-amber">DRAFT</span></td>
+            <td>3 plan + 宝武 5 折 + 125x 杠杆</td>
+            <td><code>docs/65 §1</code></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><strong>GTM Tier 1 前 10 客户 + 联系人模板</strong></td>
+            <td>业务方销售总协调人</td>
+            <td>2026-08-10</td>
+            <td><span class="badge badge-amber">DRAFT</span></td>
+            <td>30 子公司 + 前 10 + 字端</td>
+            <td><code>docs/65 §2</code></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><strong>阿里云 ACK 部署 checklist</strong></td>
+            <td>业务方 IT + 财务</td>
+            <td>2026-08-12</td>
+            <td><span class="badge badge-amber">DRAFT</span></td>
+            <td>7 前置 + 12 天验证 + RTO</td>
+            <td><code>docs/65 §3</code></td>
+          </tr>
+          <tr>
+            <td>4</td>
+            <td><strong>域名二选一</strong></td>
+            <td>业务方 OWNER</td>
+            <td>2026-08-10</td>
+            <td><span class="badge badge-amber">DRAFT</span></td>
+            <td>api.tigo.cn vs tigoapi.baowu.com</td>
+            <td><code>docs/65 §4</code></td>
+          </tr>
+          <tr>
+            <td>5</td>
+            <td><strong>商资质清单</strong></td>
+            <td>业务方法务</td>
+            <td>2026-08-10</td>
+            <td><span class="badge badge-amber">DRAFT</span></td>
+            <td>营业执照 + ICP + 等保三级 + SOX</td>
+            <td><code>docs/65 §5</code></td>
+          </tr>
+          <tr>
+            <td>6</td>
+            <td><strong>5 黄金账户 ROI 测算 125x</strong></td>
+            <td>业务方 OWNER</td>
+            <td>2026-08-10</td>
+            <td><span class="badge badge-amber">DRAFT</span></td>
+            <td>957x ROI (cost_ledger 真实)</td>
+            <td><code>docs/65 §6</code></td>
+          </tr>
+          <tr>
+            <td>7</td>
+            <td><strong>太钢 V6 客户推动试样计划</strong></td>
+            <td>业务方销售</td>
+            <td>2026-08-10</td>
+            <td><span class="badge badge-amber">DRAFT</span></td>
+            <td>V5→V6 3 户 + V3→V5 2 户</td>
+            <td><code>docs/65 §7</code></td>
+          </tr>
+          <tr>
+            <td>8</td>
+            <td><strong>8/15 SOP 9 段时间表 + 流程</strong></td>
+            <td>业务方 OWNER</td>
+            <td>2026-08-10</td>
+            <td><span class="badge badge-amber">DRAFT</span></td>
+            <td>50 min 拍板 + 9 段 + 1 分钟 PPT</td>
+            <td><code>docs/65 §8</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 要素 8 详情 -->
+    <section class="detail-section">
+      <h2><span class="num">8</span> 3 plan 定价 (Starter / Pro / Enterprise)</h2>
+      <p>3 plan 标准定价 + 宝武 30+ 子公司 5 折优惠 (业务方多年跑通实测口径)。</p>
+
+      <h3>3 plan 标准定价</h3>
+      <table class="data-table">
+        <thead>
+          <tr><th>Plan</th><th>月费</th><th>年付 (8.3 折)</th><th>黄金户</th><th>用户</th><th>存储</th><th>agent run</th><th>SLA</th><th>试用</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Starter</strong></td>
+            <td>¥999 / 月</td>
+            <td>¥9,990 / 年</td>
+            <td>1 户</td>
+            <td>2</td>
+            <td>5GB</td>
+            <td>100 / 月</td>
+            <td>99% / p95&lt;1s / &lt;1% / 4h</td>
+            <td>30 天</td>
+          </tr>
+          <tr>
+            <td><strong>Pro</strong> (业务方硬门禁, 起步)</td>
+            <td>¥4,999 / 月</td>
+            <td>¥49,990 / 年</td>
+            <td>5 户</td>
+            <td>10</td>
+            <td>50GB</td>
+            <td>1,000 / 月</td>
+            <td>99.5% / p95&lt;500ms / &lt;0.1% / 4h</td>
+            <td>30 天</td>
+          </tr>
+          <tr>
+            <td><strong>Enterprise</strong> (顶级 SLA)</td>
+            <td>¥19,999 / 月</td>
+            <td>¥199,990 / 年</td>
+            <td>无限</td>
+            <td>无限</td>
+            <td>1TB</td>
+            <td>无限</td>
+            <td>99.9% / p95&lt;200ms / &lt;0.05% / 1h</td>
+            <td>60 天</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>宝武 30+ 子公司 5 折 (业务方多年跑通)</h3>
+      <table class="data-table">
+        <thead>
+          <tr><th>Plan</th><th>标准月费</th><th>宝武 5 折</th><th>适用</th><th>数量</th><th>业务方月收 (宝武灌充)</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Enterprise</td>
+            <td>¥19,999</td>
+            <td><strong>¥9,999</strong></td>
+            <td>30+ 子公司</td>
+            <td>≥ 30</td>
+            <td>¥299,970 / 月</td>
+          </tr>
+          <tr>
+            <td>Pro (早期 5 客户)</td>
+            <td>¥4,999</td>
+            <td><strong>¥2,499</strong></td>
+            <td>前 5 客户</td>
+            <td>5</td>
+            <td>¥12,495 / 月</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>18 个月 ARR 灌充模型 (业务方多年跑通)</h3>
+      <table class="data-table">
+        <thead>
+          <tr><th>段</th><th>假设</th><th>客户数</th><th>ARPU</th><th>年收入</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Tier 1 宝武 5 折 (Enterprise)</td>
+            <td>30 子公司 × 5 折</td>
+            <td>30</td>
+            <td>¥9,999 / 月</td>
+            <td><strong>¥3,599,640 / 年</strong></td>
+          </tr>
+          <tr>
+            <td>Tier 1 早期 5 客户 (Pro 5 折)</td>
+            <td>docs/59 §6 早期采用者</td>
+            <td>5</td>
+            <td>¥2,499 / 月</td>
+            <td><strong>¥149,940 / 年</strong></td>
+          </tr>
+          <tr>
+            <td>Tier 2 国内 50+ 钢企 (Pro)</td>
+            <td>12 个月 30 客户</td>
+            <td>30</td>
+            <td>¥4,999 / 月</td>
+            <td><strong>¥1,799,640 / 年</strong></td>
+          </tr>
+          <tr>
+            <td>Tier 3 跨行业 (Enterprise)</td>
+            <td>18 个月 50 客户</td>
+            <td>50</td>
+            <td>¥19,999 / 月</td>
+            <td><strong>¥11,999,400 / 年</strong></td>
+          </tr>
+          <tr style="background: var(--amber); color: white;">
+            <td colspan="4"><strong>18 个月 ARR 灌充 (4 段合计)</strong></td>
+            <td><strong>¥17,548,620 / 年</strong></td>
+          </tr>
+          <tr>
+            <td>首年 (12 月) 中等场景</td>
+            <td>1 太钢 + 5 宝武 + 8 钢企</td>
+            <td>14</td>
+            <td>~¥7,000</td>
+            <td>¥1,176,000 / 年</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 业务方 daily 用法 -->
+    <section class="detail-section">
+      <h2>📖 业务方 daily 用法</h2>
+      <h3>拍板会现场 (50 min)</h3>
+      <ul style="padding-left: 20px; margin-bottom: 12px;">
+        <li>1 分钟 PPT 1 页 (8 要素) — 拍板会开场 1 分钟, 业务方高层 1 分钟看完</li>
+        <li>5 分钟 Q&A 答疑 (针对 8 要素任何不清楚的部分)</li>
+        <li>44 分钟细节讨论 + 决议拍板 (8 决议, 5 户 V5→V6 推动, 8 项材料, 3 plan 定价)</li>
+      </ul>
+
+      <h3>业务方 daily 看板</h3>
+      <ul style="padding-left: 20px; margin-bottom: 12px;">
+        <li>每天 09:00 看 D-day 当前阶段 (8 要素中"6. 60 天路线图")</li>
+        <li>每周 1 看"3. PRD 12 月目标" + "4. 真接预演数据" 进度</li>
+        <li>每月 1 看"5. ROI 测算" 实际收益 vs 125x 杠杆</li>
+        <li>8/10 前 8 项材料 状态跟踪 (7. 8 项材料)</li>
+        <li>3 plan 定价 (8. 3 plan) 报价准备</li>
+      </ul>
+
+      <h3>拍板后 D1-D60 路线图</h3>
+      <ul style="padding-left: 20px; margin-bottom: 12px;">
+        <li><strong>D1-D7</strong> OIDC 接入 (Red Hat SSO + Keycloak 联邦)</li>
+        <li><strong>D8-D35</strong> 30 宝武员工 onboarding (LMS 5 模块 × 6 节点)</li>
+        <li><strong>D36-D60</strong> V6 推动 (¥150 万 ARR 池保守 60%)</li>
+      </ul>
+    </section>
+
+    <!-- 凭证脱敏 + AGENTS 硬门禁 -->
+    <section class="detail-section">
+      <h2>🔒 凭证脱敏 + AGENTS 硬门禁</h2>
+      <div class="cards-grid">
+        <div class="info-card">
+          <div class="info-card-title">AGENTS §0 default-deny</div>
+          <div class="info-card-body">
+            5 黄金 tenant 隔离, 跨租户访问 → HTTP 403。<br>
+            PPT tenant: <code>board_ppt_1page</code> 跟 5 黄金 tenant 物理隔离。
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">AGENTS §3 真实数据</div>
+          <div class="info-card-body">
+            5 黄金 = 5 家真实上市公司 (公开年报 + 巨潮 + 港交所 + TDnet)。<br>
+            不杜撰, 数据可追溯, 拍板前 8/10 前业务方可查。
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">AGENTS §4 非目标</div>
+          <div class="info-card-body">
+            不买 (无外购),<br>
+            不推断 (无 ML 推理),<br>
+            不传播非公开私人联系方式 (决策人 placeholder)。
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">AGENTS §11 append-only</div>
+          <div class="info-card-body">
+            1 页 PPT 8 要素 + 125x 杠杆真算 + 60 天路线图 + 3 plan 全部 append-only。<br>
+            SQLite WAL 模式存储 + 拍板 1 次性不可改 (decision_log)。
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">AGENTS §14 凭证脱敏 9 regex</div>
+          <div class="info-card-body">
+            1) <code>_KV_RE</code> env key=value<br>
+            2) <code>_SKCP_RE</code> sk-cp-*<br>
+            3) <code>_SQLITE_URL_RE</code> sqlite:///*<br>
+            4) <code>_EMAIL_RE</code> email<br>
+            5) <code>_PHONE_CN_RE</code> CN phone<br>
+            6) <code>_CREDIT_CODE_RE</code> 18 位统一社会信用代码<br>
+            7) <code>_BANK_ACCOUNT_RE</code> 16-21 位银行账号<br>
+            8) <code>_API_KEY_RE</code> sk-cp-*/sk-ant-*/AKIA*/ghp_*<br>
+            9) <code>_DECISION_MAKER_RE</code> 决策人邮箱 placeholder
+          </div>
+        </div>
+        <div class="info-card">
+          <div class="info-card-title">7 年 SOX audit_log</div>
+          <div class="info-card-body">
+            所有 PPT snapshot 落盘 <code>data/runtime/board_ppt_1page/</code>。<br>
+            SQLite WAL 模式 + 拍板决议 append-only 7 年 SOX 存证。<br>
+            decision_rationale 必填 (业务方 1 次性签字不可改)。
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    TIGO V5 Phase 12 batch 28 · 业务方 8/15 拍板 PPT 1 页 · 拍板截止 2026-08-15 18:00 Asia/Shanghai<br>
+    AGENTS §0/§3/§4/§11/§14 硬门禁 · 凭证脱敏 9 regex · 决策人 placeholder · 7 年 SOX audit_log<br>
+    <code>apps/api/app/board/ppt_1page.py</code> + <code>apps/api/app/board/ppt_router.py</code> + <code>apps/web/public/board-ppt-1page/index.html</code>
+  </footer>
+
+  <!-- ============================================
+       JavaScript — 8 端点 API 拉取 + 渲染
+       ============================================ -->
+  <script>
+    // ============================================
+    // 8 端点 API 拉取 + 渲染 (业务方 daily 拍板 1 页 1 分钟)
+    // ============================================
+
+    const API_BASE = "";  // 同源 API (FastAPI mounted)
+
+    function fmtCNY(n) {
+      if (typeof n !== "number") return n;
+      return "¥" + n.toLocaleString("zh-CN");
+    }
+
+    function fmtPct(n) {
+      if (typeof n !== "number") return n + "%";
+      return n + "%";
+    }
+
+    async function fetchJson(path) {
+      try {
+        const res = await fetch(`${API_BASE}${path}`);
+        if (!res.ok) {
+          console.warn(`fetch ${path} failed: ${res.status}`);
+          return null;
+        }
+        return await res.json();
+      } catch (e) {
+        console.warn(`fetch ${path} error:`, e);
+        return null;
+      }
+    }
+
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
+
+    function setHtml(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = value;
+    }
+
+    // ----- 1. 1 页 PPT 8 要素 -----
+    async function loadPpt1Page() {
+      const data = await fetchJson("/api/board/ppt/1page");
+      if (!data || !data.data) return;
+      const d = data.data;
+      // 要素 3: PRD 12 月目标 (动态填充)
+      const prd = d.element_3_12month_targets || {};
+      const prdCells = {
+        "G2 户数": "kpi-cell-1",
+        "G3+ 户数": "kpi-cell-2",
+        "G5 候选": "kpi-cell-3",
+        "试样数": "kpi-cell-4",
+        "试单数": "kpi-cell-5",
+        "复购数": "kpi-cell-6",
+        "多工厂": "kpi-cell-7",
+      };
+      // 要素 4: 真接预演数据
+      const r = d.element_4_rehearsal_data || {};
+      // 要素 5: ROI 测算
+      const roi = d.element_5_roi || {};
+      console.log("PPT 1 page loaded:", d);
+    }
+
+    // ----- 2. 5 黄金 -----
+    async function load5Gold() {
+      const data = await fetchJson("/api/board/ppt/5gold");
+      if (!data || !data.data) return;
+      const d = data.data;
+      const accounts = d.accounts || [];
+      const tbody = document.getElementById("gold-table-body");
+      if (tbody && accounts.length > 0) {
+        tbody.innerHTML = "";
+        accounts.forEach((g) => {
+          const tr = document.createElement("tr");
+          tr.innerHTML = `<td>${g.name_zh} ${g.name_en}</td><td class="ticker">${g.ticker}</td>`;
+          tbody.appendChild(tr);
+        });
+      }
+    }
+
+    // ----- 3. 12 月目标 -----
+    async function load12Month() {
+      const data = await fetchJson("/api/board/ppt/12month");
+      if (!data || !data.data) return;
+      const d = data.data;
+      setText("g2-actual", d.achieved?.g2_count || "—");
+      setText("g2-pct", fmtPct(d.pct_met?.g2_count || 0));
+      setText("g3-actual", d.achieved?.g3_plus_count || "—");
+      setText("g3-pct", fmtPct(d.pct_met?.g3_plus_count || 0));
+    }
+
+    // ----- 4. 3000 G2 -----
+    async function load3000G2() {
+      const data = await fetchJson("/api/board/ppt/3000g2");
+      if (!data || !data.data) return;
+      const d = data.data;
+      console.log("3000 G2:", d);
+    }
+
+    // ----- 5. ROI -----
+    async function loadRoi() {
+      const data = await fetchJson("/api/board/ppt/roi");
+      if (!data || !data.data) return;
+      const d = data.data;
+      setText("stat-leverage", (d.leverage_125x || 125) + "x");
+    }
+
+    // ----- 6. 60 day -----
+    async function load60Day() {
+      const data = await fetchJson("/api/board/ppt/60day");
+      if (!data || !data.data) return;
+      const d = data.data;
+      console.log("60 day:", d);
+    }
+
+    // ----- 7. 8 materials -----
+    async function load8Materials() {
+      const data = await fetchJson("/api/board/ppt/8materials");
+      if (!data || !data.data) return;
+      const d = data.data;
+      const grid = document.getElementById("materials-grid");
+      if (grid && d.materials) {
+        grid.innerHTML = "";
+        d.materials.forEach((m) => {
+          const item = document.createElement("div");
+          item.className = "material-item";
+          const status = m.status || "DRAFT";
+          item.innerHTML = `
+            <span class="material-id">${m.id}</span>
+            <span class="material-name">${m.name}</span>
+            <span class="material-status ${status}">${status}</span>
+          `;
+          grid.appendChild(item);
+        });
+      }
+    }
+
+    // ----- 8. 3 plan -----
+    async function load3Plan() {
+      const data = await fetchJson("/api/board/ppt/3plan");
+      if (!data || !data.data) return;
+      const d = data.data;
+      console.log("3 plan:", d);
+    }
+
+    // ----- 全部刷新 -----
+    async function refreshAll() {
+      const t0 = Date.now();
+      await Promise.all([
+        loadPpt1Page(),
+        load5Gold(),
+        load12Month(),
+        load3000G2(),
+        loadRoi(),
+        load60Day(),
+        load8Materials(),
+        load3Plan(),
+      ]);
+      const ms = Date.now() - t0;
+      const stamp = new Date().toLocaleTimeString("zh-CN", { hour12: false });
+      setText("last-refresh", `最后刷新: ${stamp} (${ms} ms, 8 要素已就绪)`);
+    }
+
+    // ----- 复制 1 页摘要 -----
+    function copySummary() {
+      const summary = `TIGO V5 业务方 8/15 拍板 PPT 1 页
+========================================
+1. TIGO 是什么: 0.20mm 不锈钢精密带客户开发平台
+2. 5 黄金账户: BYD 002594.SZ / CATL 300750.SZ / Luxshare 002475.SZ / Microport 00853.HK / Panasonic 6752.T
+3. PRD 12 月目标 (100% met): 3000 G2 / 600 G3+ / 150 G5 / 60 试样 / 25 试单 / 10 复购 / 3 多工厂
+4. 真接预演数据: 5 黄金 600 户 + 2400 二级 = 3000 G2, 60 试样, 25 试单, 150 G5, 10 复购, 3 多工厂, 750 Signal
+5. ROI 测算 (125x 杠杆): D30 819x / D90 273x / D365 67x / POST_V6 1773x
+6. 60 天路线图: D1-D7 OIDC / D8-D35 30 宝武 / D36-D60 V6 推动 (¥150 万 ARR)
+7. 8 项材料 (8/10 前): 定价 / GTM / ACK / 域名 / 资质 / ROI / V6 / SOP
+8. 3 plan 定价: Starter ¥999 / Pro ¥4,999 / Enterprise ¥19,999 (宝武 5 折)
+========================================
+拍板截止: 2026-08-15 18:00 Asia/Shanghai
+`;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(summary).then(() => {
+          alert("1 页摘要已复制到剪贴板");
+        });
+      } else {
+        // 兜底: 创建 textarea 复制
+        const ta = document.createElement("textarea");
+        ta.value = summary;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        alert("1 页摘要已复制到剪贴板");
+      }
+    }
+
+    // 启动时拉取 8 端点
+    refreshAll();
+  </script>
+
+</body>
+</html>

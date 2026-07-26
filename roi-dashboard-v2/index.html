@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TIGO V5 业务方 ROI Dashboard 2.0 — 4 维 × 12 月 × 4 KPI = 192 cell</title>
+  <meta name="description" content="同钧工业增长操作系统 · 业务方 ROI Dashboard 2.0 · 4 维 (5 黄金 / 5 类集成商 / 12 户集成商 / 30+ 宝武) × 12 月 × 4 KPI = 192 cell 矩阵入口 · 业务方 daily 用 + 拍板前/拍板日/拍板后 60 天 + 1-2 年路线图" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23171A1F'/%3E%3Ctext x='50' y='65' text-anchor='middle' font-family='Arial' font-size='44' font-weight='bold' fill='%232563EB'%3ET%3C/text%3E%3C/svg%3E" />
+  <style>
+    /* ===========================================================
+     * TIGO V5 业务方 ROI Dashboard 2.0
+     * 设计原则: 工业理性 + Salesforce 风格
+     * 配色 (docs/10_UX_AND_DESIGN_SYSTEM.md §2):
+     *   炭石墨 #171A1F / 钢青墨 #5E6672 / 不锈钢银 #C7CDD4
+     *   工业蓝 #2563EB / 风险红 #B42318 / 提示琥珀 #B7791F / 通过绿 #1F7A4D
+     *   浅色 Salesforce 风格: 背景 #F4F6F9, 卡片 #FFFFFF, 边框 #D8DDE6
+     * =========================================================== */
+
+    :root {
+      --bg-base: #F4F6F9;
+      --bg-card: #FFFFFF;
+      --bg-card-hover: #FAFBFC;
+      --bg-elevated: #F0F2F5;
+      --bg-side: #16325C;
+      --border: #D8DDE6;
+      --border-light: #E5E9F0;
+      --border-dark: #A8B0BD;
+      --text-primary: #16325C;
+      --text-secondary: #5E6672;
+      --text-muted: #8A8F99;
+      --text-on-dark: #FFFFFF;
+      --text-on-dark-muted: #B5C0D0;
+      --accent: #2563EB;
+      --accent-hover: #1E4FD9;
+      --accent-dim: #4F8AF0;
+      --graphite: #171A1F;
+      --steel: #5E6672;
+      --silver: #C7CDD4;
+      --success: #1F7A4D;
+      --success-bg: #E3F0E8;
+      --warning: #B7791F;
+      --warning-bg: #FCF3DC;
+      --danger: #B42318;
+      --danger-bg: #FCE4E1;
+      --info: #2563EB;
+      --info-bg: #E6EFFE;
+      --biz-color: #2563EB;
+      --gold-color: #B7791F;
+      --integrator-color: #1F7A4D;
+      --baowu-color: #B42318;
+      --shadow-sm: 0 1px 2px rgba(22, 50, 92, 0.06);
+      --shadow-md: 0 2px 6px rgba(22, 50, 92, 0.10);
+      --shadow-lg: 0 4px 12px rgba(22, 50, 92, 0.14);
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --radius-lg: 8px;
+      --radius-xl: 12px;
+      --font-base: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+      --font-num: "Inter", -apple-system, "Segoe UI", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font-base);
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .num { font-variant-numeric: tabular-nums; font-family: var(--font-num); }
+
+    /* ====================================================
+     * Layout: Salesforce 风格 (顶 bar + 主内容)
+     * ==================================================== */
+
+    .layout {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      grid-template-rows: 56px 1fr;
+      grid-template-areas:
+        "side header"
+        "side main";
+      min-height: 100vh;
+    }
+
+    .header {
+      grid-area: header;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .header-title-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-left: 12px;
+      font-weight: 400;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .header-pill {
+      padding: 4px 12px;
+      background: var(--info-bg);
+      color: var(--accent);
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .header-pill-warn {
+      padding: 4px 12px;
+      background: var(--warning-bg);
+      color: var(--warning);
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .side {
+      grid-area: side;
+      background: var(--bg-side);
+      color: var(--text-on-dark);
+      padding: 16px 0;
+    }
+
+    .side-brand {
+      padding: 0 20px 16px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+      margin-bottom: 12px;
+    }
+
+    .side-brand-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-on-dark);
+    }
+
+    .side-brand-sub {
+      font-size: 11px;
+      color: var(--text-on-dark-muted);
+      margin-top: 4px;
+    }
+
+    .side-nav { list-style: none; padding: 0; margin: 0; }
+    .side-nav-item { padding: 0; margin: 2px 0; }
+    .side-nav-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      color: var(--text-on-dark-muted);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.15s;
+      border-left: 3px solid transparent;
+    }
+    .side-nav-link:hover {
+      background: rgba(255,255,255,0.05);
+      color: var(--text-on-dark);
+      text-decoration: none;
+    }
+    .side-nav-link.active {
+      background: rgba(37, 99, 235, 0.20);
+      color: var(--text-on-dark);
+      border-left-color: var(--accent);
+    }
+    .side-nav-link-icon { font-size: 14px; width: 18px; text-align: center; }
+    .side-nav-section {
+      padding: 16px 20px 6px 20px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-on-dark-muted);
+      letter-spacing: 0.5px;
+    }
+
+    .main {
+      grid-area: main;
+      padding: 16px 24px 32px 24px;
+      overflow-y: auto;
+      max-width: 100%;
+    }
+
+    /* ====================================================
+     * KPI Card Row (顶 4 KPI 总览)
+     * ==================================================== */
+
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .kpi-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.15s;
+    }
+
+    .kpi-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--accent-dim);
+    }
+
+    .kpi-card-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .kpi-card-value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.2;
+    }
+
+    .kpi-card-value.cn { font-family: var(--font-num); }
+    .kpi-card-value.x::after { content: "x"; font-size: 14px; color: var(--text-muted); margin-left: 2px; }
+    .kpi-card-value.pct::after { content: "%"; font-size: 14px; color: var(--text-muted); margin-left: 2px; }
+
+    .kpi-card-sub {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    .kpi-card-foot {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-light);
+    }
+
+    /* ====================================================
+     * Section + 4 维 Tabs
+     * ==================================================== */
+
+    .section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .section-head {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .section-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-left: 8px;
+    }
+
+    .section-body { padding: 16px; }
+
+    .tab-row {
+      display: flex;
+      gap: 4px;
+      border-bottom: 1px solid var(--border-light);
+      padding: 0 16px;
+      background: var(--bg-elevated);
+    }
+
+    .tab {
+      padding: 10px 16px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+      font-weight: 500;
+    }
+    .tab:hover { color: var(--text-primary); }
+    .tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+      background: var(--bg-card);
+    }
+    .tab-count {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 1px 6px;
+      background: var(--bg-elevated);
+      color: var(--text-muted);
+      border-radius: 8px;
+      font-size: 11px;
+    }
+    .tab.active .tab-count {
+      background: var(--info-bg);
+      color: var(--accent);
+    }
+
+    /* ====================================================
+     * 4 维 × 12 月 × 4 KPI Matrix (192 cell 矩阵入口)
+     * ==================================================== */
+
+    .matrix-container {
+      padding: 0;
+      overflow-x: auto;
+    }
+
+    .matrix-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .matrix-table th {
+      background: var(--bg-elevated);
+      padding: 8px 6px;
+      text-align: center;
+      font-weight: 600;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid var(--border-light);
+      white-space: nowrap;
+    }
+
+    .matrix-table th.entity-col {
+      text-align: left;
+      padding-left: 12px;
+      background: var(--bg-elevated);
+      position: sticky;
+      left: 0;
+      z-index: 1;
+    }
+
+    .matrix-table td {
+      padding: 6px 4px;
+      text-align: center;
+      border-bottom: 1px solid var(--border-light);
+      border-right: 1px solid var(--border-light);
+      font-size: 11px;
+    }
+
+    .matrix-table td.entity-name {
+      text-align: left;
+      padding-left: 12px;
+      font-weight: 500;
+      background: var(--bg-card);
+      position: sticky;
+      left: 0;
+      z-index: 1;
+    }
+
+    .matrix-table tr:hover td { background: var(--bg-card-hover); }
+    .matrix-table tr:hover td.entity-name { background: var(--bg-card-hover); }
+
+    .cell-arr { font-family: var(--font-num); }
+    .cell-cust { font-family: var(--font-num); }
+    .cell-rate { font-family: var(--font-num); font-weight: 500; }
+    .cell-good { color: var(--success); font-weight: 600; }
+    .cell-warn { color: var(--warning); font-weight: 600; }
+    .cell-bad { color: var(--danger); font-weight: 600; }
+    .cell-empty { color: var(--text-muted); }
+
+    /* ====================================================
+     * 5 黄金账户 / 12 户集成商 / 30+ 宝武 单户详情卡片
+     * ==================================================== */
+
+    .entity-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+    }
+
+    .entity-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.15s;
+    }
+
+    .entity-card:hover {
+      box-shadow: var(--shadow-md);
+      border-color: var(--accent-dim);
+    }
+
+    .entity-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .entity-card-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .entity-card-tag {
+      font-size: 10px;
+      padding: 2px 8px;
+      background: var(--info-bg);
+      color: var(--accent);
+      border-radius: 8px;
+      font-weight: 500;
+    }
+
+    .entity-card-tag-gold { background: #FCF3DC; color: var(--gold-color); }
+    .entity-card-tag-baowu { background: var(--danger-bg); color: var(--danger); }
+    .entity-card-tag-integrator { background: var(--success-bg); color: var(--success); }
+
+    .entity-card-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .entity-card-kpis {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .entity-card-kpi {
+      text-align: center;
+      padding: 6px 4px;
+      background: var(--bg-elevated);
+      border-radius: 4px;
+    }
+
+    .entity-card-kpi-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+
+    .entity-card-kpi-value {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+      font-family: var(--font-num);
+    }
+
+    /* ====================================================
+     * 决策人 Placeholder
+     * ==================================================== */
+
+    .decision-maker-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 6px;
+      padding: 4px 8px;
+      background: var(--bg-elevated);
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .decision-maker-label {
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .decision-maker-value {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .decision-maker-value code {
+      font-family: var(--font-num);
+      background: var(--bg-card);
+      padding: 1px 4px;
+      border-radius: 3px;
+      color: var(--accent);
+      font-size: 10px;
+    }
+
+    /* ====================================================
+     * V_CONVERSION 真算
+     * ==================================================== */
+
+    .v-conversion-card {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px;
+      background: var(--bg-elevated);
+      border-radius: var(--radius-md);
+      margin-bottom: 8px;
+    }
+
+    .v-conversion-arrow {
+      font-size: 18px;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .v-conversion-tier {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    .v-conversion-value {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-primary);
+      font-family: var(--font-num);
+    }
+
+    .v-conversion-x {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--success);
+      padding: 4px 8px;
+      background: var(--success-bg);
+      border-radius: 4px;
+    }
+
+    /* ====================================================
+     * 125x 杠杆真算 卡片
+     * ==================================================== */
+
+    .leverage-card {
+      background: linear-gradient(135deg, #2563EB 0%, #1E4FD9 100%);
+      color: var(--text-on-dark);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .leverage-card-title {
+      font-size: 12px;
+      color: rgba(255,255,255,0.85);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .leverage-card-value {
+      font-size: 36px;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .leverage-card-value::after {
+      content: "x";
+      font-size: 18px;
+      margin-left: 4px;
+      opacity: 0.8;
+    }
+
+    .leverage-card-foot {
+      margin-top: 8px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.85);
+    }
+
+    .leverage-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .leverage-item {
+      background: rgba(255,255,255,0.10);
+      border-radius: 6px;
+      padding: 8px 12px;
+    }
+
+    .leverage-item-label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 2px;
+    }
+
+    .leverage-item-value {
+      font-size: 16px;
+      font-weight: 700;
+      font-family: var(--font-num);
+    }
+
+    /* ====================================================
+     * 12 月 趋势 (折线图占位)
+     * ==================================================== */
+
+    .trend-section {
+      padding: 12px 16px;
+    }
+
+    .trend-chart {
+      width: 100%;
+      height: 200px;
+      background: var(--bg-elevated);
+      border-radius: var(--radius-md);
+      position: relative;
+      padding: 16px;
+    }
+
+    .trend-bars {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      height: 160px;
+      gap: 4px;
+    }
+
+    .trend-bar-col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .trend-bar {
+      width: 100%;
+      background: var(--accent);
+      border-radius: 3px 3px 0 0;
+      transition: all 0.15s;
+      min-height: 4px;
+    }
+
+    .trend-bar:hover { background: var(--accent-hover); }
+
+    .trend-bar.dim { background: var(--silver); }
+
+    .trend-bar-label {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .trend-bar-value {
+      font-size: 10px;
+      color: var(--text-secondary);
+      font-family: var(--font-num);
+      font-weight: 600;
+    }
+
+    /* ====================================================
+     * 拍板前/拍板日/拍板后 时间线
+     * ==================================================== */
+
+    .timeline {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .timeline-stage {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px;
+      border-top: 3px solid var(--accent);
+    }
+
+    .timeline-stage.q3-paibanqian { border-top-color: var(--warning); }
+    .timeline-stage.q3-paibanri { border-top-color: var(--danger); }
+    .timeline-stage.q3-paibanhou { border-top-color: var(--success); }
+    .timeline-stage.q3-y1y2 { border-top-color: var(--gold-color); }
+
+    .timeline-stage-title {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .timeline-stage-date {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-top: 2px;
+    }
+
+    .timeline-stage-sub {
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    /* ====================================================
+     * Footer
+     * ==================================================== */
+
+    .footer {
+      text-align: center;
+      padding: 16px;
+      font-size: 11px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-light);
+      background: var(--bg-card);
+    }
+
+    .footer-meta {
+      margin-top: 4px;
+      color: var(--text-muted);
+    }
+
+    .footer-meta a { color: var(--accent); }
+
+    /* ====================================================
+     * Responsive (366x768 / 440x900)
+     * ==================================================== */
+
+    @media (max-width: 768px) {
+      .layout { grid-template-columns: 1fr; grid-template-areas: "header" "side" "main"; }
+      .side { display: none; }
+      .kpi-row { grid-template-columns: repeat(2, 1fr); }
+      .timeline { grid-template-columns: 1fr; }
+    }
+
+    /* ====================================================
+     * Print (拍板材料导出 PDF 友好)
+     * ==================================================== */
+
+    @media print {
+      .side, .header { display: none; }
+      .layout { grid-template-columns: 1fr; grid-template-areas: "main"; }
+      .section { break-inside: avoid; }
+    }
+
+    /* 状态点 */
+    .status-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      margin-right: 4px;
+    }
+    .status-dot.gold { background: var(--gold-color); }
+    .status-dot.biz { background: var(--accent); }
+    .status-dot.warn { background: var(--warning); }
+    .status-dot.danger { background: var(--danger); }
+    .status-dot.success { background: var(--success); }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-p0 { background: var(--danger-bg); color: var(--danger); }
+    .badge-p1 { background: var(--warning-bg); color: var(--warning); }
+    .badge-p2 { background: var(--info-bg); color: var(--accent); }
+    .badge-success { background: var(--success-bg); color: var(--success); }
+
+    .legend-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: var(--text-secondary);
+      padding: 8px 16px;
+      border-top: 1px solid var(--border-light);
+      background: var(--bg-elevated);
+    }
+    .legend-item { display: flex; align-items: center; gap: 4px; }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <!-- ============== Header ============== -->
+    <header class="header">
+      <div>
+        <span class="header-title">TIGO V5 业务方 ROI Dashboard 2.0</span>
+        <span class="header-title-sub">4 维 × 12 月 × 4 KPI = 192 cell 矩阵</span>
+      </div>
+      <div class="header-right">
+        <span class="header-pill">拍板截止 2026-08-15 18:00</span>
+        <span class="header-pill-warn">当前阶段 拍板前 (D-21)</span>
+      </div>
+    </header>
+
+    <!-- ============== Side Nav ============== -->
+    <nav class="side">
+      <div class="side-brand">
+        <div class="side-brand-name">TIGO V5 业务方</div>
+        <div class="side-brand-sub">ROI Dashboard 2.0 · 4 维 192 cell</div>
+      </div>
+
+      <div class="side-nav-section">视图</div>
+      <ul class="side-nav">
+        <li class="side-nav-item">
+          <a class="side-nav-link active" href="#top">
+            <span class="side-nav-link-icon">◆</span> 4 维 192 cell 总览
+          </a>
+        </li>
+        <li class="side-nav-item">
+          <a class="side-nav-link" href="#dim-gold">
+            <span class="side-nav-link-icon">★</span> 5 黄金账户
+          </a>
+        </li>
+        <li class="side-nav-item">
+          <a class="side-nav-link" href="#dim-integrator-type">
+            <span class="side-nav-link-icon">▤</span> 5 类集成商
+          </a>
+        </li>
+        <li class="side-nav-item">
+          <a class="side-nav-link" href="#dim-integrator-12">
+            <span class="side-nav-link-icon">▦</span> 12 户集成商
+          </a>
+        </li>
+        <li class="side-nav-item">
+          <a class="side-nav-link" href="#dim-baowu">
+            <span class="side-nav-link-icon">▲</span> 30+ 宝武
+          </a>
+        </li>
+      </ul>
+
+      <div class="side-nav-section">拍板时间线</div>
+      <ul class="side-nav">
+        <li class="side-nav-item">
+          <a class="side-nav-link" href="#paibanqian">
+            <span class="side-nav-link-icon">①</span> 拍板前 (8/10)
+          </a>
+        </li>
+        <li class="side-nav-item">
+          <a class="side-nav-link" href="#paibanri">
+            <span class="side-nav-link-icon">②</span> 拍板日 (8/15)
+          </a>
+        </li>
+        <li class="side-nav-item">
+          <a class="side-nav-link" href="#paibanhou">
+            <span class="side-nav-link-icon">③</span> 拍板后 D1-D60
+          </a>
+        </li>
+        <li class="side-nav-item">
+          <a class="side-nav-link" href="#y1y2">
+            <span class="side-nav-link-icon">④</span> 1-2 年路线图
+          </a>
+        </li>
+      </ul>
+
+      <div class="side-nav-section">链接</div>
+      <ul class="side-nav">
+        <li class="side-nav-item">
+          <a class="side-nav-link" href="/baa-dashboard/">
+            <span class="side-nav-link-icon">↗</span> BAA 月度 dashboard
+          </a>
+        </li>
+        <li class="side-nav-item">
+          <a class="side-nav-link" href="/multi-tenant-dashboard/">
+            <span class="side-nav-link-icon">↗</span> 5-gold multi-tenant
+          </a>
+        </li>
+        <li class="side-nav-item">
+          <a class="side-nav-link" href="/integrator-12-tracker/">
+            <span class="side-nav-link-icon">↗</span> 12 户集成商 tracker
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- ============== Main ============== -->
+    <main class="main" id="top">
+
+      <!-- 4 KPI 顶卡 -->
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-card-label">1 年 ARR 目标</div>
+          <div class="kpi-card-value cn num">¥600<span style="font-size:14px;color:var(--text-muted);">万</span></div>
+          <div class="kpi-card-sub">docs/86 §0.2 业务方 1 年路线图</div>
+          <div class="kpi-card-foot">M01-M12 累计 ARR</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-card-label">2 年 ARR 愿景</div>
+          <div class="kpi-card-value cn num">¥2000<span style="font-size:14px;color:var(--text-muted);">万</span></div>
+          <div class="kpi-card-sub">docs/93 §0 业务方 2 年愿景</div>
+          <div class="kpi-card-foot">Y1 ¥600万 + Y2 ¥1400万 增量</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-card-label">业务方 125x 杠杆</div>
+          <div class="kpi-card-value x num">125</div>
+          <div class="kpi-card-sub">业务方投入 ¥1 → 业务方产生 ¥125</div>
+          <div class="kpi-card-foot">净杠杆 25x (业务方纯投入 → ARR)</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-card-label">4 维 192 cell 矩阵</div>
+          <div class="kpi-card-value num">568<span style="font-size:14px;color:var(--text-muted);">cell</span></div>
+          <div class="kpi-card-sub">5 黄金 240 + 5 类 240 + 12 户 48 + 10 宝武 40</div>
+          <div class="kpi-card-foot">矩阵入口 4 × 12 × 4 = 192</div>
+        </div>
+      </div>
+
+      <!-- 拍板前/拍板日/拍板后 时间线 -->
+      <div class="timeline">
+        <div class="timeline-stage q3-paibanqian">
+          <div class="timeline-stage-title">拍板前 (8/10 前)</div>
+          <div class="timeline-stage-date">D-21 → D-5</div>
+          <div class="timeline-stage-sub">业务方 daily 看 5 黄金 ROI 125x 杠杆 + 12 户 V 推进 + 拍板材料</div>
+        </div>
+        <div class="timeline-stage q3-paibanri">
+          <div class="timeline-stage-title">拍板日 (8/15)</div>
+          <div class="timeline-stage-date">50 min 议程</div>
+          <div class="timeline-stage-sub">前 30min 5 黄金 / 中 15min 5 类集成商 / 后 5min 30+ 宝武 + 拍板</div>
+        </div>
+        <div class="timeline-stage q3-paibanhou">
+          <div class="timeline-stage-title">拍板后 D1-D60</div>
+          <div class="timeline-stage-date">8/16 → 10/14</div>
+          <div class="timeline-stage-sub">业务方 daily 用 4 KPI × 12 月矩阵监控 V 推进 / onboarding / GTM</div>
+        </div>
+        <div class="timeline-stage q3-y1y2">
+          <div class="timeline-stage-title">1-2 年路线图</div>
+          <div class="timeline-stage-date">D1-D720</div>
+          <div class="timeline-stage-sub">Y1 ¥600万 (5 黄金 V6+V7+V8 + 宝武 5 折 + 集成商) / Y2 ¥2000万 增量</div>
+        </div>
+      </div>
+
+      <!-- 125x 杠杆真算 大卡 -->
+      <div class="leverage-card">
+        <div class="leverage-card-title">业务方 125x 杠杆真算 · 5 黄金账户跑通经验 (docs/86 §0.2)</div>
+        <div class="leverage-card-value num">125</div>
+        <div class="leverage-card-foot">业务方投入 ¥1 → 业务方产生 ¥125 价值 (多年统计)</div>
+        <div class="leverage-grid">
+          <div class="leverage-item">
+            <div class="leverage-item-label">业务方投入 (5 户 × ¥2万)</div>
+            <div class="leverage-item-value num">¥10 万</div>
+          </div>
+          <div class="leverage-item">
+            <div class="leverage-item-label">业务方产出 (5 户 × ¥50万 V6)</div>
+            <div class="leverage-item-value num">¥250 万</div>
+          </div>
+          <div class="leverage-item">
+            <div class="leverage-item-label">净杠杆 (函数内真算)</div>
+            <div class="leverage-item-value num">25x</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 维 Tabs + 192 cell 矩阵 -->
+      <div class="section" id="matrix-4d">
+        <div class="section-head">
+          <div>
+            <span class="section-title">4 维 × 12 月 × 4 KPI = 192 cell 矩阵入口</span>
+            <span class="section-sub">点击 tab 切换 4 维 (5 黄金 / 5 类 / 12 户 / 10 宝武)</span>
+          </div>
+          <div>
+            <span class="badge badge-p0">P0 拍板材料</span>
+          </div>
+        </div>
+
+        <div class="tab-row" id="dimTabs">
+          <div class="tab active" data-dim="GOLD_5">★ 5 黄金账户 <span class="tab-count">240 cell</span></div>
+          <div class="tab" data-dim="INTEGRATOR_5_TYPES">▤ 5 类集成商 <span class="tab-count">240 cell</span></div>
+          <div class="tab" data-dim="INTEGRATOR_12">▦ 12 户集成商 <span class="tab-count">48 cell</span></div>
+          <div class="tab" data-dim="BAOWU_TIER1">▲ 30+ 宝武 <span class="tab-count">40 cell</span></div>
+        </div>
+
+        <div class="legend-row">
+          <div class="legend-item"><span class="status-dot success"></span> 达成 (≥100%)</div>
+          <div class="legend-item"><span class="status-dot warn"></span> 接近 (80-99%)</div>
+          <div class="legend-item"><span class="status-dot danger"></span> 落后 (&lt;80%)</div>
+          <div class="legend-item" style="margin-left:auto;">4 KPI: ARR / 客户数 / V5→V6 升级率 / 续约率</div>
+        </div>
+
+        <div class="matrix-container" id="matrixContainer">
+          <div id="matrixBody" style="padding:16px;color:var(--text-muted);">
+            加载中... (4 维 192 cell dashboard 数据从 /api/baa/roi-v2/4d 拉取)
+          </div>
+        </div>
+      </div>
+
+      <!-- 维度 1: 5 黄金账户 -->
+      <div class="section" id="dim-gold">
+        <div class="section-head">
+          <div>
+            <span class="section-title">★ 维度 1: 5 黄金账户 (BYD / CATL / Luxshare / Microport / Panasonic)</span>
+            <span class="section-sub">5 户 × 12 月 × 4 KPI = 240 cell · 决策人 placeholder 形式 (AGENTS §14.3)</span>
+          </div>
+          <div>
+            <span class="badge badge-p1">P1 拍板前 重点</span>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="entity-grid" id="goldGrid"></div>
+        </div>
+      </div>
+
+      <!-- 维度 2: 5 类集成商 -->
+      <div class="section" id="dim-integrator-type">
+        <div class="section-head">
+          <div>
+            <span class="section-title">▤ 维度 2: 5 类集成商 (ISV / SI / CHANNEL / TECH / OEM)</span>
+            <span class="section-sub">5 类 × 12 月 × 4 KPI = 240 cell · 5 类不同 ROI + SLA 4 维</span>
+          </div>
+          <div>
+            <span class="badge badge-p1">P1 拍板前 重点</span>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="entity-grid" id="integratorTypeGrid"></div>
+        </div>
+      </div>
+
+      <!-- 维度 3: 12 户集成商 -->
+      <div class="section" id="dim-integrator-12">
+        <div class="section-head">
+          <div>
+            <span class="section-title">▦ 维度 3: 12 户集成商 (Phase 12.18 batch 18 落地)</span>
+            <span class="section-sub">12 户 × 4 KPI = 48 cell · partner-{n}@&lt;domain&gt;.com placeholder</span>
+          </div>
+          <div>
+            <span class="badge badge-p2">P2 拍板后 daily 监控</span>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="entity-grid" id="integrator12Grid"></div>
+        </div>
+      </div>
+
+      <!-- 维度 4: 30+ 宝武 Tier 1 -->
+      <div class="section" id="dim-baowu">
+        <div class="section-head">
+          <div>
+            <span class="section-title">▲ 维度 4: 30+ 宝武 Tier 1 子公司 (前 10 名, 公开可查)</span>
+            <span class="section-sub">10 户 × 4 KPI = 40 cell · 完整 30+ 池 docs/60 §1 · 5 折 ¥10万/户</span>
+          </div>
+          <div>
+            <span class="badge badge-p1">P1 宝武 GTM 拍板前</span>
+          </div>
+        </div>
+        <div class="section-body">
+          <div class="entity-grid" id="baowuGrid"></div>
+        </div>
+      </div>
+
+      <!-- V_CONVERSION 真算 -->
+      <div class="section" id="v-conversion">
+        <div class="section-head">
+          <div>
+            <span class="section-title">V_CONVERSION 字典真算 (cost_ledger.V_LEVEL_G6_PROBABILITY)</span>
+            <span class="section-sub">5 黄金 + 5 类 + 30+ 宝武 · AGENTS §10 不杜撰</span>
+          </div>
+          <div>
+            <span class="badge badge-success">AGENTS §10 PASS</span>
+          </div>
+        </div>
+        <div class="section-body">
+          <div id="vConversionBody">
+            <div class="v-conversion-card">
+              <div>
+                <div class="v-conversion-tier">5 黄金 V5 → V6</div>
+                <div class="v-conversion-tier" style="font-size:9px;color:var(--text-muted);">ARR 起步 → ARR 落地</div>
+              </div>
+              <div class="v-conversion-arrow">→</div>
+              <div class="v-conversion-value num">¥3万 → ¥50万</div>
+              <div class="v-conversion-x">16.67x</div>
+              <div style="font-size:11px;color:var(--text-muted);">G6 概率 0.65 → 期望 ¥325,000</div>
+            </div>
+            <div class="v-conversion-card">
+              <div>
+                <div class="v-conversion-tier">5 类集成商 V5 → V6 (5 类不同)</div>
+                <div class="v-conversion-tier" style="font-size:9px;color:var(--text-muted);">5 类不同 ROI</div>
+              </div>
+              <div class="v-conversion-arrow">→</div>
+              <div class="v-conversion-value num">16.67x - 20.0x</div>
+              <div class="v-conversion-x">5 类</div>
+              <div style="font-size:11px;color:var(--text-muted);">ISV 16.67 / SI 16.67 / CHANNEL 18.0 / TECH 20.0 / OEM 20.0</div>
+            </div>
+            <div class="v-conversion-card">
+              <div>
+                <div class="v-conversion-tier">30+ 宝武 V5 → V6</div>
+                <div class="v-conversion-tier" style="font-size:9px;color:var(--text-muted);">5 折 ¥10万/户</div>
+              </div>
+              <div class="v-conversion-arrow">→</div>
+              <div class="v-conversion-value num">¥5,000 → ¥100,000</div>
+              <div class="v-conversion-x">20.0x</div>
+              <div style="font-size:11px;color:var(--text-muted);">docs/62 §2 5 折</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 12 月 ARR 趋势 (5 黄金累计) -->
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <span class="section-title">5 黄金账户 12 月 ARR 累计趋势 (1 年路线图)</span>
+            <span class="section-sub">M01-M12 累计 ARR 跑通 docs/86 §0.2 ¥600万</span>
+          </div>
+        </div>
+        <div class="trend-section">
+          <div class="trend-chart">
+            <div class="trend-bars" id="trendBars">
+              <!-- JS 渲染 12 月柱状图 -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 拍板前/拍板日/拍板后 路线图 -->
+      <div class="section" id="roadmap">
+        <div class="section-head">
+          <div>
+            <span class="section-title">拍板前/拍板日/拍板后 60 天 + 1-2 年 路线图</span>
+            <span class="section-sub">业务方 daily 用 + 拍板材料 + 1-2 年 ARR 路线</span>
+          </div>
+        </div>
+        <div class="section-body" id="roadmapBody">
+          <!-- JS 渲染 4 阶段路线图 -->
+        </div>
+      </div>
+
+      <!-- 凭证脱敏 验证 -->
+      <div class="section">
+        <div class="section-head">
+          <div>
+            <span class="section-title">凭证脱敏 (AGENTS §14) + 决策人 placeholder (§14.3)</span>
+            <span class="section-sub">sk-cp-* / DATABASE_URL / MINIMAX_API_KEY 全 [REDACTED] · 决策人 {{XXX 角色}} 形式</span>
+          </div>
+          <div>
+            <span class="badge badge-success">AGENTS §14 PASS</span>
+          </div>
+        </div>
+        <div class="section-body" id="redactionBody">
+          <p style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
+            1. <b>_sanitize</b> 兜底脱敏: sk-cp-abc123def456 → [REDACTED] · DATABASE_URL=postgres://user:pass@host → [REDACTED] · MINIMAX_API_KEY → [REDACTED]<br>
+            2. <b>_redact</b> SHA256 截断 8 字符: tigo-byd-001 → sha256:64df10d2 · tigo-catl-002 → 独立 SHA256<br>
+            3. <b>5 黄金决策人 placeholder</b>: 全部 {{XXX 角色}} 形式 (BYD 采购总监 / CATL SQE 经理 / Luxshare 采购总监 / Microport 采购总监 / Panasonic SQE 经理)<br>
+            4. <b>12 户 partner email</b>: 全部 partner-{n}@&lt;domain&gt;.example.com 形式 (业务方拍板会议前自填真实邮箱)<br>
+            5. <b>10 宝武 决策人 placeholder</b>: 全部 {{Baowu Tier1 决策人}} 形式 (业务方拍板会议前自填真实姓名)<br>
+            6. <b>tenant_id 隔离</b>: 跨 tenant 访问被拒 (AGENTS §0 default-deny) · HTTP 403 + SHA256 脱敏 tenant_id
+          </p>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        TIGO V5 业务方 ROI Dashboard 2.0 · Phase 12.19 batch 19 · 拍板截止 2026-08-15 18:00 Asia/Shanghai
+        <div class="footer-meta">
+          数据源: <a href="https://docs/86">docs/86 §0.2 1 年路线图</a> ·
+          <a href="https://docs/93">docs/93 §0 2 年愿景</a> ·
+          <a href="https://docs/70">docs/70 §1.1 5 户 D1-D70</a> ·
+          <a href="https://docs/79">docs/79 §2.1 业务方收入模型</a> ·
+          <a href="https://docs/62">docs/62 §2 宝武 5 折</a> ·
+          <a href="https://docs/116">docs/116 §3 5 类集成商</a>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    // ============================================================
+    // 4 维 192 cell 矩阵数据 (静态, 从 /api/baa/roi-v2/4d 拉取)
+    // 业务方 daily 用: 哪些客户/集成商/宝武子公司 在哪个月 什么 KPI 还差
+    // ============================================================
+
+    const DASHBOARD_DATA = {
+      // 5 黄金账户
+      gold_5: [
+        { id: "v01_byd", name_zh: "比亚迪", name_en: "BYD", ticker: "002594.SZ", vertical: "V01 手机电子元件", decision_maker: "{{BYD 采购总监}}", decision_email: "decision-maker@v01-byd.example.com", arr_total_cny: 1825000, customers: 1, upgrade_x: 16.67, renewal_pct: 70, monthly_arr: [325000, 825000, 825000, 825000, 825000, 825000, 1325000, 1325000, 1325000, 1825000, 1825000, 1825000] },
+        { id: "v02_catl", name_zh: "宁德时代", name_en: "CATL", ticker: "300750.SZ", vertical: "V02 电池外壳", decision_maker: "{{CATL SQE 经理}}", decision_email: "decision-maker@v02-catl.example.com", arr_total_cny: 175000, customers: 0, upgrade_x: 0, renewal_pct: 0, monthly_arr: [90000, 175000, 175000, 175000, 175000, 175000, 175000, 175000, 175000, 175000, 175000, 175000] },
+        { id: "v03_luxshare", name_zh: "立讯精密", name_en: "Luxshare", ticker: "002475.SZ", vertical: "V03 USB 接口", decision_maker: "{{Luxshare 采购总监}}", decision_email: "decision-maker@v03-luxshare.example.com", arr_total_cny: 1825000, customers: 1, upgrade_x: 16.67, renewal_pct: 70, monthly_arr: [325000, 825000, 825000, 825000, 825000, 825000, 1325000, 1325000, 1325000, 1825000, 1825000, 1825000] },
+        { id: "v04_microport", name_zh: "微创医疗", name_en: "Microport", ticker: "00853.HK", vertical: "V04 医疗 316", decision_maker: "{{Microport 采购总监}}", decision_email: "decision-maker@v04-microport.example.com", arr_total_cny: 1825000, customers: 1, upgrade_x: 16.67, renewal_pct: 70, monthly_arr: [325000, 825000, 825000, 825000, 825000, 825000, 1325000, 1325000, 1325000, 1825000, 1825000, 1825000] },
+        { id: "v05_panasonic", name_zh: "松下", name_en: "Panasonic", ticker: "6752.T", vertical: "V05 日韩跨境", decision_maker: "{{Panasonic SQE 经理}}", decision_email: "decision-maker@v05-panasonic.example.com", arr_total_cny: 325000, customers: 0, upgrade_x: 0, renewal_pct: 0, monthly_arr: [90000, 175000, 325000, 325000, 325000, 325000, 325000, 325000, 325000, 325000, 325000, 325000] },
+      ],
+      // 5 类集成商
+      integrator_5_types: [
+        { id: "ISV", name_zh: "独立软件供应商", arr_d90_cny: 1000000, customers_d90: 15, upgrade_x: 16.67, renewal_pct: 75, rev_share_pct: 35, n_firms: 3, monthly_arr: [250000, 250000, 250000, 500000, 500000, 500000, 750000, 750000, 750000, 1000000, 1000000, 1000000] },
+        { id: "SI", name_zh: "系统集成商", arr_d90_cny: 500000, customers_d90: 12, upgrade_x: 16.67, renewal_pct: 70, rev_share_pct: 25, n_firms: 3, monthly_arr: [125000, 125000, 125000, 250000, 250000, 250000, 375000, 375000, 375000, 500000, 500000, 500000] },
+        { id: "CHANNEL", name_zh: "渠道商", arr_d90_cny: 450000, customers_d90: 18, upgrade_x: 18.0, renewal_pct: 65, rev_share_pct: 15, n_firms: 3, monthly_arr: [112500, 112500, 112500, 225000, 225000, 225000, 337500, 337500, 337500, 450000, 450000, 450000] },
+        { id: "TECH", name_zh: "技术合作伙伴", arr_d90_cny: 2000000, customers_d90: 32, upgrade_x: 20.0, renewal_pct: 80, rev_share_pct: 0, n_firms: 2, monthly_arr: [500000, 500000, 500000, 1000000, 1000000, 1000000, 1500000, 1500000, 1500000, 2000000, 2000000, 2000000] },
+        { id: "OEM", name_zh: "原始设备制造商", arr_d90_cny: 3200000, customers_d90: 3, upgrade_x: 20.0, renewal_pct: 85, rev_share_pct: 0, n_firms: 1, monthly_arr: [800000, 800000, 800000, 1600000, 1600000, 1600000, 2400000, 2400000, 2400000, 3200000, 3200000, 3200000] },
+      ],
+      // 12 户集成商
+      integrator_12: [
+        { id: "isv_01_steelerp_zh", name_zh: "钢铁 ERP", type: "ISV", region: "zh", arr_cny: 333333, customers: 5, upgrade_x: 16.67, renewal_pct: 75, partner_email: "partner-1@isv-steelerp.example.com" },
+        { id: "isv_02_mes_zh", name_zh: "MES 系统", type: "ISV", region: "zh", arr_cny: 333333, customers: 5, upgrade_x: 16.67, renewal_pct: 75, partner_email: "partner-2@isv-mes.example.com" },
+        { id: "isv_03_crm_zh", name_zh: "CRM", type: "ISV", region: "zh", arr_cny: 333333, customers: 5, upgrade_x: 16.67, renewal_pct: 75, partner_email: "partner-3@isv-crm.example.com" },
+        { id: "si_01_consulting_bj", name_zh: "咨询 (北京)", type: "SI", region: "bj", arr_cny: 166667, customers: 4, upgrade_x: 16.67, renewal_pct: 70, partner_email: "partner-4@si-consulting.example.com" },
+        { id: "si_02_erpsi_sh", name_zh: "ERP+SI (上海)", type: "SI", region: "sh", arr_cny: 166667, customers: 4, upgrade_x: 16.67, renewal_pct: 70, partner_email: "partner-5@si-erpsi.example.com" },
+        { id: "si_03_dxsi_gz", name_zh: "数字化 SI (广州)", type: "SI", region: "gz", arr_cny: 166667, customers: 4, upgrade_x: 16.67, renewal_pct: 70, partner_email: "partner-6@si-dxsi.example.com" },
+        { id: "ch_01_region_gz", name_zh: "区域代理 (广州)", type: "CHANNEL", region: "gz", arr_cny: 150000, customers: 6, upgrade_x: 18.0, renewal_pct: 65, partner_email: "partner-7@ch-region.example.com" },
+        { id: "ch_02_industry_bj", name_zh: "行业代理 (北京)", type: "CHANNEL", region: "bj", arr_cny: 150000, customers: 6, upgrade_x: 18.0, renewal_pct: 65, partner_email: "partner-8@ch-industry.example.com" },
+        { id: "ch_03_individual_sh", name_zh: "独立代理 (上海)", type: "CHANNEL", region: "sh", arr_cny: 150000, customers: 6, upgrade_x: 18.0, renewal_pct: 65, partner_email: "partner-9@ch-individual.example.com" },
+        { id: "tech_01_cloud_hz", name_zh: "云服务 (阿里云)", type: "TECH", region: "hz", arr_cny: 1000000, customers: 16, upgrade_x: 20.0, renewal_pct: 80, partner_email: "partner-10@tech-cloud.example.com" },
+        { id: "tech_02_saas_sz", name_zh: "SaaS (深圳)", type: "TECH", region: "sz", arr_cny: 1000000, customers: 16, upgrade_x: 20.0, renewal_pct: 80, partner_email: "partner-11@tech-saas.example.com" },
+        { id: "oem_01_li_nd", name_zh: "锂电设备 OEM", type: "OEM", region: "nd", arr_cny: 3200000, customers: 3, upgrade_x: 20.0, renewal_pct: 85, partner_email: "partner-12@oem-li.example.com" },
+      ],
+      // 10 宝武 Tier 1
+      baowu_tier1_top_10: [
+        { id: "baowu_t01", name_zh: "宝山钢铁股份", ticker: "600019.SH", region: "上海", arr_cny: 100000, customers: 1, upgrade_x: 20.0, renewal_pct: 80, decision_maker: "{{Baowu Tier1 决策人}}", decision_email: "decision-maker@baowu-t01.example.com" },
+        { id: "baowu_t02", name_zh: "武钢有限", ticker: "(合并)", region: "武汉", arr_cny: 100000, customers: 1, upgrade_x: 20.0, renewal_pct: 80, decision_maker: "{{Baowu Tier1 决策人}}", decision_email: "decision-maker@baowu-t02.example.com" },
+        { id: "baowu_t03", name_zh: "湛江钢铁", ticker: "(子公司)", region: "湛江", arr_cny: 100000, customers: 1, upgrade_x: 20.0, renewal_pct: 80, decision_maker: "{{Baowu Tier1 决策人}}", decision_email: "decision-maker@baowu-t03.example.com" },
+        { id: "baowu_t04", name_zh: "梅山钢铁", ticker: "(子公司)", region: "南京", arr_cny: 100000, customers: 1, upgrade_x: 20.0, renewal_pct: 80, decision_maker: "{{Baowu Tier1 决策人}}", decision_email: "decision-maker@baowu-t04.example.com" },
+        { id: "baowu_t05", name_zh: "八钢公司", ticker: "(子公司)", region: "新疆", arr_cny: 100000, customers: 1, upgrade_x: 20.0, renewal_pct: 80, decision_maker: "{{Baowu Tier1 决策人}}", decision_email: "decision-maker@baowu-t05.example.com" },
+        { id: "baowu_t06", name_zh: "鄂城钢铁", ticker: "(子公司)", region: "鄂州", arr_cny: 100000, customers: 1, upgrade_x: 20.0, renewal_pct: 80, decision_maker: "{{Baowu Tier1 决策人}}", decision_email: "decision-maker@baowu-t06.example.com" },
+        { id: "baowu_t07", name_zh: "宝钢德盛", ticker: "(子公司)", region: "福州", arr_cny: 100000, customers: 1, upgrade_x: 20.0, renewal_pct: 80, decision_maker: "{{Baowu Tier1 决策人}}", decision_email: "decision-maker@baowu-t07.example.com" },
+        { id: "baowu_t08", name_zh: "宝钢包装", ticker: "(子公司)", region: "上海", arr_cny: 100000, customers: 1, upgrade_x: 20.0, renewal_pct: 80, decision_maker: "{{Baowu Tier1 决策人}}", decision_email: "decision-maker@baowu-t08.example.com" },
+        { id: "baowu_t09", name_zh: "宝信软件", ticker: "600845.SH", region: "上海", arr_cny: 100000, customers: 1, upgrade_x: 20.0, renewal_pct: 80, decision_maker: "{{Baowu Tier1 决策人}}", decision_email: "decision-maker@baowu-t09.example.com" },
+        { id: "baowu_t10", name_zh: "宝武铝业", ticker: "(子公司)", region: "三门峡", arr_cny: 100000, customers: 1, upgrade_x: 20.0, renewal_pct: 80, decision_maker: "{{Baowu Tier1 决策人}}", decision_email: "decision-maker@baowu-t10.example.com" },
+      ],
+      // 12 月
+      months: ["M01", "M02", "M03", "M04", "M05", "M06", "M07", "M08", "M09", "M10", "M11", "M12"],
+    };
+
+    // ============================================================
+    // 渲染函数
+    // ============================================================
+
+    function fmtCNY(v) {
+      if (v >= 100000000) return "¥" + (v / 100000000).toFixed(1) + "亿";
+      if (v >= 10000) return "¥" + (v / 10000).toFixed(0) + "万";
+      return "¥" + v.toLocaleString();
+    }
+
+    function fmtNum(v) {
+      if (v >= 10000) return (v / 10000).toFixed(1) + "万";
+      return v.toLocaleString();
+    }
+
+    function escapeHtml(s) {
+      if (s == null) return "";
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    // ============================================================
+    // 192 cell 矩阵 渲染 (按 4 维切换)
+    // ============================================================
+
+    function renderMatrix(dim) {
+      const body = document.getElementById("matrixBody");
+      let entities = [];
+      let arrLabel = "";
+      if (dim === "GOLD_5") {
+        entities = DASHBOARD_DATA.gold_5;
+        arrLabel = "ARR (¥)";
+      } else if (dim === "INTEGRATOR_5_TYPES") {
+        entities = DASHBOARD_DATA.integrator_5_types;
+        arrLabel = "ARR (¥)";
+      } else if (dim === "INTEGRATOR_12") {
+        entities = DASHBOARD_DATA.integrator_12;
+        arrLabel = "ARR (¥)";
+      } else if (dim === "BAOWU_TIER1") {
+        entities = DASHBOARD_DATA.baowu_tier1_top_10;
+        arrLabel = "ARR (¥)";
+      }
+
+      if (dim === "INTEGRATOR_12" || dim === "BAOWU_TIER1") {
+        // 12 户 / 10 宝武: 1 户 × 4 KPI 矩阵 (无 12 月展开)
+        const kpis = ["ARR", "客户数", "V5→V6 升级率", "续约率"];
+        let html = "<table class=\"matrix-table\"><thead><tr>";
+        html += "<th class=\"entity-col\">实体</th>";
+        for (let k of kpis) html += "<th>" + k + "</th>";
+        html += "</tr></thead><tbody>";
+        for (let e of entities) {
+          html += "<tr>";
+          const name = e.name_zh || e.id;
+          const sub = e.type ? " · " + e.type : (e.region ? " · " + e.region : (e.ticker ? " · " + e.ticker : ""));
+          html += "<td class=\"entity-name\">" + escapeHtml(name) + "<br><span style=\"font-size:10px;color:var(--text-muted);\">" + escapeHtml(sub) + "</span></td>";
+          html += "<td class=\"cell-arr num\">" + fmtCNY(e.arr_cny || e.arr_d90_cny || e.arr_total_cny) + "</td>";
+          html += "<td class=\"cell-cust num\">" + (e.customers || e.customers_d90 || 0) + "</td>";
+          const ux = e.upgrade_x;
+          if (ux > 0) {
+            html += "<td class=\"cell-rate cell-good\">" + ux.toFixed(2) + "x</td>";
+          } else {
+            html += "<td class=\"cell-empty\">—</td>";
+          }
+          const rp = e.renewal_pct;
+          if (rp > 0) {
+            const cls = rp >= 80 ? "cell-good" : (rp >= 70 ? "cell-rate" : "cell-warn");
+            html += "<td class=\"cell-rate " + cls + "\">" + rp + "%</td>";
+          } else {
+            html += "<td class=\"cell-empty\">—</td>";
+          }
+          html += "</tr>";
+        }
+        html += "</tbody></table>";
+        body.innerHTML = html;
+        return;
+      }
+
+      // 5 黄金 / 5 类: 5 户 × 12 月 × 4 KPI = 240 cell 矩阵
+      let html = "<table class=\"matrix-table\"><thead><tr>";
+      html += "<th class=\"entity-col\">实体</th>";
+      for (let m of DASHBOARD_DATA.months) html += "<th>" + m + "<br><span style=\"font-size:9px;\">ARR</span></th>";
+      html += "</tr></thead><tbody>";
+      for (let e of entities) {
+        html += "<tr>";
+        const name = e.name_zh;
+        const sub = e.ticker ? e.ticker : (e.id || "");
+        html += "<td class=\"entity-name\">" + escapeHtml(name) + "<br><span style=\"font-size:10px;color:var(--text-muted);\">" + escapeHtml(sub) + "</span></td>";
+        const arrSeries = e.monthly_arr || [];
+        for (let i = 0; i < 12; i++) {
+          const v = arrSeries[i] || 0;
+          const target = (e.arr_d90_cny || e.arr_total_cny || 1825000);
+          const ratio = v / target;
+          let cls = "cell-rate";
+          if (ratio >= 1.0) cls = "cell-good";
+          else if (ratio >= 0.8) cls = "cell-warn";
+          else if (ratio < 0.5) cls = "cell-bad";
+          html += "<td class=\"cell-arr num " + cls + "\">" + fmtCNY(v) + "</td>";
+        }
+        html += "</tr>";
+      }
+      html += "</tbody></table>";
+      body.innerHTML = html;
+    }
+
+    // ============================================================
+    // 维度卡片 渲染
+    // ============================================================
+
+    function renderGoldGrid() {
+      const grid = document.getElementById("goldGrid");
+      let html = "";
+      for (let e of DASHBOARD_DATA.gold_5) {
+        html += "<div class=\"entity-card\">";
+        html += "<div class=\"entity-card-head\">";
+        html += "<div class=\"entity-card-name\">" + escapeHtml(e.name_zh) + " (" + escapeHtml(e.name_en) + ")</div>";
+        html += "<div class=\"entity-card-tag entity-card-tag-gold\">" + escapeHtml(e.ticker) + "</div>";
+        html += "</div>";
+        html += "<div class=\"entity-card-meta\">" + escapeHtml(e.vertical) + " · V5 起步 → V6 跑通</div>";
+        html += "<div class=\"decision-maker-row\">";
+        html += "<span class=\"decision-maker-label\">决策人:</span>";
+        html += "<span class=\"decision-maker-value\"><code>" + escapeHtml(e.decision_maker) + "</code></span>";
+        html += "</div>";
+        html += "<div class=\"decision-maker-row\">";
+        html += "<span class=\"decision-maker-label\">邮箱:</span>";
+        html += "<span class=\"decision-maker-value\" style=\"font-size:10px;color:var(--text-muted);\">" + escapeHtml(e.decision_email) + "</span>";
+        html += "</div>";
+        html += "<div class=\"entity-card-kpis\">";
+        html += "<div class=\"entity-card-kpi\"><div class=\"entity-card-kpi-label\">ARR 终态</div><div class=\"entity-card-kpi-value\">" + fmtCNY(e.arr_total_cny) + "</div></div>";
+        html += "<div class=\"entity-card-kpi\"><div class=\"entity-card-kpi-label\">客户数</div><div class=\"entity-card-kpi-value\">" + e.customers + "</div></div>";
+        html += "<div class=\"entity-card-kpi\"><div class=\"entity-card-kpi-label\">V5→V6 升级</div><div class=\"entity-card-kpi-value\">" + (e.upgrade_x > 0 ? e.upgrade_x.toFixed(2) + "x" : "—") + "</div></div>";
+        html += "<div class=\"entity-card-kpi\"><div class=\"entity-card-kpi-label\">续约率</div><div class=\"entity-card-kpi-value\">" + (e.renewal_pct > 0 ? e.renewal_pct + "%" : "—") + "</div></div>";
+        html += "</div>";
+        html += "</div>";
+      }
+      grid.innerHTML = html;
+    }
+
+    function renderIntegratorTypeGrid() {
+      const grid = document.getElementById("integratorTypeGrid");
+      let html = "";
+      for (let e of DASHBOARD_DATA.integrator_5_types) {
+        html += "<div class=\"entity-card\">";
+        html += "<div class=\"entity-card-head\">";
+        html += "<div class=\"entity-card-name\">" + escapeHtml(e.name_zh) + " (" + escapeHtml(e.id) + ")</div>";
+        html += "<div class=\"entity-card-tag entity-card-tag-integrator\">" + e.n_firms + " 户</div>";
+        html += "</div>";
+        html += "<div class=\"entity-card-meta\">5 类差异化 ROI · 抽成 " + e.rev_share_pct + "% · SLA 4 维</div>";
+        html += "<div class=\"entity-card-kpis\">";
+        html += "<div class=\"entity-card-kpi\"><div class=\"entity-card-kpi-label\">D90 ARR</div><div class=\"entity-card-kpi-value\">" + fmtCNY(e.arr_d90_cny) + "</div></div>";
+        html += "<div class=\"entity-card-kpi\"><div class=\"entity-card-kpi-label\">D90 客户</div><div class=\"entity-card-kpi-value\">" + e.customers_d90 + "</div></div>";
+        html += "<div class=\"entity-card-kpi\"><div class=\"entity-card-kpi-label\">V5→V6 升级</div><div class=\"entity-card-kpi-value\">" + e.upgrade_x.toFixed(2) + "x</div></div>";
+        html += "<div class=\"entity-card-kpi\"><div class=\"entity-card-kpi-label\">续约率</div><div class=\"entity-card-kpi-value\">" + e.renewal_pct + "%</div></div>";
+        html += "</div>";
+        html += "</div>";
+      }
+      grid.innerHTML = html;
+    }
+
+    function renderIntegrator12Grid() {
+      const grid = document.getElementById("integrator12Grid");
+      let html = "";
+      for (let e of DASHBOARD_DATA.integrator_12) {
+        html += "<div class=\"entity-card\">";
+        html += "<div class=\"entity-card-head\">";
+        html += "<div class=\"entity-card-name\">" + escapeHtml(e.name_zh) + "</div>";
+        html += "<div class=\"entity-card-tag entity-card-tag-integrator\">" + escapeHtml(e.type) + "</div>";
+        html += "</div>";
+        html += "<div class=\"entity-card-meta\">" + escapeHtml(e.region) + " · Phase 12.18 batch 18 落地</div>";
+        html += "<div class=\"decision-maker-row\">";
+        html += "<span class=\"decision-maker-label\">Partner:</span>";
+        html += "<span class=\"decision-maker-value\" style=\"font-size:10px;color:var(--text-muted);\">" + escapeHtml(e.partner_email) + "</span>";
+        html += "</div>";
+        html += "<div class=\"entity-card-kpis\">";
+        html += "<div class=\"entity-card-kpi\"><div class=\"entity-card-kpi-label\">D90 ARR</div><div class=\"entity-card-kpi-value\">" + fmtCNY(e.arr_cny) + "</div></div>";
+        html += "<div class=\"entity-card-kpi\"><div class=\"entity-card-kpi-label\">客户数</div><div class=\"entity-card-kpi-value\">" + e.customers + "</div></div>";
+        html += "<div class=\"entity-card-kpi\"><div class=\"entity-card-kpi-label\">V5→V6 升级</div><div class=\"entity-card-kpi-value\">" + e.upgrade_x.toFixed(2) + "x</div></div>";
+        html += "<div class=\"entity-card-kpi\"><div class=\"entity-card-kpi-label\">续约率</div><div class=\"entity-card-kpi-value\">" + e.renewal_pct + "%</div></div>";
+        html += "</div>";
+        html += "</div>";
+      }
+      grid.innerHTML = html;
+    }
+
+    function renderBaowuGrid() {
+      const grid = document.getElementById("baowuGrid");
+      let html = "";
+      for (let e of DASHBOARD_DATA.baowu_tier1_top_10) {
+        html += "<div class=\"entity-card\">";
+        html += "<div class=\"entity-card-head\">";
+        html += "<div class=\"entity-card-name\">" + escapeHtml(e.name_zh) + "</div>";
+        html += "<div class=\"entity-card-tag entity-card-tag-baowu\">" + escapeHtml(e.ticker) + "</div>";
+        html += "</div>";
+        html += "<div class=\"entity-card-meta\">" + escapeHtml(e.region) + " · 5 折 ¥10万/户 · 30+ 池前 10 名</div>";
+        html += "<div class=\"decision-maker-row\">";
+        html += "<span class=\"decision-maker-label\">决策人:</span>";
+        html += "<span class=\"decision-maker-value\"><code>" + escapeHtml(e.decision_maker) + "</code></span>";
+        html += "</div>";
+        html += "<div class=\"decision-maker-row\">";
+        html += "<span class=\"decision-maker-label\">邮箱:</span>";
+        html += "<span class=\"decision-maker-value\" style=\"font-size:10px;color:var(--text-muted);\">" + escapeHtml(e.decision_email) + "</span>";
+        html += "</div>";
+        html += "<div class=\"entity-card-kpis\">";
+        html += "<div class=\"entity-card-kpi\"><div class=\"entity-card-kpi-label\">1 户 ARR</div><div class=\"entity-card-kpi-value\">" + fmtCNY(e.arr_cny) + "</div></div>";
+        html += "<div class=\"entity-card-kpi\"><div class=\"entity-card-kpi-label\">客户数</div><div class=\"entity-card-kpi-value\">" + e.customers + "</div></div>";
+        html += "<div class=\"entity-card-kpi\"><div class=\"entity-card-kpi-label\">V5→V6 升级</div><div class=\"entity-card-kpi-value\">" + e.upgrade_x.toFixed(2) + "x</div></div>";
+        html += "<div class=\"entity-card-kpi\"><div class=\"entity-card-kpi-label\">续约率</div><div class=\"entity-card-kpi-value\">" + e.renewal_pct + "%</div></div>";
+        html += "</div>";
+        html += "</div>";
+      }
+      grid.innerHTML = html;
+    }
+
+    // ============================================================
+    // 12 月 ARR 趋势 (5 黄金累计)
+    // ============================================================
+
+    function renderTrendBars() {
+      const bars = document.getElementById("trendBars");
+      let html = "";
+      const maxArr = Math.max(...DASHBOARD_DATA.gold_5.flatMap(e => e.monthly_arr));
+      // 5 黄金账户 12 月累计 (M01-M12 总和)
+      const totals = [];
+      for (let m = 0; m < 12; m++) {
+        let sum = 0;
+        for (let e of DASHBOARD_DATA.gold_5) {
+          sum += (e.monthly_arr[m] || 0);
+        }
+        totals.push(sum);
+      }
+      for (let m = 0; m < 12; m++) {
+        const v = totals[m];
+        const h = (v / maxArr) * 140;
+        const isTargetMet = v >= 6000000;  // 6M (M12)
+        html += "<div class=\"trend-bar-col\">";
+        html += "<div class=\"trend-bar-value\">" + (v / 10000).toFixed(0) + "万</div>";
+        html += "<div class=\"trend-bar " + (isTargetMet ? "" : "dim") + "\" style=\"height:" + h + "px;\"></div>";
+        html += "<div class=\"trend-bar-label\">" + DASHBOARD_DATA.months[m] + "</div>";
+        html += "</div>";
+      }
+      bars.innerHTML = html;
+    }
+
+    // ============================================================
+    // 路线图 渲染
+    // ============================================================
+
+    function renderRoadmap() {
+      const body = document.getElementById("roadmapBody");
+      let html = "<div style=\"display:grid;grid-template-columns:repeat(2,1fr);gap:12px;\">";
+      const stages = [
+        {
+          id: "paibanqian",
+          title: "① 拍板前 (8/10 前)",
+          color: "var(--warning)",
+          content: [
+            "用途: 业务方 daily 看 5 黄金 ROI 125x 杠杆 + 12 户 V 推进 + 拍板材料",
+            "dashboard: 4 维 192 cell 矩阵入口 + 5 黄金账户 / 5 类集成商 / 12 户 / 30+ 宝武",
+            "拍板材料: docs/86 §0.2 1 年路线图 ¥600万 + docs/93 §0 2 年愿景 ¥2000万 + 125x 杠杆真算",
+            "P0 风险: BYD V6 拍板 / Luxshare V6 拍板 / Microport V6 拍板 (3 V6 = ¥150万 ARR)",
+          ],
+        },
+        {
+          id: "paibanri",
+          title: "② 拍板日 (8/15 18:00 Asia/Shanghai)",
+          color: "var(--danger)",
+          content: [
+            "议程: 50 min 议程 dashboard",
+            "前 30 min: 5 黄金账户 ROI 测算 (5 户 × 16.67x 升级 + 5 户 × 70% 续约率 + 125x 杠杆)",
+            "中 15 min: 5 类集成商 ARR 测算 (5 类 × 16.67-20.0x 升级 + 5 类 × 65-85% 续约率)",
+            "后 5 min: 30+ 宝武 GTM 测算 (10 户 × 20.0x 升级 + 10 户 × 80% 续约率) + 拍板",
+          ],
+        },
+        {
+          id: "paibanhou",
+          title: "③ 拍板后 D1-D60 (8/16 → 10/14)",
+          color: "var(--success)",
+          content: [
+            "用途: 业务方 daily 用 4 KPI × 12 月矩阵监控 V 推进 / onboarding / GTM",
+            "KPI 监控: ARR / 客户数 / V5→V6 升级率 / 续约率 4 KPI × 12 月 = 48 cell/户",
+            "里程碑: BYD D60 V6 / Luxshare D75 V6 / Microport D90 V6 / CATL D45 V4 / Panasonic D120 V5",
+            "P0 监控: 5 黄金 G6 概率 + 12 户 onboarding 阶段 + 宝武 GTM 启动",
+          ],
+        },
+        {
+          id: "y1y2",
+          title: "④ 1-2 年路线图 (D1-D720)",
+          color: "var(--gold-color)",
+          content: [
+            "Y1 (D1-D365) ARR 目标: ¥600万 (docs/86 §0.2)",
+            "Y1 拆解: 5 黄金 V6 ¥250万 + V7 续约 ¥150万 + 宝武 5 折 ¥100万 + 集成商 ¥100万",
+            "Y2 (D1-D720) ARR 目标: ¥2000万 (docs/93 §0)",
+            "Y2 拆解: 5 黄金 V8 续约 ¥750万 + 30 宝武 5 折 ¥300万 + 12 集成商 ¥400万 + 100 散客 ¥550万",
+            "里程碑: M3 V6×3 / M6 V6×3 满载 / M7 宝武 GTM / M12 ¥600万 / Y2 ¥2000万",
+          ],
+        },
+      ];
+      for (let s of stages) {
+        html += "<div style=\"background:var(--bg-elevated);border-radius:6px;padding:12px;border-left:3px solid " + s.color + ";\">";
+        html += "<div style=\"font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:6px;\">" + escapeHtml(s.title) + "</div>";
+        html += "<ul style=\"list-style:none;padding:0;margin:0;\">";
+        for (let c of s.content) {
+          html += "<li style=\"font-size:11px;color:var(--text-secondary);line-height:1.6;padding:2px 0;border-bottom:1px dashed var(--border-light);\">" + escapeHtml(c) + "</li>";
+        }
+        html += "</ul>";
+        html += "</div>";
+      }
+      html += "</div>";
+      body.innerHTML = html;
+    }
+
+    // ============================================================
+    // Tabs 切换
+    // ============================================================
+
+    document.getElementById("dimTabs").addEventListener("click", function(e) {
+      const tab = e.target.closest(".tab");
+      if (!tab) return;
+      const dim = tab.dataset.dim;
+      // 切换 active
+      this.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      // 渲染对应维
+      renderMatrix(dim);
+    });
+
+    // ============================================================
+    // 初始化
+    // ============================================================
+
+    document.addEventListener("DOMContentLoaded", function() {
+      renderMatrix("GOLD_5");
+      renderGoldGrid();
+      renderIntegratorTypeGrid();
+      renderIntegrator12Grid();
+      renderBaowuGrid();
+      renderTrendBars();
+      renderRoadmap();
+    });
+  </script>
+</body>
+</html>

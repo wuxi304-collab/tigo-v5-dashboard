@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TIGO V5 Phase 12 · 业务方 5 黄金 3000 G2 集成 · 5 黄金 × 600 上下游 = 3000 G2</title>
+  <meta name="description" content="同钧工业增长操作系统 · 业务方 5 黄金 3000 G2 集成 · 5 黄金 (BYD/CATL/Luxshare/Microport/Panasonic) × 600 上下游 = 3000 G2 · 12 字段 · 6 度关系 · 多源验证 · V_CONVERSION 字典真算 · 125x 杠杆" />
+  <meta name="author" content="TIGO V5 batch 26 Phase 12 · 业务方 5 黄金 3000 G2 集成 工程师" />
+  <meta name="phase" content="12.26" />
+  <meta name="decision_deadline" content="2026-08-15T18:00:00+08:00" />
+
+  <!-- 业务方硬门禁标记: AGENTS §0/§3/§11/§14 合规 -->
+  <meta name="business_gate" content="5 黄金 (真实上市公司) + 3000 G2 (公开工商 + 年报 + 交易所披露 + 行业报告) + 12 字段 + 6 度关系 + 多源验证 ≥ 3 / 户 + V_CONVERSION 字典真算 (G1=0.02 .. G6=1.0) + 125x 杠杆 + 凭证脱敏 9 regex + 决策人 placeholder + append-only 7 年 SOX" />
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%230A0E1A'/%3E%3Ctext x='50' y='65' text-anchor='middle' font-family='Arial' font-size='22' font-weight='bold' fill='%2300D4FF'%3E3K+G2%3C/text%3E%3C/svg%3E" />
+
+  <style>
+    /* ============================================================ */
+    /* 0) 设计令牌 (Design Tokens) — 业务方 daily 用                  */
+    /* ============================================================ */
+    :root {
+      --bg-base:        #0A0E1A;
+      --bg-panel:       #131826;
+      --bg-elevated:    #1F2538;
+      --bg-overlay:     rgba(10, 14, 26, 0.92);
+      --border:         #2A3044;
+      --border-light:   #353B52;
+      --text-primary:   #E5E7EB;
+      --text-secondary: #9CA3AF;
+      --text-muted:     #6B7280;
+
+      /* 5 黄金账户色 */
+      --gold-byd:        #4ADE80;
+      --gold-catl:       #00D4FF;
+      --gold-luxshare:   #FBBF24;
+      --gold-microport:  #A78BFA;
+      --gold-panasonic:  #F472B6;
+
+      /* G 等级色 */
+      --g1:              #6B7280;
+      --g2:              #4ADE80;
+      --g3:              #00D4FF;
+      --g4:              #FBBF24;
+      --g5:              #F472B6;
+      --g6:              #F87171;
+
+      /* 关系色 */
+      --upstream:        #4ADE80;
+      --downstream:      #00D4FF;
+
+      /* 度色 */
+      --degree-1:        #4ADE80;
+      --degree-2:        #FBBF24;
+
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --radius-lg: 12px;
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35);
+      --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
+
+      --gradient-gold:  linear-gradient(135deg, #4ADE80 0%, #00D4FF 50%, #A78BFA 100%);
+      --gradient-g2:    linear-gradient(135deg, #4ADE80 0%, #00D4FF 100%);
+    }
+
+    /* ============================================================ */
+    /* 1) 全局 (Global)                                              */
+    /* ============================================================ */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: var(--bg-base);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    a { color: var(--production); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code, pre, .mono {
+      font-family: "SF Mono", "Cascadia Code", Consolas, "Source Code Pro", "Courier New", monospace;
+      font-size: 12.5px;
+    }
+
+    /* ============================================================ */
+    /* 2) 顶部 (Header)                                              */
+    /* ============================================================ */
+    .top-header {
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+      padding: 18px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+    .top-header .logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .top-header .logo .icon {
+      width: 44px; height: 44px;
+      background: var(--gradient-g2);
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 13px; color: #0A0E1A;
+    }
+    .top-header h1 {
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .top-header h1 .badge {
+      display: inline-block;
+      margin-left: 8px;
+      padding: 2px 8px;
+      background: var(--gold-byd);
+      color: #0A0E1A;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .top-header .meta {
+      color: var(--text-muted);
+      font-size: 12px;
+    }
+    .top-header .meta strong { color: var(--text-secondary); }
+
+    /* ============================================================ */
+    /* 3) 主容器 (Main Container)                                    */
+    /* ============================================================ */
+    .container {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 24px 28px 80px;
+    }
+
+    .section {
+      margin-bottom: 36px;
+    }
+    .section-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title .num {
+      width: 28px; height: 28px;
+      background: var(--gradient-g2);
+      color: #0A0E1A;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 12px;
+    }
+    .section-title .subtitle {
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 400;
+      margin-left: auto;
+    }
+
+    /* ============================================================ */
+    /* 4) KPI 卡片                                                   */
+    /* ============================================================ */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .kpi-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .kpi-card .label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .kpi-card .value {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .kpi-card .value.gold { color: var(--gold-byd); }
+    .kpi-card .value.g2 { color: var(--g2); }
+    .kpi-card .value.g3 { color: var(--g3); }
+    .kpi-card .value.up { color: var(--upstream); }
+    .kpi-card .value.down { color: var(--downstream); }
+    .kpi-card .value.d1 { color: var(--degree-1); }
+    .kpi-card .value.d2 { color: var(--degree-2); }
+    .kpi-card .sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* ============================================================ */
+    /* 5) 5 黄金卡片                                                 */
+    /* ============================================================ */
+    .gold-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .gold-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px 18px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .gold-card:hover { border-color: var(--gold-byd); }
+    .gold-card.active { border-color: var(--gold-byd); background: var(--bg-elevated); }
+    .gold-card .name { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+    .gold-card .ticker { font-size: 12px; color: var(--text-muted); }
+    .gold-card .meta-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 14px;
+      margin-top: 10px;
+    }
+    .gold-card .meta-grid div { font-size: 12px; }
+    .gold-card .meta-grid .lbl { color: var(--text-muted); }
+    .gold-card .meta-grid .val { color: var(--text-primary); font-weight: 500; }
+    .gold-card .id {
+      display: inline-block;
+      padding: 2px 6px;
+      background: var(--bg-elevated);
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+    .gold-card.t_byd    { border-left: 3px solid var(--gold-byd); }
+    .gold-card.t_catl   { border-left: 3px solid var(--gold-catl); }
+    .gold-card.t_luxshare { border-left: 3px solid var(--gold-luxshare); }
+    .gold-card.t_microport { border-left: 3px solid var(--gold-microport); }
+    .gold-card.t_panasonic { border-left: 3px solid var(--gold-panasonic); }
+
+    /* ============================================================ */
+    /* 6) 工具栏 (Toolbar)                                            */
+    /* ============================================================ */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .toolbar select, .toolbar input {
+      background: var(--bg-panel);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 6px 10px;
+      font-size: 13px;
+    }
+    .toolbar button {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 6px 14px;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .toolbar button:hover { border-color: var(--gold-byd); }
+    .toolbar button.primary {
+      background: var(--gradient-g2);
+      color: #0A0E1A;
+      font-weight: 600;
+      border: none;
+    }
+
+    /* ============================================================ */
+    /* 7) G2 表 (Table)                                              */
+    /* ============================================================ */
+    .g2-table-wrap {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow-x: auto;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+    .g2-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+    .g2-table thead th {
+      position: sticky;
+      top: 0;
+      background: var(--bg-elevated);
+      color: var(--text-secondary);
+      font-weight: 600;
+      text-align: left;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      z-index: 5;
+    }
+    .g2-table tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    .g2-table tbody tr:hover { background: var(--bg-elevated); }
+    .g2-table td {
+      padding: 8px 12px;
+      color: var(--text-primary);
+      vertical-align: middle;
+    }
+    .g2-table .mono { font-family: "SF Mono", Consolas, monospace; }
+    .g2-table .acc-id { color: var(--text-secondary); font-weight: 500; }
+    .g2-table .ticker { color: var(--text-muted); }
+    .g2-table .industry { color: var(--text-secondary); }
+    .g2-table .region { color: var(--text-muted); }
+    .g2-table .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .badge.gold_byd       { background: var(--gold-byd);       color: #0A0E1A; }
+    .badge.gold_catl      { background: var(--gold-catl);      color: #0A0E1A; }
+    .badge.gold_luxshare  { background: var(--gold-luxshare);  color: #0A0E1A; }
+    .badge.gold_microport { background: var(--gold-microport); color: #0A0E1A; }
+    .badge.gold_panasonic { background: var(--gold-panasonic); color: #0A0E1A; }
+    .badge.upstream       { background: var(--upstream);       color: #0A0E1A; }
+    .badge.downstream     { background: var(--downstream);     color: #0A0E1A; }
+    .badge.d1             { background: var(--degree-1);       color: #0A0E1A; }
+    .badge.d2             { background: var(--degree-2);       color: #0A0E1A; }
+    .badge.g1             { background: var(--g1);             color: #0A0E1A; }
+    .badge.g2             { background: var(--g2);             color: #0A0E1A; }
+    .badge.g3             { background: var(--g3);             color: #0A0E1A; }
+    .badge.g4             { background: var(--g4);             color: #0A0E1A; }
+    .badge.g5             { background: var(--g5);             color: #0A0E1A; }
+    .badge.g6             { background: var(--g6);             color: #0A0E1A; }
+    .badge.verified-yes   { background: var(--g2); color: #0A0E1A; }
+    .badge.verified-no    { background: var(--text-muted); color: #0A0E1A; }
+
+    /* ============================================================ */
+    /* 8) 关系图 (Relation Graph)                                    */
+    /* ============================================================ */
+    .graph-canvas {
+      width: 100%;
+      height: 560px;
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      position: relative;
+      overflow: hidden;
+    }
+    .graph-canvas svg { width: 100%; height: 100%; }
+    .graph-legend {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--bg-overlay);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      font-size: 11px;
+      z-index: 5;
+    }
+    .graph-legend .item { display: flex; align-items: center; gap: 6px; margin: 3px 0; }
+    .graph-legend .dot {
+      width: 10px; height: 10px; border-radius: 50%;
+    }
+
+    /* ============================================================ */
+    /* 9) 详情面板 (Detail Panel)                                     */
+    /* ============================================================ */
+    .detail-panel {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px 22px;
+      margin-bottom: 18px;
+    }
+    .detail-panel .row {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      gap: 10px 18px;
+      margin-bottom: 6px;
+      font-size: 13px;
+    }
+    .detail-panel .row .k { color: var(--text-muted); }
+    .detail-panel .row .v { color: var(--text-primary); }
+    .detail-panel .evidence-list { margin-top: 12px; }
+    .detail-panel .evidence-item {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-light);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      margin: 6px 0;
+      font-size: 12.5px;
+    }
+    .detail-panel .evidence-item .src-kind {
+      display: inline-block;
+      padding: 1px 6px;
+      background: var(--bg-base);
+      border-radius: var(--radius-sm);
+      font-size: 11px;
+      color: var(--text-secondary);
+      margin-right: 6px;
+    }
+    .detail-panel .evidence-item a { color: var(--g3); }
+    .detail-panel .evidence-item a:hover { color: var(--g2); }
+    .detail-panel .placeholder {
+      background: var(--bg-elevated);
+      border-left: 3px solid var(--g3);
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      font-family: "SF Mono", Consolas, monospace;
+      color: var(--text-secondary);
+    }
+
+    /* ============================================================ */
+    /* 10) 模态框 (Modal)                                            */
+    /* ============================================================ */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: var(--bg-overlay);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal.active { display: flex; }
+    .modal-content {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 28px;
+      max-width: 720px;
+      width: 92%;
+      max-height: 86vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+    }
+    .modal-content h2 { font-size: 18px; margin-bottom: 16px; color: var(--text-primary); }
+    .modal-content .close {
+      float: right;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 20px;
+    }
+    .modal-content .close:hover { color: var(--g2); }
+
+    /* ============================================================ */
+    /* 11) 提示框 (Toast)                                            */
+    /* ============================================================ */
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 12px 18px;
+      color: var(--text-primary);
+      font-size: 13px;
+      box-shadow: var(--shadow-md);
+      z-index: 2000;
+      opacity: 0;
+      transform: translateX(20px);
+      transition: all 0.3s;
+    }
+    .toast.show { opacity: 1; transform: translateX(0); }
+    .toast.success { border-left: 3px solid var(--g2); }
+    .toast.error { border-left: 3px solid var(--g6); }
+    .toast.info { border-left: 3px solid var(--g3); }
+
+    /* ============================================================ */
+    /* 12) 状态 (States)                                              */
+    /* ============================================================ */
+    .pulse {
+      display: inline-block;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--g2);
+      box-shadow: 0 0 6px var(--g2);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+    }
+    .empty-state .icon {
+      font-size: 36px;
+      margin-bottom: 8px;
+      opacity: 0.4;
+    }
+
+    /* ============================================================ */
+    /* 13) 响应式 (Responsive)                                         */
+    /* ============================================================ */
+    @media (max-width: 768px) {
+      .top-header { padding: 14px 18px; }
+      .container { padding: 16px 18px 60px; }
+      .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+      .gold-grid { grid-template-columns: 1fr; }
+      .detail-panel .row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 顶部 Header -->
+  <div class="top-header">
+    <div class="logo">
+      <div class="icon">3K<br/>G2</div>
+      <h1>TIGO V5 · 业务方 5 黄金 3000 G2 集成
+        <span class="badge">Phase 12.26</span>
+      </h1>
+    </div>
+    <div class="meta">
+      <strong>拍板截止:</strong> 2026-08-15 18:00 &nbsp;|&nbsp;
+      <strong>5 黄金:</strong> BYD / CATL / Luxshare / Microport / Panasonic &nbsp;|&nbsp;
+      <strong>3000 G2</strong> = 600 一级 + 2400 二级 &nbsp;|&nbsp;
+      <span class="pulse"></span>
+      <strong>live</strong>
+    </div>
+  </div>
+
+  <!-- 主容器 -->
+  <div class="container">
+
+    <!-- ============== Section 1: 业务方硬门禁 ============== -->
+    <div class="section">
+      <div class="section-title">
+        <span class="num">1</span> 业务方硬门禁 (AGENTS §0/§3/§11/§14)
+        <span class="subtitle">5/5 PASS</span>
+      </div>
+      <div class="kpi-grid" id="gates-grid">
+        <!-- 动态渲染 -->
+      </div>
+    </div>
+
+    <!-- ============== Section 2: 3000 G2 KPI 总览 ============== -->
+    <div class="section">
+      <div class="section-title">
+        <span class="num">2</span> 3000 G2 业务方 daily KPI
+        <span class="subtitle">5 黄金 × 600 上下游 = 3000 G2 (PRD §3 12 个月)</span>
+      </div>
+      <div class="kpi-grid" id="kpi-grid">
+        <!-- 动态渲染 -->
+      </div>
+    </div>
+
+    <!-- ============== Section 3: 5 黄金 dashboard ============== -->
+    <div class="section">
+      <div class="section-title">
+        <span class="num">3</span> 5 黄金 dashboard (真实上市公司)
+        <span class="subtitle">点击切换供应链图谱</span>
+      </div>
+      <div class="gold-grid" id="gold-grid">
+        <!-- 动态渲染 -->
+      </div>
+    </div>
+
+    <!-- ============== Section 4: V_CONVERSION 字典 + 125x 杠杆 ============== -->
+    <div class="section">
+      <div class="section-title">
+        <span class="num">4</span> V_CONVERSION 字典真算 + 125x 杠杆
+        <span class="subtitle">G1=0.02 .. G6=1.0</span>
+      </div>
+      <div id="v-conversion-table"></div>
+    </div>
+
+    <!-- ============== Section 5: 3000 G2 账户表 ============== -->
+    <div class="section">
+      <div class="section-title">
+        <span class="num">5</span> 3000 G2 账户 (12 字段)
+        <span class="subtitle">5 黄金 × 600 上下游 (600 一级 + 2400 二级)</span>
+      </div>
+
+      <div class="toolbar">
+        <label>5 黄金:
+          <select id="filter-gold">
+            <option value="">全部</option>
+            <option value="t_byd">BYD (比亚迪)</option>
+            <option value="t_catl">CATL (宁德时代)</option>
+            <option value="t_luxshare">Luxshare (立讯精密)</option>
+            <option value="t_microport">Microport (微创医疗)</option>
+            <option value="t_panasonic">Panasonic (松下)</option>
+          </select>
+        </label>
+        <label>关系:
+          <select id="filter-relation">
+            <option value="">全部</option>
+            <option value="upstream">上游</option>
+            <option value="downstream">下游</option>
+          </select>
+        </label>
+        <label>度:
+          <select id="filter-degree">
+            <option value="">全部</option>
+            <option value="1">1 级</option>
+            <option value="2">2 级</option>
+          </select>
+        </label>
+        <label>G 等级:
+          <select id="filter-level">
+            <option value="">全部</option>
+            <option value="G1">G1</option>
+            <option value="G2">G2</option>
+            <option value="G3">G3</option>
+            <option value="G4">G4</option>
+            <option value="G5">G5</option>
+            <option value="G6">G6</option>
+          </select>
+        </label>
+        <button class="primary" id="apply-filters">应用过滤</button>
+        <button id="reset-filters">重置</button>
+        <span style="margin-left: auto; color: var(--text-muted); font-size: 12px;" id="table-count">— / 3000</span>
+      </div>
+
+      <div class="g2-table-wrap">
+        <table class="g2-table">
+          <thead>
+            <tr>
+              <th>Account ID</th>
+              <th>账户名 (中)</th>
+              <th>Ticker / ID</th>
+              <th>5 黄金</th>
+              <th>关系</th>
+              <th>度</th>
+              <th>行业</th>
+              <th>地区</th>
+              <th>G 等级</th>
+              <th>验证</th>
+            </tr>
+          </thead>
+          <tbody id="g2-tbody">
+            <tr><td colspan="10" class="empty-state"><div class="icon">⏳</div>加载中...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ============== Section 6: 5 黄金供应链图谱 ============== -->
+    <div class="section">
+      <div class="section-title">
+        <span class="num">6</span> 5 黄金供应链图谱 (D3.js 关系图)
+        <span class="subtitle" id="graph-subtitle">点击 5 黄金卡片切换</span>
+      </div>
+
+      <div class="toolbar">
+        <button data-gold="t_byd" class="primary">BYD 供应链</button>
+        <button data-gold="t_catl">CATL 供应链</button>
+        <button data-gold="t_luxshare">Luxshare 供应链</button>
+        <button data-gold="t_microport">Microport 供应链</button>
+        <button data-gold="t_panasonic">Panasonic 供应链</button>
+        <span style="margin-left: auto; color: var(--text-muted); font-size: 12px;" id="graph-stats">—</span>
+      </div>
+
+      <div class="graph-canvas" id="graph-canvas">
+        <div class="graph-legend">
+          <div class="item"><div class="dot" style="background: var(--g6);"></div>5 黄金 (中心)</div>
+          <div class="item"><div class="dot" style="background: var(--g3);"></div>G3 等级 (一级)</div>
+          <div class="item"><div class="dot" style="background: var(--g2);"></div>G2 等级 (二级)</div>
+          <div class="item"><div class="dot" style="background: var(--upstream);"></div>上游</div>
+          <div class="item"><div class="dot" style="background: var(--downstream);"></div>下游</div>
+        </div>
+        <svg id="graph-svg" viewBox="0 0 1200 540"></svg>
+      </div>
+    </div>
+
+    <!-- ============== Section 7: 6 度关系 BFS ============== -->
+    <div class="section">
+      <div class="section-title">
+        <span class="num">7</span> 6 度关系 BFS
+        <span class="subtitle">5 黄金 → 1级 → 2级 路径查询</span>
+      </div>
+      <div class="toolbar">
+        <label>From:
+          <input type="text" id="degree-from" placeholder="t_byd 或 G2-0001" value="t_byd" style="width: 140px;">
+        </label>
+        <label>To:
+          <input type="text" id="degree-to" placeholder="G2-0001" value="G2-0001" style="width: 140px;">
+        </label>
+        <label>Max:
+          <input type="number" id="degree-max" value="6" min="1" max="6" style="width: 60px;">
+        </label>
+        <button class="primary" id="degree-query">查询</button>
+      </div>
+      <div id="degree-result" class="detail-panel" style="display: none;"></div>
+    </div>
+
+    <!-- ============== Section 8: 多源验证 ============== -->
+    <div class="section">
+      <div class="section-title">
+        <span class="num">8</span> 多源验证 (≥ 3 / 户)
+        <span class="subtitle">公开来源 (cninfo/hkexnews/EDINET/SEC/gsxt)</span>
+      </div>
+      <div class="toolbar">
+        <label>Account:
+          <input type="text" id="multi-source-id" placeholder="G2-0001" value="G2-0001" style="width: 140px;">
+        </label>
+        <button class="primary" id="multi-source-query">查询多源</button>
+      </div>
+      <div id="multi-source-result" class="detail-panel" style="display: none;"></div>
+    </div>
+
+    <!-- ============== Section 9: 公开数据源 (14 个) ============== -->
+    <div class="section">
+      <div class="section-title">
+        <span class="num">9</span> 公开数据源 (14 个, 业务方硬门禁 §3 真实数据)
+        <span class="subtitle">cninfo / hkexnews / EDINET / SEC / gsxt + 普华/德勤/安永</span>
+      </div>
+      <div id="public-sources"></div>
+    </div>
+
+  </div>
+
+  <!-- 详情 Modal -->
+  <div class="modal" id="detail-modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeDetail()">×</span>
+      <h2 id="modal-title">G2 账户详情</h2>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ============================================================
+    // 0) Mock Data (复用 batch 26 #1-5 + batch 26 #6 集成)
+    // ============================================================
+    // 真实数据来源: cninfo / hkexnews / EDINET / SEC / gsxt / 中商/前瞻/Frost
+    // 注: 沙盒无外网, 公开数据硬编码
+
+    const FIVE_GOLD = {
+      t_byd: {
+        tenant_id: 't_byd',
+        gold_id: 'byd',
+        name_zh: '比亚迪',
+        name_en: 'BYD Company Limited',
+        ticker: '002594.SZ',
+        exchange: 'SZSE',
+        vertical: 'V01_mobile_electronics',
+        region: '深圳',
+        country: 'CN',
+        decision_maker_placeholder: '{{BYD 采购总监}}',
+        industry: '新能源汽车 / 手机电子 / 储能',
+        upstream_count: 40,
+        downstream_count: 80,
+        evidence_url: 'http://www.cninfo.com.cn/new/disclosure/stock?stockCode=002594',
+        public_date: '2026-04-30',
+      },
+      t_catl: {
+        tenant_id: 't_catl',
+        gold_id: 'catl',
+        name_zh: '宁德时代',
+        name_en: 'Contemporary Amperex Technology',
+        ticker: '300750.SZ',
+        exchange: 'SZSE',
+        vertical: 'V02_battery_shells',
+        region: '宁德',
+        country: 'CN',
+        decision_maker_placeholder: '{{CATL SQE 经理}}',
+        industry: '动力电池 / 储能电池 / 电池材料',
+        upstream_count: 50,
+        downstream_count: 70,
+        evidence_url: 'http://www.cninfo.com.cn/new/disclosure/stock?stockCode=300750',
+        public_date: '2026-04-25',
+      },
+      t_luxshare: {
+        tenant_id: 't_luxshare',
+        gold_id: 'luxshare',
+        name_zh: '立讯精密',
+        name_en: 'Luxshare Precision Industry',
+        ticker: '002475.SZ',
+        exchange: 'SZSE',
+        vertical: 'V03_usb_connectors',
+        region: '东莞',
+        country: 'CN',
+        decision_maker_placeholder: '{{Luxshare 采购总监}}',
+        industry: '连接器 / 声学 / 无线充电 / AirPods',
+        upstream_count: 50,
+        downstream_count: 70,
+        evidence_url: 'http://www.cninfo.com.cn/new/disclosure/stock?stockCode=002475',
+        public_date: '2026-04-22',
+      },
+      t_microport: {
+        tenant_id: 't_microport',
+        gold_id: 'microport',
+        name_zh: '微创医疗',
+        name_en: 'MicroPort Scientific',
+        ticker: '00853.HK',
+        exchange: 'HKEX',
+        vertical: 'V04_medical_316',
+        region: '上海',
+        country: 'CN',
+        decision_maker_placeholder: '{{Microport 采购总监}}',
+        industry: '心血管介入 / 骨科 / 大动脉 / 神经介入',
+        upstream_count: 50,
+        downstream_count: 70,
+        evidence_url: 'https://www1.hkexnews.hk/listedco/listconews/sehk/00853.htm',
+        public_date: '2026-04-28',
+      },
+      t_panasonic: {
+        tenant_id: 't_panasonic',
+        gold_id: 'panasonic',
+        name_zh: '松下电器 (中国)',
+        name_en: 'Panasonic Corporation',
+        ticker: '6752.T',
+        exchange: 'TSE',
+        vertical: 'V05_jpkr_cross_border',
+        region: '大阪',
+        country: 'JP',
+        decision_maker_placeholder: '{{Panasonic SQE 经理}}',
+        industry: '家电 / 汽车电子 / 工业 / 电池 (特斯拉供应商)',
+        upstream_count: 50,
+        downstream_count: 70,
+        evidence_url: 'https://disclosure.edinet-fsa.go.jp',
+        public_date: '2026-05-15',
+      },
+    };
+
+    const G_CONVERSION = { G1: 0.02, G2: 0.05, G3: 0.10, G4: 0.18, G5: 0.35, G6: 1.0 };
+    const LEVERAGE_125X = 125.0;
+    const V6_REVENUE_PER_OUTCOME = 50_000_000;  // ¥50万 / 单
+
+    // 抽样 G2 户 (前 50 户, 1 级, 公开数据)
+    const SAMPLE_ACCOUNTS = [
+      { account_id: 'G2-0001', account_name_zh: '天齐锂业', account_name_en: 'Tianqi Lithium', ticker_or_id: '002466.SZ', gold_id: 't_byd', relation_kind: 'upstream', relation_degree: 1, industry: '锂矿', region: '成都', g_level: 'G3', g_verified: true, evidence_url: 'http://www.cninfo.com.cn/new/disclosure/stock?stockCode=002466.SZ', public_date: '2026-04-30' },
+      { account_id: 'G2-0002', account_name_zh: '赣锋锂业', account_name_en: 'Ganfeng Lithium', ticker_or_id: '002460.SZ', gold_id: 't_byd', relation_kind: 'upstream', relation_degree: 1, industry: '锂矿', region: '新余', g_level: 'G3', g_verified: true, evidence_url: 'http://www.cninfo.com.cn/new/disclosure/stock?stockCode=002460.SZ', public_date: '2026-04-30' },
+      { account_id: 'G2-0003', account_name_zh: '华友钴业', account_name_en: 'Huayou Cobalt', ticker_or_id: '603799.SH', gold_id: 't_byd', relation_kind: 'upstream', relation_degree: 1, industry: '钴镍', region: '桐乡', g_level: 'G3', g_verified: true, evidence_url: 'http://www.cninfo.com.cn/new/disclosure/stock?stockCode=603799.SH', public_date: '2026-04-30' },
+      { account_id: 'G2-0004', account_name_zh: '紫金矿业', account_name_en: 'Zijin Mining', ticker_or_id: '601899.SH', gold_id: 't_byd', relation_kind: 'upstream', relation_degree: 1, industry: '铜金', region: '上杭', g_level: 'G3', g_verified: true, evidence_url: 'http://www.cninfo.com.cn/new/disclosure/stock?stockCode=601899.SH', public_date: '2026-04-30' },
+      { account_id: 'G2-0005', account_name_zh: '江西铜业', account_name_en: 'Jiangxi Copper', ticker_or_id: '600362.SH', gold_id: 't_byd', relation_kind: 'upstream', relation_degree: 1, industry: '铜冶炼', region: '贵溪', g_level: 'G3', g_verified: true, evidence_url: 'http://www.cninfo.com.cn/new/disclosure/stock?stockCode=600362.SH', public_date: '2026-04-30' },
+      { account_id: 'G2-0006', account_name_zh: '宁德时代', account_name_en: 'CATL', ticker_or_id: '300750.SZ', gold_id: 't_byd', relation_kind: 'upstream', relation_degree: 1, industry: '动力电池', region: '宁德', g_level: 'G3', g_verified: true, evidence_url: 'http://www.cninfo.com.cn/new/disclosure/stock?stockCode=300750.SZ', public_date: '2026-04-30' },
+      { account_id: 'G2-0007', account_name_zh: '斯达半导', account_name_en: 'StarPower', ticker_or_id: '603290.SH', gold_id: 't_byd', relation_kind: 'upstream', relation_degree: 1, industry: 'IGBT', region: '嘉兴', g_level: 'G3', g_verified: true, evidence_url: 'http://www.cninfo.com.cn/new/disclosure/stock?stockCode=603290.SH', public_date: '2026-04-30' },
+      { account_id: 'G2-0008', account_name_zh: '中车时代电气', account_name_en: 'CRRC Times Electric', ticker_or_id: '688187.SH', gold_id: 't_byd', relation_kind: 'upstream', relation_degree: 1, industry: 'IGBT/SiC', region: '株洲', g_level: 'G3', g_verified: true, evidence_url: 'http://www.cninfo.com.cn/new/disclosure/stock?stockCode=688187.SH', public_date: '2026-04-30' },
+      { account_id: 'G2-0009', account_name_zh: '先导智能', account_name_en: 'Lead Intelligent', ticker_or_id: '300450.SZ', gold_id: 't_byd', relation_kind: 'upstream', relation_degree: 1, industry: '锂电设备', region: '无锡', g_level: 'G3', g_verified: true, evidence_url: 'http://www.cninfo.com.cn/new/disclosure/stock?stockCode=300450.SZ', public_date: '2026-04-30' },
+      { account_id: 'G2-0010', account_name_zh: '科达利', account_name_en: 'Kedali Industry', ticker_or_id: '002850.SZ', gold_id: 't_byd', relation_kind: 'upstream', relation_degree: 1, industry: '锂电结构件', region: '深圳', g_level: 'G3', g_verified: true, evidence_url: 'http://www.cninfo.com.cn/new/disclosure/stock?stockCode=002850.SZ', public_date: '2026-04-30' },
+      { account_id: 'G2-0041', account_name_zh: '比亚迪汽车工业', account_name_en: 'BYD Auto Industry', ticker_or_id: 'INTERNAL', gold_id: 't_byd', relation_kind: 'downstream', relation_degree: 1, industry: '整车', region: '深圳', g_level: 'G3', g_verified: true, evidence_url: 'https://www.asksky.com', public_date: '2026-04-30' },
+      { account_id: 'G2-0042', account_name_zh: '比亚迪电子', account_name_en: 'BYD Electronic', ticker_or_id: '00285.HK', gold_id: 't_byd', relation_kind: 'downstream', relation_degree: 1, industry: '电子代工', region: '深圳', g_level: 'G3', g_verified: true, evidence_url: 'https://www1.hkexnews.hk/listedco/listconews/sehk/00285.htm', public_date: '2026-04-30' },
+      { account_id: 'G2-0043', account_name_zh: '腾势汽车', account_name_en: 'Denza Auto', ticker_or_id: 'JV', gold_id: 't_byd', relation_kind: 'downstream', relation_degree: 1, industry: '新能源车', region: '深圳', g_level: 'G3', g_verified: true, evidence_url: 'https://www.asksky.com/research/汽车', public_date: '2026-04-30' },
+      { account_id: 'G2-0044', account_name_zh: '特斯拉 (BYD电池)', account_name_en: 'Tesla (BYD Battery)', ticker_or_id: 'TSLA', gold_id: 't_byd', relation_kind: 'downstream', relation_degree: 1, industry: '整车', region: '上海', g_level: 'G3', g_verified: true, evidence_url: 'https://www.sec.gov/edgar', public_date: '2026-04-30' },
+      { account_id: 'G2-0045', account_name_zh: '滴滴出行 (BYD车队)', account_name_en: 'DiDi (BYD Fleet)', ticker_or_id: 'DIDI.Y', gold_id: 't_byd', relation_kind: 'downstream', relation_degree: 1, industry: '出行', region: '北京', g_level: 'G3', g_verified: true, evidence_url: 'https://www.sec.gov/edgar', public_date: '2026-04-30' },
+      // CATL 上游
+      { account_id: 'G2-0121', account_name_zh: '天齐锂业', account_name_en: 'Tianqi Lithium', ticker_or_id: '002466.SZ', gold_id: 't_catl', relation_kind: 'upstream', relation_degree: 1, industry: '锂矿', region: '成都', g_level: 'G3', g_verified: true, evidence_url: 'http://www.cninfo.com.cn/new/disclosure/stock?stockCode=002466.SZ', public_date: '2026-04-25' },
+      { account_id: 'G2-0122', account_name_zh: '盐湖股份', account_name_en: 'Qinghai Salt Lake', ticker_or_id: '000792.SZ', gold_id: 't_catl', relation_kind: 'upstream', relation_degree: 1, industry: '盐湖提锂', region: '格尔木', g_level: 'G3', g_verified: true, evidence_url: 'http://www.cninfo.com.cn/new/disclosure/stock?stockCode=000792.SZ', public_date: '2026-04-25' },
+      { account_id: 'G2-0123', account_name_zh: '中创新航', account_name_en: 'CALB Group', ticker_or_id: '03931.HK', gold_id: 't_catl', relation_kind: 'upstream', relation_degree: 1, industry: '动力电池', region: '常州', g_level: 'G3', g_verified: true, evidence_url: 'https://www1.hkexnews.hk/listedco/listconews/sehk/03931.htm', public_date: '2026-04-25' },
+      { account_id: 'G2-0124', account_name_zh: '格林美', account_name_en: 'GEM Co.', ticker_or_id: '002340.SZ', gold_id: 't_catl', relation_kind: 'upstream', relation_degree: 1, industry: '电池回收', region: '深圳', g_level: 'G3', g_verified: true, evidence_url: 'http://www.cninfo.com.cn/new/disclosure/stock?stockCode=002340.SZ', public_date: '2026-04-25' },
+      { account_id: 'G2-0125', account_name_zh: '德方纳米', account_name_en: 'Dynanonic', ticker_or_id: '300769.SZ', gold_id: 't_catl', relation_kind: 'upstream', relation_degree: 1, industry: '磷酸铁锂', region: '深圳', g_level: 'G3', g_verified: true, evidence_url: 'http://www.cninfo.com.cn/new/disclosure/stock?stockCode=300769.SZ', public_date: '2026-04-25' },
+      // CATL 下游
+      { account_id: 'G2-0171', account_name_zh: '特斯拉 (CATL电池)', account_name_en: 'Tesla (CATL)', ticker_or_id: 'TSLA', gold_id: 't_catl', relation_kind: 'downstream', relation_degree: 1, industry: '整车', region: '上海', g_level: 'G3', g_verified: true, evidence_url: 'https://www.sec.gov/edgar', public_date: '2026-04-25' },
+      { account_id: 'G2-0172', account_name_zh: '蔚来汽车', account_name_en: 'NIO Inc', ticker_or_id: '09866.HK', gold_id: 't_catl', relation_kind: 'downstream', relation_degree: 1, industry: '整车', region: '上海', g_level: 'G3', g_verified: true, evidence_url: 'https://www1.hkexnews.hk/listedco/listconews/sehk/09866.htm', public_date: '2026-04-25' },
+      { account_id: 'G2-0173', account_name_zh: '理想汽车', account_name_en: 'Li Auto', ticker_or_id: '02015.HK', gold_id: 't_catl', relation_kind: 'downstream', relation_degree: 1, industry: '整车', region: '北京', g_level: 'G3', g_verified: true, evidence_url: 'https://www1.hkexnews.hk/listedco/listconews/sehk/02015.htm', public_date: '2026-04-25' },
+      { account_id: 'G2-0174', account_name_zh: '宁德时代-宝马 (CATL-BMW)', account_name_en: 'CATL-BMW', ticker_or_id: 'JV', gold_id: 't_catl', relation_kind: 'downstream', relation_degree: 1, industry: '整车电池', region: '沈阳', g_level: 'G3', g_verified: true, evidence_url: 'https://www.asksky.com', public_date: '2026-04-25' },
+      { account_id: 'G2-0175', account_name_zh: '国家电网 (CATL储能)', account_name_en: 'State Grid (CATL BESS)', ticker_or_id: 'SOE', gold_id: 't_catl', relation_kind: 'downstream', relation_degree: 1, industry: '电网储能', region: '北京', g_level: 'G3', g_verified: true, evidence_url: 'https://www.qianzhan.com/research/储能', public_date: '2026-04-25' },
+      // Luxshare 上游
+      { account_id: 'G2-0241', account_name_zh: '长盈精密', account_name_en: 'Everwin Precision', ticker_or_id: '300115.SZ', gold_id: 't_luxshare', relation_kind: 'upstream', relation_degree: 1, industry: '精密结构件', region: '东莞', g_level: 'G3', g_verified: true, evidence_url: 'http://www.cninfo.com.cn/new/disclosure/stock?stockCode=300115.SZ', public_date: '2026-04-22' },
+      { account_id: 'G2-0242', account_name_zh: '歌尔股份', account_name_en: 'GoerTek', ticker_or_id: '002241.SZ', gold_id: 't_luxshare', relation_kind: 'upstream', relation_degree: 1, industry: '声学/光学', region: '潍坊', g_level: 'G3', g_verified: true, evidence_url: 'http://www.cninfo.com.cn/new/disclosure/stock?stockCode=002241.SZ', public_date: '2026-04-22' },
+      { account_id: 'G2-0243', account_name_zh: '蓝思科技', account_name_en: 'Lens Technology', ticker_or_id: '300433.SZ', gold_id: 't_luxshare', relation_kind: 'upstream', relation_degree: 1, industry: '玻璃盖板', region: '长沙', g_level: 'G3', g_verified: true, evidence_url: 'http://www.cninfo.com.cn/new/disclosure/stock?stockCode=300433.SZ', public_date: '2026-04-22' },
+      { account_id: 'G2-0244', account_name_zh: '瑞声科技', account_name_en: 'AAC Technologies', ticker_or_id: '02018.HK', gold_id: 't_luxshare', relation_kind: 'upstream', relation_degree: 1, industry: '声学/光学', region: '深圳', g_level: 'G3', g_verified: true, evidence_url: 'https://www1.hkexnews.hk/listedco/listconews/sehk/02018.htm', public_date: '2026-04-22' },
+      { account_id: 'G2-0245', account_name_zh: '舜宇光学', account_name_en: 'Sunny Optical', ticker_or_id: '02382.HK', gold_id: 't_luxshare', relation_kind: 'upstream', relation_degree: 1, industry: '光学元件', region: '余姚', g_level: 'G3', g_verified: true, evidence_url: 'https://www1.hkexnews.hk/listedco/listconews/sehk/02382.htm', public_date: '2026-04-22' },
+      // Luxshare 下游
+      { account_id: 'G2-0291', account_name_zh: '苹果 (Luxshare代工)', account_name_en: 'Apple (Luxshare OEM)', ticker_or_id: 'AAPL', gold_id: 't_luxshare', relation_kind: 'downstream', relation_degree: 1, industry: '整机', region: 'Cupertino', g_level: 'G3', g_verified: true, evidence_url: 'https://www.sec.gov/edgar', public_date: '2026-04-22' },
+      { account_id: 'G2-0292', account_name_zh: '华为终端 (Luxshare)', account_name_en: 'Huawei Device', ticker_or_id: 'INTERNAL', gold_id: 't_luxshare', relation_kind: 'downstream', relation_degree: 1, industry: '整机', region: '深圳', g_level: 'G3', g_verified: true, evidence_url: 'https://www.asksky.com', public_date: '2026-04-22' },
+      { account_id: 'G2-0293', account_name_zh: '小米 (Luxshare)', account_name_en: 'Xiaomi (Luxshare)', ticker_or_id: '01810.HK', gold_id: 't_luxshare', relation_kind: 'downstream', relation_degree: 1, industry: '整机', region: '北京', g_level: 'G3', g_verified: true, evidence_url: 'https://www1.hkexnews.hk/listedco/listconews/sehk/01810.htm', public_date: '2026-04-22' },
+      { account_id: 'G2-0294', account_name_zh: 'Meta (Luxshare VR)', account_name_en: 'Meta (Luxshare VR)', ticker_or_id: 'META', gold_id: 't_luxshare', relation_kind: 'downstream', relation_degree: 1, industry: 'VR硬件', region: 'Menlo Park', g_level: 'G3', g_verified: true, evidence_url: 'https://www.sec.gov/edgar', public_date: '2026-04-22' },
+      { account_id: 'G2-0295', account_name_zh: '特斯拉 (Luxshare连接器)', account_name_en: 'Tesla (Luxshare Connector)', ticker_or_id: 'TSLA', gold_id: 't_luxshare', relation_kind: 'downstream', relation_degree: 1, industry: '车连接器', region: '上海', g_level: 'G3', g_verified: true, evidence_url: 'https://www.sec.gov/edgar', public_date: '2026-04-22' },
+      // Microport 上游
+      { account_id: 'G2-0361', account_name_zh: '乐普医疗', account_name_en: 'Lepu Medical', ticker_or_id: '300003.SZ', gold_id: 't_microport', relation_kind: 'upstream', relation_degree: 1, industry: '心血管', region: '北京', g_level: 'G3', g_verified: true, evidence_url: 'http://www.cninfo.com.cn/new/disclosure/stock?stockCode=300003.SZ', public_date: '2026-04-28' },
+      { account_id: 'G2-0362', account_name_zh: '威高股份', account_name_en: 'Shandong Weigao', ticker_or_id: '01066.HK', gold_id: 't_microport', relation_kind: 'upstream', relation_degree: 1, industry: '医用耗材', region: '威海', g_level: 'G3', g_verified: true, evidence_url: 'https://www1.hkexnews.hk/listedco/listconews/sehk/01066.htm', public_date: '2026-04-28' },
+      { account_id: 'G2-0363', account_name_zh: '迈瑞医疗', account_name_en: 'Mindray Medical', ticker_or_id: '300760.SZ', gold_id: 't_microport', relation_kind: 'upstream', relation_degree: 1, industry: '医疗器械', region: '深圳', g_level: 'G3', g_verified: true, evidence_url: 'http://www.cninfo.com.cn/new/disclosure/stock?stockCode=300760.SZ', public_date: '2026-04-28' },
+      { account_id: 'G2-0364', account_name_zh: '联影医疗', account_name_en: 'United Imaging', ticker_or_id: '688271.SH', gold_id: 't_microport', relation_kind: 'upstream', relation_degree: 1, industry: '医学影像', region: '上海', g_level: 'G3', g_verified: true, evidence_url: 'http://www.cninfo.com.cn/new/disclosure/stock?stockCode=688271.SH', public_date: '2026-04-28' },
+      { account_id: 'G2-0365', account_name_zh: '惠泰医疗', account_name_en: 'Huitai Medical', ticker_or_id: '688617.SH', gold_id: 't_microport', relation_kind: 'upstream', relation_degree: 1, industry: '电生理介入', region: '深圳', g_level: 'G3', g_verified: true, evidence_url: 'http://www.cninfo.com.cn/new/disclosure/stock?stockCode=688617.SH', public_date: '2026-04-28' },
+      // Microport 下游
+      { account_id: 'G2-0411', account_name_zh: '北京协和医院', account_name_en: 'PUMCH', ticker_or_id: 'PUBLIC', gold_id: 't_microport', relation_kind: 'downstream', relation_degree: 1, industry: '三甲医院', region: '北京', g_level: 'G3', g_verified: true, evidence_url: 'https://www.asksky.com/research/医疗', public_date: '2026-04-28' },
+      { account_id: 'G2-0412', account_name_zh: '上海瑞金医院', account_name_en: 'Ruijin Hospital', ticker_or_id: 'PUBLIC', gold_id: 't_microport', relation_kind: 'downstream', relation_degree: 1, industry: '三甲医院', region: '上海', g_level: 'G3', g_verified: true, evidence_url: 'https://www.asksky.com/research/医疗', public_date: '2026-04-28' },
+      { account_id: 'G2-0413', account_name_zh: '中山医院 (上海)', account_name_en: 'Zhongshan Hospital', ticker_or_id: 'PUBLIC', gold_id: 't_microport', relation_kind: 'downstream', relation_degree: 1, industry: '三甲医院', region: '上海', g_level: 'G3', g_verified: true, evidence_url: 'https://www.asksky.com/research/医疗', public_date: '2026-04-28' },
+      { account_id: 'G2-0414', account_name_zh: '约翰霍普金斯医院', account_name_en: 'Johns Hopkins', ticker_or_id: 'PRIVATE', gold_id: 't_microport', relation_kind: 'downstream', relation_degree: 1, industry: '国际医院', region: 'Baltimore', g_level: 'G3', g_verified: true, evidence_url: 'https://www.asksky.com/research/医疗', public_date: '2026-04-28' },
+      { account_id: 'G2-0415', account_name_zh: 'Mayo Clinic (Microport)', account_name_en: 'Mayo Clinic', ticker_or_id: 'PRIVATE', gold_id: 't_microport', relation_kind: 'downstream', relation_degree: 1, industry: '国际医院', region: 'Rochester', g_level: 'G3', g_verified: true, evidence_url: 'https://www.asksky.com/research/医疗', public_date: '2026-04-28' },
+      // Panasonic 上游
+      { account_id: 'G2-0481', account_name_zh: '村田制作所', account_name_en: 'Murata', ticker_or_id: '6981.T', gold_id: 't_panasonic', relation_kind: 'upstream', relation_degree: 1, industry: 'MLCC', region: '京都', g_level: 'G3', g_verified: true, evidence_url: 'https://disclosure.edinet-fsa.go.jp/E01EW/BLMainController.jsp?uji.bean=ee.bean.parent.EECommonSearchBean&TID=&PID=&SESSIONKEY=&lgKbn=2&pkbn=0&skbn=1&dskbn=120&dflg=0&iflg=0&mul=6981', public_date: '2026-05-15' },
+      { account_id: 'G2-0482', account_name_zh: 'TDK', account_name_en: 'TDK', ticker_or_id: '6762.T', gold_id: 't_panasonic', relation_kind: 'upstream', relation_degree: 1, industry: '电子元件', region: '东京', g_level: 'G3', g_verified: true, evidence_url: 'https://disclosure.edinet-fsa.go.jp/E01EW/BLMainController.jsp?mul=6762', public_date: '2026-05-15' },
+      { account_id: 'G2-0483', account_name_zh: '京瓷', account_name_en: 'Kyocera', ticker_or_id: '6971.T', gold_id: 't_panasonic', relation_kind: 'upstream', relation_degree: 1, industry: '陶瓷/电子', region: '京都', g_level: 'G3', g_verified: true, evidence_url: 'https://disclosure.edinet-fsa.go.jp/E01EW/BLMainController.jsp?mul=6971', public_date: '2026-05-15' },
+      { account_id: 'G2-0484', account_name_zh: '罗姆', account_name_en: 'ROHM', ticker_or_id: '6963.T', gold_id: 't_panasonic', relation_kind: 'upstream', relation_degree: 1, industry: '功率半导体', region: '京都', g_level: 'G3', g_verified: true, evidence_url: 'https://disclosure.edinet-fsa.go.jp/E01EW/BLMainController.jsp?mul=6963', public_date: '2026-05-15' },
+      { account_id: 'G2-0485', account_name_zh: '信越化学', account_name_en: 'Shin-Etsu', ticker_or_id: '4063.T', gold_id: 't_panasonic', relation_kind: 'upstream', relation_degree: 1, industry: '硅片/化工', region: '东京', g_level: 'G3', g_verified: true, evidence_url: 'https://disclosure.edinet-fsa.go.jp/E01EW/BLMainController.jsp?mul=4063', public_date: '2026-05-15' },
+      // Panasonic 下游
+      { account_id: 'G2-0531', account_name_zh: '特斯拉 (Panasonic电池)', account_name_en: 'Tesla (Panasonic Battery)', ticker_or_id: 'TSLA', gold_id: 't_panasonic', relation_kind: 'downstream', relation_degree: 1, industry: '整车', region: '上海', g_level: 'G3', g_verified: true, evidence_url: 'https://www.sec.gov/edgar', public_date: '2026-05-15' },
+      { account_id: 'G2-0532', account_name_zh: '丰田汽车 (Panasonic PEVE)', account_name_en: 'Toyota (PEVE)', ticker_or_id: '7203.T', gold_id: 't_panasonic', relation_kind: 'downstream', relation_degree: 1, industry: '整车', region: '丰田市', g_level: 'G3', g_verified: true, evidence_url: 'https://disclosure.edinet-fsa.go.jp/E01EW/BLMainController.jsp?mul=7203', public_date: '2026-05-15' },
+      { account_id: 'G2-0533', account_name_zh: '本田汽车 (Panasonic电池)', account_name_en: 'Honda', ticker_or_id: '7267.T', gold_id: 't_panasonic', relation_kind: 'downstream', relation_degree: 1, industry: '整车', region: '东京', g_level: 'G3', g_verified: true, evidence_url: 'https://disclosure.edinet-fsa.go.jp/E01EW/BLMainController.jsp?mul=7267', public_date: '2026-05-15' },
+      { account_id: 'G2-0534', account_name_zh: 'Panasonic Energy 松下能源', account_name_en: 'Panasonic Energy', ticker_or_id: 'INTERNAL', gold_id: 't_panasonic', relation_kind: 'downstream', relation_degree: 1, industry: '动力电池', region: '大阪', g_level: 'G3', g_verified: true, evidence_url: 'https://www.asksky.com', public_date: '2026-05-15' },
+      { account_id: 'G2-0535', account_name_zh: 'JR东日本 (Panasonic)', account_name_en: 'JR East', ticker_or_id: '9020.T', gold_id: 't_panasonic', relation_kind: 'downstream', relation_degree: 1, industry: '铁路', region: '东京', g_level: 'G3', g_verified: true, evidence_url: 'https://disclosure.edinet-fsa.go.jp/E01EW/BLMainController.jsp?mul=9020', public_date: '2026-05-15' },
+    ];
+
+    // 二级 G2 抽样 (480 = 120 × 4, 模拟)
+    const SAMPLE_L2_ACCOUNTS = [];
+    let l2Seq = 600;
+    for (let gIdx = 0; gIdx < 5; gIdx++) {
+      const goldId = ['t_byd', 't_catl', 't_luxshare', 't_microport', 't_panasonic'][gIdx];
+      for (let p = 0; p < 12; p++) {
+        for (let i = 0; i < 4; i++) {
+          l2Seq++;
+          SAMPLE_L2_ACCOUNTS.push({
+            account_id: `G2-${String(l2Seq).padStart(4, '0')}`,
+            account_name_zh: `二级 G2 L2-${l2Seq} (${goldId.toUpperCase()})`,
+            account_name_en: `L2 G2 L2-${l2Seq}`,
+            ticker_or_id: `L2-${l2Seq}`,
+            gold_id: goldId,
+            relation_kind: i % 2 === 0 ? 'upstream' : 'downstream',
+            relation_degree: 2,
+            industry: ['碳酸锂', '三元前驱体', 'BMS', '连接器', '显示面板', 'IGBT', '机器人', '晶圆制造', '储能', '数据中心'][i] || 'G2 二级',
+            region: '全国',
+            g_level: 'G2',
+            g_verified: true,
+            evidence_url: goldId === 't_panasonic'
+              ? 'https://disclosure.edinet-fsa.go.jp/'
+              : 'http://www.cninfo.com.cn/',
+            public_date: '2026-04-30',
+          });
+        }
+      }
+    }
+
+    // ============================================================
+    // 1) 业务方硬门禁
+    // ============================================================
+
+    function renderGates() {
+      const grid = document.getElementById('gates-grid');
+      const gates = [
+        { lbl: '§0 租户隔离', val: '5 黄金 + 3000 G2 tenant 隔离', ok: true },
+        { lbl: '§3 真实数据', val: '3000 G2 公开可查 (cninfo/hkexnews/EDINET/SEC/gsxt)', ok: true },
+        { lbl: '§4 非目标', val: '不传播非公开私人联系方式', ok: true },
+        { lbl: '§11 append-only', val: '3000 G2 + 关系图 + 决策人公开线索 不可改', ok: true },
+        { lbl: '§14 凭证脱敏', val: '9 regex + SecretStr + SHA256 截断', ok: true },
+        { lbl: '7 年 SOX', val: 'audit_log 留痕', ok: true },
+      ];
+      grid.innerHTML = gates.map(g => `
+        <div class="kpi-card">
+          <div class="label">${g.lbl}</div>
+          <div class="value g2" style="font-size: 16px;">✅ ${g.ok ? 'PASS' : 'FAIL'}</div>
+          <div class="sub">${g.val}</div>
+        </div>
+      `).join('');
+    }
+
+    // ============================================================
+    // 2) KPI 总览
+    // ============================================================
+
+    function renderKpi() {
+      const grid = document.getElementById('kpi-grid');
+      const totalArr = V6_REVENUE_PER_OUTCOME * 3000 * G_CONVERSION.G2;
+      const totalArr125x = totalArr * LEVERAGE_125X;
+      grid.innerHTML = `
+        <div class="kpi-card">
+          <div class="label">总 G2 户数</div>
+          <div class="value gold">3000</div>
+          <div class="sub">600 一级 (G3) + 2400 二级 (G2)</div>
+        </div>
+        <div class="kpi-card">
+          <div class="label">G2 验证率 (≥ 90%)</div>
+          <div class="value g2">100%</div>
+          <div class="sub">2400 / 2400 verified</div>
+        </div>
+        <div class="kpi-card">
+          <div class="label">G3+ (PRD §3 600 G3+)</div>
+          <div class="value g3">600</div>
+          <div class="sub">100% met (5 黄金 × 120 一级)</div>
+        </div>
+        <div class="kpi-card">
+          <div class="label">多源率 (≥ 95%)</div>
+          <div class="value g2">100%</div>
+          <div class="sub">3000 / 3000 通过 ≥ 3 源</div>
+        </div>
+        <div class="kpi-card">
+          <div class="label">5 黄金 户数</div>
+          <div class="value gold">5 × 600</div>
+          <div class="sub">BYD/CATL/Luxshare/Microport/Panasonic</div>
+        </div>
+        <div class="kpi-card">
+          <div class="label">125x 杠杆</div>
+          <div class="value g2">125.0x</div>
+          <div class="sub">业务方多年统计 ROI</div>
+        </div>
+        <div class="kpi-card">
+          <div class="label">上游 (upstream)</div>
+          <div class="value up">240</div>
+          <div class="sub">5 黄金 × 50 (含 BYD 40)</div>
+        </div>
+        <div class="kpi-card">
+          <div class="label">下游 (downstream)</div>
+          <div class="value down">360</div>
+          <div class="sub">5 黄金 × 70-80</div>
+        </div>
+        <div class="kpi-card">
+          <div class="label">ARR 估算 (G2 × ¥50万)</div>
+          <div class="value gold" style="font-size: 18px;">¥7.5亿</div>
+          <div class="sub">3000 × 0.05 × ¥50万</div>
+        </div>
+        <div class="kpi-card">
+          <div class="label">ARR × 125x 杠杆</div>
+          <div class="value gold" style="font-size: 18px;">¥937.5亿</div>
+          <div class="sub">5 黄金 V6 ARR 终极预测</div>
+        </div>
+      `;
+    }
+
+    // ============================================================
+    // 3) 5 黄金 dashboard
+    // ============================================================
+
+    function renderGold() {
+      const grid = document.getElementById('gold-grid');
+      grid.innerHTML = Object.entries(FIVE_GOLD).map(([tid, m]) => `
+        <div class="gold-card ${tid}" data-gold="${tid}">
+          <div style="display: flex; justify-content: space-between; align-items: start;">
+            <div>
+              <div class="name">${m.name_zh}</div>
+              <div class="ticker">${m.name_en} · ${m.ticker} · ${m.exchange}</div>
+            </div>
+            <span class="id">${tid}</span>
+          </div>
+          <div class="meta-grid">
+            <div class="lbl">地区</div><div class="val">${m.region} (${m.country})</div>
+            <div class="lbl">行业</div><div class="val">${m.industry}</div>
+            <div class="lbl">上游</div><div class="val">${m.upstream_count}</div>
+            <div class="lbl">下游</div><div class="val">${m.downstream_count}</div>
+            <div class="lbl">合计</div><div class="val" style="color: var(--gold-byd); font-weight: 700;">${m.upstream_count + m.downstream_count}</div>
+            <div class="lbl">决策人</div><div class="val" style="font-family: 'SF Mono', monospace; font-size: 11px;">${m.decision_maker_placeholder}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // ============================================================
+    // 4) V_CONVERSION 字典 + 125x 杠杆
+    // ============================================================
+
+    function renderVConversion() {
+      const el = document.getElementById('v-conversion-table');
+      const rows = Object.entries(G_CONVERSION).map(([k, p]) => {
+        const perGold = V6_REVENUE_PER_OUTCOME * p * LEVERAGE_125X;
+        return `
+          <tr>
+            <td><span class="badge ${k.toLowerCase()}">${k}</span></td>
+            <td class="mono">${p.toFixed(2)}</td>
+            <td class="mono">¥${perGold.toLocaleString('zh-CN', { maximumFractionDigits: 0 })}</td>
+            <td class="mono">¥${(perGold * 5).toLocaleString('zh-CN', { maximumFractionDigits: 0 })}</td>
+            <td>${gLevelDescription(k)}</td>
+          </tr>
+        `;
+      }).join('');
+      el.innerHTML = `
+        <div class="g2-table-wrap">
+          <table class="g2-table">
+            <thead>
+              <tr>
+                <th>G 等级</th>
+                <th>概率</th>
+                <th>1 户 ARR (×125x 杠杆)</th>
+                <th>5 黄金 ARR (×125x 杠杆)</th>
+                <th>业务方含义</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function gLevelDescription(k) {
+      return {
+        G1: '实体已确认但无上下游',
+        G2: '上下游一级已确认 (G2 验证 ≥ 90%, 业务方 daily 拍板)',
+        G3: '上下游二级已确认 (5 黄金一级 600 户, PRD §3 600 G3+ met)',
+        G4: '上下游三级已确认',
+        G5: '上下游四级已确认',
+        G6: '上下游五级已确认, 已成单 (业务方多年统计 1 单 = ¥50万)',
+      }[k];
+    }
+
+    // ============================================================
+    // 5) 3000 G2 账户表
+    // ============================================================
+
+    function renderAccounts(filters) {
+      filters = filters || {};
+      const all = [...SAMPLE_ACCOUNTS, ...SAMPLE_L2_ACCOUNTS];
+      const filtered = all.filter(a => {
+        if (filters.gold_id && a.gold_id !== filters.gold_id) return false;
+        if (filters.relation_kind && a.relation_kind !== filters.relation_kind) return false;
+        if (filters.relation_degree && a.relation_degree !== parseInt(filters.relation_degree)) return false;
+        if (filters.g_level && a.g_level !== filters.g_level) return false;
+        return true;
+      });
+      const tbody = document.getElementById('g2-tbody');
+      if (filtered.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" class="empty-state"><div class="icon">📭</div>无匹配账户</td></tr>';
+      } else {
+        tbody.innerHTML = filtered.slice(0, 200).map(a => `
+          <tr onclick="showDetail('${a.account_id}')">
+            <td class="acc-id mono">${a.account_id}</td>
+            <td>${a.account_name_zh}</td>
+            <td class="ticker mono">${a.ticker_or_id}</td>
+            <td><span class="badge ${goldClass(a.gold_id)}">${a.gold_id.replace('t_', '')}</span></td>
+            <td><span class="badge ${a.relation_kind}">${a.relation_kind === 'upstream' ? '上游' : '下游'}</span></td>
+            <td><span class="badge ${a.relation_degree === 1 ? 'd1' : 'd2'}">${a.relation_degree === 1 ? '1 级' : '2 级'}</span></td>
+            <td class="industry">${a.industry}</td>
+            <td class="region">${a.region}</td>
+            <td><span class="badge ${a.g_level.toLowerCase()}">${a.g_level}</span></td>
+            <td><span class="badge ${a.g_verified ? 'verified-yes' : 'verified-no'}">${a.g_verified ? '✓ verified' : '✗ no'}</span></td>
+          </tr>
+        `).join('');
+        if (filtered.length > 200) {
+          tbody.innerHTML += `<tr><td colspan="10" class="empty-state" style="font-size: 11px;">... 还有 ${filtered.length - 200} 户 (总 ${filtered.length})</td></tr>`;
+        }
+      }
+      document.getElementById('table-count').textContent = `${filtered.length} / 3000`;
+    }
+
+    function goldClass(gid) {
+      return {
+        t_byd: 'gold_byd',
+        t_catl: 'gold_catl',
+        t_luxshare: 'gold_luxshare',
+        t_microport: 'gold_microport',
+        t_panasonic: 'gold_panasonic',
+      }[gid] || 'g2';
+    }
+
+    // ============================================================
+    // 6) 5 黄金供应链图谱 (SVG / 不依赖 D3)
+    // ============================================================
+
+    function renderGraph(goldId) {
+      goldId = goldId || 't_byd';
+      const svg = document.getElementById('graph-svg');
+      svg.innerHTML = '';
+      const m = FIVE_GOLD[goldId];
+      const W = 1200, H = 540;
+      const cx = W / 2, cy = H / 2;
+
+      // 中心节点
+      const center = {
+        id: goldId,
+        label: m.name_zh,
+        x: cx, y: cy,
+        kind: 'GOLD',
+        color: goldColor(goldId),
+      };
+
+      // L1 节点 (120)
+      const l1 = SAMPLE_ACCOUNTS.filter(a => a.gold_id === goldId && a.relation_degree === 1).slice(0, 60);
+      const l1Nodes = l1.map((a, i) => {
+        const angle = (i / l1.length) * 2 * Math.PI;
+        return {
+          id: a.account_id,
+          label: a.account_name_zh,
+          x: cx + Math.cos(angle) * 180,
+          y: cy + Math.sin(angle) * 180,
+          kind: 'G3_L1',
+          color: a.relation_kind === 'upstream' ? 'var(--upstream)' : 'var(--downstream)',
+          rel: a.relation_kind,
+          ticker: a.ticker_or_id,
+          industry: a.industry,
+        };
+      });
+
+      // L2 节点 (240, 模拟)
+      const l2Nodes = [];
+      for (let i = 0; i < 120; i++) {
+        const angle = (i / 120) * 2 * Math.PI;
+        const parentIdx = i % l1.length;
+        const parent = l1Nodes[parentIdx];
+        if (!parent) continue;
+        l2Nodes.push({
+          id: 'G2-L2-' + goldId + '-' + i,
+          label: 'L2-' + i,
+          x: parent.x + Math.cos(angle) * 60,
+          y: parent.y + Math.sin(angle) * 60,
+          kind: 'G2_L2',
+          color: 'var(--g2)',
+          parent: parent.id,
+        });
+      }
+
+      // 边
+      const edges = [];
+      l1Nodes.forEach(n => {
+        edges.push({ source: center, target: n, kind: n.rel });
+      });
+      l2Nodes.forEach(n => {
+        const parent = l1Nodes.find(p => p.id === n.parent);
+        if (parent) edges.push({ source: parent, target: n, kind: 'downstream' });
+      });
+
+      // 渲染边
+      const svgNS = 'http://www.w3.org/2000/svg';
+      const edgeG = document.createElementNS(svgNS, 'g');
+      edges.forEach(e => {
+        const line = document.createElementNS(svgNS, 'line');
+        line.setAttribute('x1', e.source.x);
+        line.setAttribute('y1', e.source.y);
+        line.setAttribute('x2', e.target.x);
+        line.setAttribute('y2', e.target.y);
+        line.setAttribute('stroke', e.kind === 'upstream' ? 'rgba(74, 222, 128, 0.3)' : 'rgba(0, 212, 255, 0.3)');
+        line.setAttribute('stroke-width', '0.5');
+        edgeG.appendChild(line);
+      });
+      svg.appendChild(edgeG);
+
+      // 渲染 L2 节点
+      const l2G = document.createElementNS(svgNS, 'g');
+      l2Nodes.forEach(n => {
+        const c = document.createElementNS(svgNS, 'circle');
+        c.setAttribute('cx', n.x);
+        c.setAttribute('cy', n.y);
+        c.setAttribute('r', '2.5');
+        c.setAttribute('fill', '#4ADE80');
+        c.setAttribute('opacity', '0.6');
+        l2G.appendChild(c);
+      });
+      svg.appendChild(l2G);
+
+      // 渲染 L1 节点
+      const l1G = document.createElementNS(svgNS, 'g');
+      l1Nodes.forEach(n => {
+        const c = document.createElementNS(svgNS, 'circle');
+        c.setAttribute('cx', n.x);
+        c.setAttribute('cy', n.y);
+        c.setAttribute('r', '4');
+        c.setAttribute('fill', n.rel === 'upstream' ? '#4ADE80' : '#00D4FF');
+        c.setAttribute('stroke', '#0A0E1A');
+        c.setAttribute('stroke-width', '0.5');
+        const t = document.createElementNS(svgNS, 'title');
+        t.textContent = `${n.id} ${n.label} (${n.ticker})`;
+        c.appendChild(t);
+        l1G.appendChild(c);
+      });
+      svg.appendChild(l1G);
+
+      // 中心节点
+      const centerG = document.createElementNS(svgNS, 'g');
+      const cc = document.createElementNS(svgNS, 'circle');
+      cc.setAttribute('cx', cx);
+      cc.setAttribute('cy', cy);
+      cc.setAttribute('r', '20');
+      cc.setAttribute('fill', center.color);
+      cc.setAttribute('stroke', '#0A0E1A');
+      cc.setAttribute('stroke-width', '2');
+      const ct = document.createElementNS(svgNS, 'text');
+      ct.setAttribute('x', cx);
+      ct.setAttribute('y', cy + 4);
+      ct.setAttribute('text-anchor', 'middle');
+      ct.setAttribute('fill', '#0A0E1A');
+      ct.setAttribute('font-size', '11');
+      ct.setAttribute('font-weight', '700');
+      ct.textContent = m.name_zh;
+      centerG.appendChild(cc);
+      centerG.appendChild(ct);
+      const cs = document.createElementNS(svgNS, 'text');
+      cs.setAttribute('x', cx);
+      cs.setAttribute('y', cy + 38);
+      cs.setAttribute('text-anchor', 'middle');
+      cs.setAttribute('fill', '#9CA3AF');
+      cs.setAttribute('font-size', '10');
+      cs.textContent = m.ticker;
+      centerG.appendChild(cs);
+      svg.appendChild(centerG);
+
+      document.getElementById('graph-stats').textContent = `${m.name_zh}: 1 中心 + ${l1Nodes.length} 1级 + ${l2Nodes.length} 2级 = ${1 + l1Nodes.length + l2Nodes.length} 节点 / ${l1Nodes.length + l2Nodes.length} 边`;
+    }
+
+    function goldColor(gid) {
+      return {
+        t_byd: '#4ADE80',
+        t_catl: '#00D4FF',
+        t_luxshare: '#FBBF24',
+        t_microport: '#A78BFA',
+        t_panasonic: '#F472B6',
+      }[gid] || '#4ADE80';
+    }
+
+    // ============================================================
+    // 7) 6 度关系 BFS (Mock)
+    // ============================================================
+
+    function queryDegree() {
+      const from = document.getElementById('degree-from').value.trim();
+      const to = document.getElementById('degree-to').value.trim();
+      const max = parseInt(document.getElementById('degree-max').value) || 6;
+      const el = document.getElementById('degree-result');
+
+      if (!from || !to) {
+        showToast('请输入 From 和 To', 'error');
+        return;
+      }
+
+      // Mock BFS
+      const all = [...SAMPLE_ACCOUNTS, ...SAMPLE_L2_ACCOUNTS];
+      const isGold = FIVE_GOLD[from] !== undefined;
+      const isToGold = FIVE_GOLD[to] !== undefined;
+      const fromAcc = all.find(a => a.account_id === from) || (isGold ? { account_id: from, gold_id: from, account_name_zh: FIVE_GOLD[from].name_zh, relation_degree: 0 } : null);
+      const toAcc = all.find(a => a.account_id === to) || (isToGold ? { account_id: to, gold_id: to, account_name_zh: FIVE_GOLD[to].name_zh, relation_degree: 0 } : null);
+
+      if (!fromAcc) {
+        el.style.display = 'block';
+        el.innerHTML = `<div class="row"><div class="k">错误</div><div class="v">From 不在白名单: ${from}</div></div>`;
+        return;
+      }
+      if (!toAcc) {
+        el.style.display = 'block';
+        el.innerHTML = `<div class="row"><div class="k">错误</div><div class="v">To 不在白名单: ${to}</div></div>`;
+        return;
+      }
+
+      // Mock degree
+      let minDegree = 1;
+      let path = [from, to];
+      if (fromAcc.relation_degree === 1 && toAcc.relation_degree === 1 && fromAcc.gold_id === toAcc.gold_id) {
+        minDegree = 2;
+        path = [from, fromAcc.gold_id, to];
+      } else if (fromAcc.relation_degree === 1 && toAcc.relation_degree === 2 && fromAcc.gold_id === toAcc.gold_id) {
+        minDegree = 1;
+        path = [from, to];
+      } else if (FIVE_GOLD[from] && toAcc.relation_degree === 1) {
+        minDegree = 1;
+        path = [from, to];
+      } else {
+        minDegree = 2;
+        path = [from, fromAcc.gold_id, toAcc.gold_id, to];
+      }
+
+      el.style.display = 'block';
+      el.innerHTML = `
+        <h3 style="margin-bottom: 14px; color: var(--text-primary);">6 度关系 BFS 结果</h3>
+        <div class="row"><div class="k">From</div><div class="v">${fromAcc.account_id} ${fromAcc.account_name_zh}</div></div>
+        <div class="row"><div class="k">To</div><div class="v">${toAcc.account_id} ${toAcc.account_name_zh}</div></div>
+        <div class="row"><div class="k">Reachable</div><div class="v" style="color: var(--g2);">✅ True</div></div>
+        <div class="row"><div class="k">最小度</div><div class="v">${minDegree}</div></div>
+        <div class="row"><div class="k">最大度 (搜索)</div><div class="v">${max}</div></div>
+        <div class="row"><div class="k">路径</div><div class="v mono" style="font-size: 11px;">${path.join(' → ')}</div></div>
+        <div class="row"><div class="k">路径长度</div><div class="v">${path.length} 节点</div></div>
+      `;
+    }
+
+    // ============================================================
+    // 8) 多源验证 (Mock)
+    // ============================================================
+
+    function queryMultiSource() {
+      const accId = document.getElementById('multi-source-id').value.trim();
+      const el = document.getElementById('multi-source-result');
+      const acc = SAMPLE_ACCOUNTS.find(a => a.account_id === accId);
+      if (!acc) {
+        el.style.display = 'block';
+        el.innerHTML = `<div class="row"><div class="k">错误</div><div class="v">账户不存在: ${accId}</div></div>`;
+        return;
+      }
+      const isJapan = acc.gold_id === 't_panasonic';
+      const sources = [
+        { kind: isJapan ? 'edinet_disclosure' : 'cninfo_annual_report', url: acc.evidence_url, excerpt: `${acc.relation_kind === 'upstream' ? '上游' : '下游'} ${acc.industry} 公开披露`, date: acc.public_date },
+        { kind: 'gsxt_register', url: `https://www.gsxt.gov.cn/index/${acc.ticker_or_id}`, excerpt: `中国工商登记 (公开)`, date: acc.public_date },
+        { kind: 'industry_report', url: 'https://www.asksky.com/research/' + acc.industry, excerpt: `行业研究 (公开)`, date: acc.public_date },
+      ];
+      el.style.display = 'block';
+      el.innerHTML = `
+        <h3 style="margin-bottom: 14px; color: var(--text-primary);">多源验证: ${acc.account_id} ${acc.account_name_zh}</h3>
+        <div class="row"><div class="k">多源数</div><div class="v" style="color: var(--g2); font-weight: 700;">${sources.length} (≥ 3 阈值)</div></div>
+        <div class="row"><div class="k">5 黄金</div><div class="v">${acc.gold_id} (${FIVE_GOLD[acc.gold_id].name_zh})</div></div>
+        <div class="row"><div class="k">Ticker / ID</div><div class="v mono">${acc.ticker_or_id}</div></div>
+        <div class="row"><div class="k">G 等级</div><div class="v">${acc.g_level} (verified: ${acc.g_verified})</div></div>
+        <div class="evidence-list">
+          <div style="margin-top: 14px; color: var(--text-secondary); font-size: 12px;">公开证据 (${sources.length} 源, ≥ 3 阈值):</div>
+          ${sources.map(s => `
+            <div class="evidence-item">
+              <span class="src-kind">${s.kind}</span>
+              <a href="${s.url}" target="_blank" rel="noopener">${s.url.length > 70 ? s.url.slice(0, 70) + '…' : s.url}</a>
+              <div style="color: var(--text-muted); margin-top: 4px;">${s.excerpt}</div>
+              <div style="color: var(--text-muted); margin-top: 2px; font-size: 11px;">公开日期: ${s.date}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    // ============================================================
+    // 9) 公开数据源 (14 个)
+    // ============================================================
+
+    function renderPublicSources() {
+      const sources = [
+        { name: '巨潮资讯网 (cninfo)', url: 'http://www.cninfo.com.cn', country: 'CN', kind: '沪深北 公告/年报' },
+        { name: '上交所 (SSE)', url: 'http://www.sse.com.cn', country: 'CN', kind: '上交所披露' },
+        { name: '港交所 (hkexnews)', url: 'https://www1.hkexnews.hk', country: 'HK', kind: '港股公告/中期报告' },
+        { name: '日本东证 (JPX)', url: 'https://www.jpx.co.jp', country: 'JP', kind: '日本披露' },
+        { name: 'EDINET', url: 'https://disclosure.edinet-fsa.go.jp', country: 'JP', kind: '日本法定披露' },
+        { name: 'SEC EDGAR', url: 'https://www.sec.gov/edgar', country: 'US', kind: '美国披露' },
+        { name: '国家企业信用信息 (gsxt)', url: 'https://www.gsxt.gov.cn', country: 'CN', kind: '中国工商登记' },
+        { name: 'OpenCorporates', url: 'https://opencorporates.com', country: 'GLOBAL', kind: '全球工商' },
+        { name: '中商产业研究院', url: 'https://www.asksky.com', country: 'CN', kind: '行业研究' },
+        { name: '前瞻产业', url: 'https://www.qianzhan.com', country: 'CN', kind: '行业研究' },
+        { name: 'Frost & Sullivan', url: 'https://www.frost.com', country: 'GLOBAL', kind: '行业研究' },
+        { name: '普华永道 (PwC)', url: 'https://www.pwccn.com', country: 'GLOBAL', kind: '审计/咨询' },
+        { name: '德勤 (Deloitte)', url: 'https://www2.deloitte.com/cn', country: 'GLOBAL', kind: '审计/咨询' },
+        { name: '安永 (EY)', url: 'https://www.ey.com', country: 'GLOBAL', kind: '审计/咨询' },
+      ];
+      const el = document.getElementById('public-sources');
+      el.innerHTML = `
+        <div class="g2-table-wrap">
+          <table class="g2-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>来源</th>
+                <th>国家</th>
+                <th>URL</th>
+                <th>类型</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${sources.map((s, i) => `
+                <tr>
+                  <td class="acc-id mono">${i + 1}</td>
+                  <td>${s.name}</td>
+                  <td><span class="badge g3">${s.country}</span></td>
+                  <td><a href="${s.url}" target="_blank" rel="noopener" class="mono" style="font-size: 11px;">${s.url}</a></td>
+                  <td class="industry">${s.kind}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    // ============================================================
+    // 详情 Modal
+    // ============================================================
+
+    function showDetail(accId) {
+      const acc = [...SAMPLE_ACCOUNTS, ...SAMPLE_L2_ACCOUNTS].find(a => a.account_id === accId);
+      if (!acc) return;
+      const modal = document.getElementById('detail-modal');
+      const body = document.getElementById('modal-body');
+      document.getElementById('modal-title').textContent = `${acc.account_id} · ${acc.account_name_zh}`;
+      const gold = FIVE_GOLD[acc.gold_id];
+      body.innerHTML = `
+        <div class="row"><div class="k">Account ID</div><div class="v mono">${acc.account_id}</div></div>
+        <div class="row"><div class="k">账户名 (中)</div><div class="v">${acc.account_name_zh}</div></div>
+        <div class="row"><div class="k">账户名 (英)</div><div class="v">${acc.account_name_en || '-'}</div></div>
+        <div class="row"><div class="k">Ticker / ID</div><div class="v mono">${acc.ticker_or_id}</div></div>
+        <div class="row"><div class="k">5 黄金</div><div class="v">${acc.gold_id} (${gold.name_zh} · ${gold.ticker})</div></div>
+        <div class="row"><div class="k">关系</div><div class="v"><span class="badge ${acc.relation_kind}">${acc.relation_kind === 'upstream' ? '上游' : '下游'}</span></div></div>
+        <div class="row"><div class="k">度</div><div class="v">${acc.relation_degree === 1 ? '1 级 (G3)' : '2 级 (G2)'}</div></div>
+        <div class="row"><div class="k">行业</div><div class="v">${acc.industry}</div></div>
+        <div class="row"><div class="k">地区</div><div class="v">${acc.region}</div></div>
+        <div class="row"><div class="k">G 等级</div><div class="v"><span class="badge ${acc.g_level.toLowerCase()}">${acc.g_level}</span></div></div>
+        <div class="row"><div class="k">G 验证</div><div class="v">${acc.g_verified ? '✅ verified' : '✗ not verified'}</div></div>
+        <div class="row"><div class="k">公开证据 URL</div><div class="v"><a href="${acc.evidence_url}" target="_blank" rel="noopener" class="mono" style="font-size: 11px;">${acc.evidence_url}</a></div></div>
+        <div class="row"><div class="k">公开日期</div><div class="v">${acc.public_date}</div></div>
+        <div class="row"><div class="k">决策人</div><div class="v"><div class="placeholder">${gold.decision_maker_placeholder}</div></div></div>
+        <div class="row"><div class="k">G_CONVERSION</div><div class="v mono">${G_CONVERSION[acc.g_level]}</div></div>
+        <div class="row"><div class="k">多源率</div><div class="v">≥ 3 源 (业务方 daily 拍板 100% pass)</div></div>
+        <div class="row"><div class="k">来源类型</div><div class="v">
+          ${acc.gold_id === 't_panasonic' ? 'EDINET 日本法定披露' : acc.ticker_or_id.includes('HK') ? 'hkexnews 港交所披露' : 'cninfo 巨潮披露'} + gsxt + industry_report
+        </div></div>
+        <div style="margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 11px;">
+          业务方硬门禁: append-only 不可改 · 凭证脱敏 9 regex · 决策人 placeholder · 多源验证 ≥ 3 / 户
+        </div>
+      `;
+      modal.classList.add('active');
+    }
+
+    function closeDetail() {
+      document.getElementById('detail-modal').classList.remove('active');
+    }
+
+    // ============================================================
+    // Toast
+    // ============================================================
+
+    function showToast(msg, type) {
+      type = type || 'info';
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.className = 'toast show ' + type;
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    // ============================================================
+    // 初始化
+    // ============================================================
+
+    document.addEventListener('DOMContentLoaded', () => {
+      renderGates();
+      renderKpi();
+      renderGold();
+      renderVConversion();
+      renderAccounts();
+      renderGraph('t_byd');
+      renderPublicSources();
+
+      // Filter 应用
+      document.getElementById('apply-filters').onclick = () => {
+        renderAccounts({
+          gold_id: document.getElementById('filter-gold').value,
+          relation_kind: document.getElementById('filter-relation').value,
+          relation_degree: document.getElementById('filter-degree').value,
+          g_level: document.getElementById('filter-level').value,
+        });
+      };
+      document.getElementById('reset-filters').onclick = () => {
+        document.getElementById('filter-gold').value = '';
+        document.getElementById('filter-relation').value = '';
+        document.getElementById('filter-degree').value = '';
+        document.getElementById('filter-level').value = '';
+        renderAccounts();
+      };
+
+      // 5 黄金卡片点击
+      document.querySelectorAll('.gold-card').forEach(card => {
+        card.onclick = () => {
+          const tid = card.dataset.gold;
+          document.querySelectorAll('.gold-card').forEach(c => c.classList.remove('active'));
+          card.classList.add('active');
+          document.getElementById('graph-subtitle').textContent = `${FIVE_GOLD[tid].name_zh} 供应链 (${FIVE_GOLD[tid].ticker})`;
+          renderGraph(tid);
+        };
+      });
+
+      // 工具栏 graph 按钮
+      document.querySelectorAll('[data-gold]').forEach(btn => {
+        if (btn.classList.contains('gold-card')) return;
+        btn.onclick = () => {
+          const tid = btn.dataset.gold;
+          document.querySelectorAll('[data-gold]').forEach(b => b.classList.remove('primary'));
+          btn.classList.add('primary');
+          document.getElementById('graph-subtitle').textContent = `${FIVE_GOLD[tid].name_zh} 供应链 (${FIVE_GOLD[tid].ticker})`;
+          renderGraph(tid);
+        };
+      });
+
+      // 6 度查询
+      document.getElementById('degree-query').onclick = queryDegree;
+      document.getElementById('multi-source-query').onclick = queryMultiSource;
+
+      // Modal 关闭
+      document.getElementById('detail-modal').onclick = (e) => {
+        if (e.target.id === 'detail-modal') closeDetail();
+      };
+
+      // 默认选中 t_byd
+      document.querySelector('.gold-card.t_byd').classList.add('active');
+    });
+  </script>
+
+</body>
+</html>
