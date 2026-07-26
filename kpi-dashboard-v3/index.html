@@ -145,6 +145,72 @@ a:hover { text-decoration: underline; }
   .sf-main { padding: 16px; }
   .sf-welcome-banner { flex-direction: column; align-items: flex-start; padding: 20px; }
 }
+
+/* Sidebar v2: 分组 + active 强化 + 底部信息卡 (AGENTS §15: 加新规则, 不改 globals.css baseline) */
+.sf-sidebar { display: flex; flex-direction: column; min-height: 100%; }
+.sf-sidebar-section { padding: 12px 0 4px; }
+.sf-sidebar-section-title {
+  font-size: 10px; font-weight: 700; color: var(--sf-blue);
+  text-transform: uppercase; letter-spacing: 1px;
+  padding: 4px 16px 6px;
+  display: flex; align-items: center; gap: 6px;
+}
+.sf-sidebar-section-title::before {
+  content: ""; display: inline-block;
+  width: 12px; height: 2px; background: var(--sf-blue);
+}
+.sf-nav-item {
+  position: relative;
+  padding: 9px 16px 9px 13px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+.sf-nav-item .sf-nav-icon { width: 16px; height: 16px; opacity: 0.75; }
+.sf-nav-item:hover .sf-nav-icon { opacity: 1; color: var(--sf-blue); }
+.sf-nav-item.active {
+  background: rgba(0, 112, 210, 0.35) !important;
+  border-left-color: var(--sf-blue) !important;
+  color: #fff !important;
+  font-weight: 700;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+}
+.sf-nav-item.active .sf-nav-icon { opacity: 1; color: var(--sf-blue); }
+.sf-nav-item.active::after {
+  content: ""; position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+  width: 6px; height: 6px; background: var(--sf-blue); border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(0, 112, 210, 0.30);
+}
+
+.sf-sidebar-divider { height: 1px; background: rgba(255,255,255,0.08); margin: 8px 16px; }
+
+.sf-sidebar-deadline {
+  margin: auto 12px 12px 12px;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, rgba(0, 112, 210, 0.18) 0%, rgba(144, 80, 224, 0.10) 100%);
+  border: 1px solid rgba(0, 112, 210, 0.35);
+  border-radius: var(--sf-radius);
+  text-align: center;
+}
+.sf-sidebar-deadline-label {
+  font-size: 9px; color: rgba(255,255,255,0.7);
+  text-transform: uppercase; letter-spacing: 0.8px; font-weight: 700;
+}
+.sf-sidebar-deadline-date {
+  font-size: 14px; font-weight: 700; color: #fff;
+  margin-top: 4px; font-family: var(--font-num, monospace);
+}
+.sf-sidebar-deadline-sub {
+  font-size: 10px; color: rgba(255,255,255,0.65);
+  margin-top: 6px; line-height: 1.5;
+}
+.sf-sidebar-deadline-stat {
+  display: flex; gap: 4px; margin-top: 8px;
+  font-size: 10px; color: rgba(255,255,255,0.75);
+  justify-content: space-around;
+}
+.sf-sidebar-deadline-stat strong { color: #fff; font-size: 11px; }
+
 </style>
 </head>
 <body>
@@ -166,13 +232,20 @@ a:hover { text-decoration: underline; }
     </div>
   </header>
   <div class="sf-layout">
-    <nav class="sf-sidebar" aria-label="主导航"><a class="sf-nav-item " href="../index.html" title="5 分钟上手"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7 L 8 2 L 14 7 L 14 14 L 2 14 Z" /><path d="M6 14 L 6 9 L 10 9 L 10 14" /></svg></span><span>新人入口</span></a>
-<a class="sf-nav-item " href="../board-ppt-1page/index.html" title="给老板看的"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2 L 11 2 L 13 4 L 13 14 L 3 14 Z" /><path d="M11 2 L 11 4 L 13 4" /><path d="M5 7 L 11 7 M 5 10 L 11 10 M 5 13 L 9 13" /></svg></span><span>决策包 1 页</span></a>
-<a class="sf-nav-item " href="../demo-day-1hour/index.html" title="现场流程"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14 L 14 14" /><rect x="3" y="8" width="2" height="6" /><rect x="7" y="5" width="2" height="9" /><rect x="11" y="2" width="2" height="12" /></svg></span><span>8/15 拍板会</span></a>
-<a class="sf-nav-item " href="../daily-12d/index.html" title="12 个核心指标"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="5" /><rect x="9" y="2" width="5" height="5" /><rect x="2" y="9" width="5" height="5" /><rect x="9" y="9" width="5" height="5" /></svg></span><span>我每天看什么</span></a>
-<a class="sf-nav-item " href="../g2-3000/index.html" title="3000 个潜在客户"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="5" /><rect x="9" y="2" width="5" height="5" /><rect x="2" y="9" width="5" height="5" /><rect x="9" y="9" width="5" height="5" /></svg></span><span>我们有多少客户</span></a>
-<a class="sf-nav-item active" href="../kpi-dashboard-v3/index.html" title="320 个评分"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14 L 14 14" /><rect x="3" y="8" width="2" height="6" /><rect x="7" y="5" width="2" height="9" /><rect x="11" y="2" width="2" height="12" /></svg></span><span>客户健康度</span></a>
-<a class="sf-nav-item " href="../roi-dashboard-v2/index.html" title="1 元换多少"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14 L 14 14" /><rect x="3" y="8" width="2" height="6" /><rect x="7" y="5" width="2" height="9" /><rect x="11" y="2" width="2" height="12" /></svg></span><span>投入回报算账</span></a></nav>
+    <nav class="sf-sidebar" aria-label="主导航">
+  <div class="sf-sidebar-section"><div class="sf-sidebar-section-title">入口</div><a class="sf-nav-item" href="../index.html" title="5 分钟上手"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 7 L 8 2 L 14 7 L 14 14 L 2 14 Z" /><path d="M6 14 L 6 9 L 10 9 L 10 14" /></svg></span><span>新人入口</span></a></div><div class="sf-sidebar-section"><div class="sf-sidebar-section-title">8/15 拍板日</div><a class="sf-nav-item" href="../board-ppt-1page/index.html" title="给老板看的"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 2 L 11 2 L 13 4 L 13 14 L 3 14 Z" /><path d="M11 2 L 11 4 L 13 4" /><path d="M5 7 L 11 7 M 5 10 L 11 10 M 5 13 L 9 13" /></svg></span><span>决策包 1 页</span></a><a class="sf-nav-item" href="../demo-day-1hour/index.html" title="现场流程"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14 L 14 14" /><rect x="3" y="8" width="2" height="6" /><rect x="7" y="5" width="2" height="9" /><rect x="11" y="2" width="2" height="12" /></svg></span><span>8/15 拍板会</span></a></div><div class="sf-sidebar-section"><div class="sf-sidebar-section-title">日常查看</div><a class="sf-nav-item" href="../daily-12d/index.html" title="12 个核心指标"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="5" /><rect x="9" y="2" width="5" height="5" /><rect x="2" y="9" width="5" height="5" /><rect x="9" y="9" width="5" height="5" /></svg></span><span>我每天看什么</span></a><a class="sf-nav-item" href="../g2-3000/index.html" title="3000 个潜在客户"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="5" height="5" /><rect x="9" y="2" width="5" height="5" /><rect x="2" y="9" width="5" height="5" /><rect x="9" y="9" width="5" height="5" /></svg></span><span>我们有多少客户</span></a><a class="sf-nav-item active" href="../kpi-dashboard-v3/index.html" title="320 个评分"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14 L 14 14" /><rect x="3" y="8" width="2" height="6" /><rect x="7" y="5" width="2" height="9" /><rect x="11" y="2" width="2" height="12" /></svg></span><span>客户健康度</span></a><a class="sf-nav-item" href="../roi-dashboard-v2/index.html" title="1 元换多少"><span class="sf-nav-icon"><svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 14 L 14 14" /><rect x="3" y="8" width="2" height="6" /><rect x="7" y="5" width="2" height="9" /><rect x="11" y="2" width="2" height="12" /></svg></span><span>投入回报算账</span></a></div>
+  <div class="sf-sidebar-divider"></div>
+<div class="sf-sidebar-deadline">
+  <div class="sf-sidebar-deadline-label">拍板倒计时</div>
+  <div class="sf-sidebar-deadline-date">2026-08-15 18:00</div>
+  <div class="sf-sidebar-deadline-stat">
+    <span>5 黄金</span>
+    <span>30 宝武</span>
+    <span>12 集成商</span>
+  </div>
+  <div class="sf-sidebar-deadline-sub">拍板日 8/15 · 24h 可撤回</div>
+</div>
+</nav>
     <main class="sf-main">
 <div class="sf-welcome-banner">
   <div>
